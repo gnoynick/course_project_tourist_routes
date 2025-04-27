@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="ed902b2e2172477ea7b98ea9ed1d58ff" Name="Diagram1">
+        <EntityTypeShape EntityType="TouristRoutesModel.Categories" Width="1.5" PointX="0.75" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="TouristRoutesModel.Favorites" Width="1.5" PointX="9.75" PointY="3.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="TouristRoutesModel.HikeParticipants" Width="1.5" PointX="12" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="TouristRoutesModel.Hikes" Width="1.5" PointX="9.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="TouristRoutesModel.Photos" Width="1.5" PointX="9.75" PointY="10.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="TouristRoutesModel.PointTypes" Width="1.5" PointX="3" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TouristRoutesModel.Roles" Width="1.5" PointX="3" PointY="2.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="TouristRoutesModel.RoutePoints" Width="1.5" PointX="5.25" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="TouristRoutesModel.Routes" Width="1.5" PointX="7.5" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="TouristRoutesModel.Users" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="TouristRoutesModel.FK__PointType__IdCat__4AB81AF0" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__Routes__IdCatego__46E78A0C" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__Favorites__IdRou__60A75C0F" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__Favorites__IdUse__5FB337D6" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__HikeParti__IdHik__59FA5E80" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__HikeParti__IdUse__5AEE82B9" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__Hikes__IdRoute__5629CD9C" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__Photos__IdRoute__6477ECF3" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__RoutePoin__IdTyp__4E88ABD4" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__Users__IdRole__3E52440B" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.FK__Routes__IdUser__45F365D3" ManuallyRouted="false" />
+        <AssociationConnector Association="TouristRoutesModel.RoutePointsForRoute" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

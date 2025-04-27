@@ -1,0 +1,70 @@
+﻿<Page x:Class="course_project_tourist_routes.AdminPages.MenuPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:course_project_tourist_routes.AdminPages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="800" d:DesignWidth="380"
+      Title="PanelPage">
+
+    <Border Background="#4A773C" CornerRadius="10">
+        <Grid>
+            <Border Background="#D1E2C4" CornerRadius="10" Margin="20">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
+
+                    <Button x:Name="FindRouteButton" 
+                            Style="{StaticResource ButtonStyle}" 
+                            FontSize="20" Padding="30,20"
+                            Margin="20" Width="260" Height="70" Click="FindRouteButton_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="MapSearch" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
+                            <TextBlock Text="Найти маршрут" FontSize="18" Foreground="white"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="AddRouteButton" 
+                            Style="{StaticResource ButtonStyle}" 
+                            FontSize="20" Padding="30,20"
+                            Margin="20" Width="260" Height="70" Click="AddRouteButton_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="MapMarkerPlus" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
+                            <TextBlock Text="Добавить маршрут" FontSize="18" Foreground="white"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="OrganizeHikeButton" 
+                            Style="{StaticResource ButtonStyle}" 
+                            FontSize="20" Padding="30,20"
+                            Margin="20" Width="260" Height="70" Click="OrganizeHikeButton_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Tent" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
+                            <TextBlock Text="Походы" FontSize="18" Foreground="white"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="FavoritesButton" 
+                            Style="{StaticResource ButtonStyle}" 
+                            FontSize="20" Padding="30,20"
+                            Margin="20" Width="260" Height="70" Click="FavoritesButton_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Star" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
+                            <TextBlock Text="Избранное" FontSize="18" Foreground="white"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="LogoutButton" 
+                            Style="{StaticResource ButtonStyle}" 
+                            FontSize="20" Padding="30,20"
+                            Margin="20" Width="260" Height="70" Click="LogoutButton_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="ExitToApp" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
+                            <TextBlock Text="Выйти" FontSize="18" Foreground="white"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Page>

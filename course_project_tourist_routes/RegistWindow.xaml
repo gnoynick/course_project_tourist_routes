@@ -1,0 +1,215 @@
+﻿<Window x:Class="course_project_tourist_routes.RegistWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:course_project_tourist_routes"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="Регистрация" Height="550" Width="450"
+        Background="#F3F0E6" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Border Background="#D1E2C4" CornerRadius="10" Margin="25">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition Height="70"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Label Content="РЕГИСТРАЦИЯ"
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center" 
+                           Foreground="#4A773C" 
+                           FontSize="38" 
+                           FontWeight="Bold"
+                           FontFamily="Arial"/>
+                    <Border Height="4" 
+                            Width="200" 
+                            Background="#8B7962" 
+                            Margin="0,8,0,0" 
+                            CornerRadius="2"/>
+                </StackPanel>
+
+                <TextBlock Text="Логин:" 
+                           Grid.Row="2"
+                           HorizontalAlignment="Left" 
+                           VerticalAlignment="Center" 
+                           Foreground="#5A5A42" 
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+
+                <Grid Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
+                    <TextBox Name="UsernameTextBox"
+                             Style="{StaticResource StyledTextBox}"
+                             materialDesign:HintAssist.Hint="Введите логин"
+                             materialDesign:HintAssist.Foreground="#777"
+                             FontSize="15"
+                             MaxLength="25"
+                             PreviewKeyDown="TextBox_PreviewKeyDown"
+                             TextChanged="UsernameTextBox_TextChanged"/>
+                    <TextBlock HorizontalAlignment="Right" 
+                               VerticalAlignment="Bottom"
+                               Margin="0,0,5,5"
+                               Text="{Binding Text.Length, ElementName=UsernameTextBox, StringFormat={}{0}/25}"
+                               Foreground="#5A5A42"
+                               FontSize="12"/>
+                </Grid>
+
+                <TextBlock Text="Эл. почта:" 
+                           Grid.Row="5"
+                           HorizontalAlignment="Left" 
+                           VerticalAlignment="Center" 
+                           Foreground="#5A5A42" 
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+
+                <Grid Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
+                    <TextBox Name="EmailTextBox"
+                             Style="{StaticResource StyledTextBox}"
+                             materialDesign:HintAssist.Hint="Введите email"
+                             materialDesign:HintAssist.Foreground="#777"
+                             FontSize="15"
+                             MaxLength="50"
+                             TextChanged="EmailTextBox_TextChanged"
+                             PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                    <TextBlock HorizontalAlignment="Right" 
+                               VerticalAlignment="Bottom"
+                               Margin="0,0,5,5"
+                               Text="{Binding Text.Length, ElementName=EmailTextBox, StringFormat={}{0}/50}"
+                               Foreground="#5A5A42"
+                               FontSize="12"/>
+                </Grid>
+
+                <TextBlock Text="Пароль:" 
+                           Grid.Row="8"
+                           HorizontalAlignment="Left" 
+                           VerticalAlignment="Center" 
+                           Foreground="#5A5A42" 
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+
+                <Grid Grid.Row="9" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
+                    <Grid>
+                        <PasswordBox x:Name="PasswordBox" 
+                                     Style="{StaticResource StyledPasswordBox}" 
+                                     materialDesign:HintAssist.Hint="Введите пароль"
+                                     materialDesign:HintAssist.Foreground="#777"
+                                     FontSize="15"
+                                     MaxLength="20"
+                                     PreviewKeyDown="PasswordBox_PreviewKeyDown"
+                                     PasswordChanged="PasswordBox_PasswordChanged"
+                                     Visibility="Visible"/>
+                        <TextBox x:Name="PasswordTextBox" 
+                                 Style="{StaticResource StyledTextBox}" 
+                                 FontSize="15"
+                                 MaxLength="20"
+                                 PreviewKeyDown="TextBox_PreviewKeyDown"
+                                 TextChanged="PasswordTextBox_TextChanged"
+                                 Visibility="Collapsed"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        <TextBlock Margin="0,0,5,5"
+                                   Text="{Binding Password.Length, ElementName=PasswordBox, StringFormat={}{0}/20}"
+                                   Foreground="#5A5A42"
+                                   FontSize="12"
+                                   x:Name="PasswordCounter"/>
+                    </StackPanel>
+                </Grid>
+
+                <Button x:Name="ShowPasswordButton" 
+                        Grid.Row="9" Grid.Column="1"
+                        Style="{StaticResource ShowPasswordButtonStyle}"
+                        Click="ShowPasswordButton_Click">
+                    <materialDesign:PackIcon Kind="Eye" VerticalAlignment="Center" Width="25" Height="20" />
+                </Button>
+
+                <TextBlock Text="Повторите пароль:" 
+                           Grid.Row="11" Grid.Column="0"
+                           HorizontalAlignment="Left" 
+                           VerticalAlignment="Center" 
+                           Foreground="#5A5A42" 
+                           FontSize="16"
+                           FontWeight="SemiBold"/>
+
+                <Grid Grid.Row="12" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
+                    <Grid>
+                        <PasswordBox x:Name="RepeatPasswordBox" 
+                                     Style="{StaticResource StyledPasswordBox}" 
+                                     materialDesign:HintAssist.Hint="Повторите пароль"
+                                     materialDesign:HintAssist.Foreground="#777"
+                                     FontSize="15"
+                                     MaxLength="20"
+                                     PreviewKeyDown="PasswordBox_PreviewKeyDown"
+                                     PasswordChanged="RepeatPasswordBox_PasswordChanged"
+                                     Visibility="Visible"/>
+                        <TextBox x:Name="RepeatPasswordTextBox" 
+                                 Style="{StaticResource StyledTextBox}" 
+                                 FontSize="15"
+                                 MaxLength="20"
+                                 PreviewKeyDown="TextBox_PreviewKeyDown"
+                                 TextChanged="RepeatPasswordTextBox_TextChanged"
+                                 Visibility="Collapsed"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        <TextBlock Margin="0,0,5,5"
+                                   Text="{Binding Password.Length, ElementName=RepeatPasswordBox, StringFormat={}{0}/20}"
+                                   Foreground="#5A5A42"
+                                   FontSize="12"
+                                   x:Name="RepeatPasswordCounter"/>
+                    </StackPanel>
+                </Grid>
+
+                <Button x:Name="ShowRepeatPasswordButton" 
+                        Grid.Row="12" Grid.Column="1"
+                        Style="{StaticResource ShowPasswordButtonStyle}"
+                        Click="ShowRepeatPasswordButton_Click">
+                    <materialDesign:PackIcon Kind="Eye" VerticalAlignment="Center" Width="25" Height="20" />
+                </Button>
+
+                <Button x:Name="SignUpButton" 
+                        Content="СОЗДАТЬ АККАУНТ" 
+                        Grid.Row="14"
+                        Style="{StaticResource ButtonStyle}" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" 
+                        Height="42" 
+                        Width="300" 
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Cursor="Hand"
+                        Click="SignUpButton_Click"/>
+
+                <TextBlock Text="Уже есть аккаунт? Войдите!" 
+                           Grid.Row="16"
+                           Style="{StaticResource UnderlinedTextBlockStyle}"
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center" 
+                           TextAlignment="Center" 
+                           FontSize="15" 
+                           Cursor="Hand"
+                           MouseLeftButtonDown="TextBlock_MouseLeftButtonDown"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

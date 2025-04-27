@@ -1,0 +1,806 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Хранилище TouristRoutesModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Categories">
+          <Key>
+            <PropertyRef Name="IdCategory" />
+          </Key>
+          <Property Name="IdCategory" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NameCategory" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="Favorites">
+          <Key>
+            <PropertyRef Name="IdFavorite" />
+          </Key>
+          <Property Name="IdFavorite" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdUser" Type="int" Nullable="false" />
+          <Property Name="IdRoute" Type="int" Nullable="false" />
+          <Property Name="DateAddedFavorite" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="HikeParticipants">
+          <Key>
+            <PropertyRef Name="IdParticipant" />
+          </Key>
+          <Property Name="IdParticipant" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdHike" Type="int" />
+          <Property Name="IdUser" Type="int" />
+        </EntityType>
+        <EntityType Name="Hikes">
+          <Key>
+            <PropertyRef Name="IdHike" />
+          </Key>
+          <Property Name="IdHike" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdRoute" Type="int" />
+          <Property Name="StartDate" Type="datetime2" Precision="7" />
+          <Property Name="EndDate" Type="datetime2" Precision="7" />
+          <Property Name="DescriptionHike" Type="nvarchar(max)" />
+          <Property Name="MaxParticipants" Type="int" />
+          <Property Name="DateAddedHike" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="Photos">
+          <Key>
+            <PropertyRef Name="IdPhoto" />
+          </Key>
+          <Property Name="IdPhoto" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdRoute" Type="int" />
+          <Property Name="Photo" Type="nvarchar(max)" />
+          <Property Name="DateAddedPhoto" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="PointTypes">
+          <Key>
+            <PropertyRef Name="IdType" />
+          </Key>
+          <Property Name="IdType" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NameType" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IdCategory" Type="int" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="IdRole" />
+          </Key>
+          <Property Name="IdRole" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NameRole" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RoutePoints">
+          <Key>
+            <PropertyRef Name="IdPoint" />
+          </Key>
+          <Property Name="IdPoint" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PointName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="IdType" Type="int" />
+          <Property Name="Country" Type="nvarchar" MaxLength="50" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" />
+          <Property Name="DateAddedPoint" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="RoutePointsForRoute">
+          <Key>
+            <PropertyRef Name="IdPoint" />
+            <PropertyRef Name="IdRoute" />
+          </Key>
+          <Property Name="IdPoint" Type="int" Nullable="false" />
+          <Property Name="IdRoute" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Routes">
+          <Key>
+            <PropertyRef Name="IdRoute" />
+          </Key>
+          <Property Name="IdRoute" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdUser" Type="int" />
+          <Property Name="IdCategory" Type="int" />
+          <Property Name="TitleRoute" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="DescriptionRoute" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="LengthPoint" Type="decimal" Precision="7" Scale="2" />
+          <Property Name="StepsCount" Type="int" />
+          <Property Name="DateAddedRoute" Type="datetime2" Precision="7" />
+          <Property Name="ViewsCount" Type="int" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="IdUser" />
+          </Key>
+          <Property Name="IdUser" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdRole" Type="int" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="25" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar" MaxLength="40" Nullable="false" />
+          <Property Name="ProfileStatus" Type="nvarchar" MaxLength="30" />
+          <Property Name="AccountStatus" Type="nvarchar" MaxLength="12" />
+          <Property Name="ProfilePhoto" Type="nvarchar(max)" />
+          <Property Name="DateAddedUser" Type="datetime2" Precision="7" />
+        </EntityType>
+        <Association Name="FK__Favorites__IdRou__60A75C0F">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Favorites" Type="Self.Favorites" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="IdRoute" />
+            </Principal>
+            <Dependent Role="Favorites">
+              <PropertyRef Name="IdRoute" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Favorites__IdUse__5FB337D6">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Favorites" Type="Self.Favorites" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="Favorites">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__HikeParti__IdHik__59FA5E80">
+          <End Role="Hikes" Type="Self.Hikes" Multiplicity="0..1" />
+          <End Role="HikeParticipants" Type="Self.HikeParticipants" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Hikes">
+              <PropertyRef Name="IdHike" />
+            </Principal>
+            <Dependent Role="HikeParticipants">
+              <PropertyRef Name="IdHike" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__HikeParti__IdUse__5AEE82B9">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="HikeParticipants" Type="Self.HikeParticipants" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="HikeParticipants">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Hikes__IdRoute__5629CD9C">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="0..1" />
+          <End Role="Hikes" Type="Self.Hikes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="IdRoute" />
+            </Principal>
+            <Dependent Role="Hikes">
+              <PropertyRef Name="IdRoute" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Photos__IdRoute__6477ECF3">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="0..1" />
+          <End Role="Photos" Type="Self.Photos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="IdRoute" />
+            </Principal>
+            <Dependent Role="Photos">
+              <PropertyRef Name="IdRoute" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PointType__IdCat__4AB81AF0">
+          <End Role="Categories" Type="Self.Categories" Multiplicity="0..1" />
+          <End Role="PointTypes" Type="Self.PointTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="IdCategory" />
+            </Principal>
+            <Dependent Role="PointTypes">
+              <PropertyRef Name="IdCategory" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__RoutePoin__IdPoi__5165187F">
+          <End Role="RoutePoints" Type="Self.RoutePoints" Multiplicity="1" />
+          <End Role="RoutePointsForRoute" Type="Self.RoutePointsForRoute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RoutePoints">
+              <PropertyRef Name="IdPoint" />
+            </Principal>
+            <Dependent Role="RoutePointsForRoute">
+              <PropertyRef Name="IdPoint" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__RoutePoin__IdRou__52593CB8">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="RoutePointsForRoute" Type="Self.RoutePointsForRoute" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="IdRoute" />
+            </Principal>
+            <Dependent Role="RoutePointsForRoute">
+              <PropertyRef Name="IdRoute" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__RoutePoin__IdTyp__4E88ABD4">
+          <End Role="PointTypes" Type="Self.PointTypes" Multiplicity="0..1" />
+          <End Role="RoutePoints" Type="Self.RoutePoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PointTypes">
+              <PropertyRef Name="IdType" />
+            </Principal>
+            <Dependent Role="RoutePoints">
+              <PropertyRef Name="IdType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Routes__IdCatego__46E78A0C">
+          <End Role="Categories" Type="Self.Categories" Multiplicity="0..1" />
+          <End Role="Routes" Type="Self.Routes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="IdCategory" />
+            </Principal>
+            <Dependent Role="Routes">
+              <PropertyRef Name="IdCategory" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Routes__IdUser__45F365D3">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Routes" Type="Self.Routes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="Routes">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Users__IdRole__3E52440B">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="IdRole" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="IdRole" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище TouristRoutesModelContainer">
+          <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Favorites" EntityType="Self.Favorites" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HikeParticipants" EntityType="Self.HikeParticipants" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Hikes" EntityType="Self.Hikes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Photos" EntityType="Self.Photos" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PointTypes" EntityType="Self.PointTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RoutePoints" EntityType="Self.RoutePoints" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RoutePointsForRoute" EntityType="Self.RoutePointsForRoute" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Routes" EntityType="Self.Routes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Favorites__IdRou__60A75C0F" Association="Self.FK__Favorites__IdRou__60A75C0F">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Favorites" EntitySet="Favorites" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Favorites__IdUse__5FB337D6" Association="Self.FK__Favorites__IdUse__5FB337D6">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Favorites" EntitySet="Favorites" />
+          </AssociationSet>
+          <AssociationSet Name="FK__HikeParti__IdHik__59FA5E80" Association="Self.FK__HikeParti__IdHik__59FA5E80">
+            <End Role="Hikes" EntitySet="Hikes" />
+            <End Role="HikeParticipants" EntitySet="HikeParticipants" />
+          </AssociationSet>
+          <AssociationSet Name="FK__HikeParti__IdUse__5AEE82B9" Association="Self.FK__HikeParti__IdUse__5AEE82B9">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="HikeParticipants" EntitySet="HikeParticipants" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Hikes__IdRoute__5629CD9C" Association="Self.FK__Hikes__IdRoute__5629CD9C">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Hikes" EntitySet="Hikes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Photos__IdRoute__6477ECF3" Association="Self.FK__Photos__IdRoute__6477ECF3">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Photos" EntitySet="Photos" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PointType__IdCat__4AB81AF0" Association="Self.FK__PointType__IdCat__4AB81AF0">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="PointTypes" EntitySet="PointTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__RoutePoin__IdPoi__5165187F" Association="Self.FK__RoutePoin__IdPoi__5165187F">
+            <End Role="RoutePoints" EntitySet="RoutePoints" />
+            <End Role="RoutePointsForRoute" EntitySet="RoutePointsForRoute" />
+          </AssociationSet>
+          <AssociationSet Name="FK__RoutePoin__IdRou__52593CB8" Association="Self.FK__RoutePoin__IdRou__52593CB8">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="RoutePointsForRoute" EntitySet="RoutePointsForRoute" />
+          </AssociationSet>
+          <AssociationSet Name="FK__RoutePoin__IdTyp__4E88ABD4" Association="Self.FK__RoutePoin__IdTyp__4E88ABD4">
+            <End Role="PointTypes" EntitySet="PointTypes" />
+            <End Role="RoutePoints" EntitySet="RoutePoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Routes__IdCatego__46E78A0C" Association="Self.FK__Routes__IdCatego__46E78A0C">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="Routes" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Routes__IdUser__45F365D3" Association="Self.FK__Routes__IdUser__45F365D3">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Routes" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Users__IdRole__3E52440B" Association="Self.FK__Users__IdRole__3E52440B">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TouristRoutesModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Categories">
+          <Key>
+            <PropertyRef Name="IdCategory" />
+          </Key>
+          <Property Name="IdCategory" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NameCategory" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PointTypes" Relationship="Self.FK__PointType__IdCat__4AB81AF0" FromRole="Categories" ToRole="PointTypes" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK__Routes__IdCatego__46E78A0C" FromRole="Categories" ToRole="Routes" />
+        </EntityType>
+        <EntityType Name="Favorites">
+          <Key>
+            <PropertyRef Name="IdFavorite" />
+          </Key>
+          <Property Name="IdFavorite" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdUser" Type="Int32" Nullable="false" />
+          <Property Name="IdRoute" Type="Int32" Nullable="false" />
+          <Property Name="DateAddedFavorite" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK__Favorites__IdRou__60A75C0F" FromRole="Favorites" ToRole="Routes" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Favorites__IdUse__5FB337D6" FromRole="Favorites" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="HikeParticipants">
+          <Key>
+            <PropertyRef Name="IdParticipant" />
+          </Key>
+          <Property Name="IdParticipant" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdHike" Type="Int32" />
+          <Property Name="IdUser" Type="Int32" />
+          <NavigationProperty Name="Hikes" Relationship="Self.FK__HikeParti__IdHik__59FA5E80" FromRole="HikeParticipants" ToRole="Hikes" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__HikeParti__IdUse__5AEE82B9" FromRole="HikeParticipants" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Hikes">
+          <Key>
+            <PropertyRef Name="IdHike" />
+          </Key>
+          <Property Name="IdHike" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdRoute" Type="Int32" />
+          <Property Name="StartDate" Type="DateTime" Precision="7" />
+          <Property Name="EndDate" Type="DateTime" Precision="7" />
+          <Property Name="DescriptionHike" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MaxParticipants" Type="Int32" />
+          <Property Name="DateAddedHike" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="HikeParticipants" Relationship="Self.FK__HikeParti__IdHik__59FA5E80" FromRole="Hikes" ToRole="HikeParticipants" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK__Hikes__IdRoute__5629CD9C" FromRole="Hikes" ToRole="Routes" />
+        </EntityType>
+        <EntityType Name="Photos">
+          <Key>
+            <PropertyRef Name="IdPhoto" />
+          </Key>
+          <Property Name="IdPhoto" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdRoute" Type="Int32" />
+          <Property Name="Photo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DateAddedPhoto" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK__Photos__IdRoute__6477ECF3" FromRole="Photos" ToRole="Routes" />
+        </EntityType>
+        <EntityType Name="PointTypes">
+          <Key>
+            <PropertyRef Name="IdType" />
+          </Key>
+          <Property Name="IdType" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NameType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdCategory" Type="Int32" />
+          <NavigationProperty Name="Categories" Relationship="Self.FK__PointType__IdCat__4AB81AF0" FromRole="PointTypes" ToRole="Categories" />
+          <NavigationProperty Name="RoutePoints" Relationship="Self.FK__RoutePoin__IdTyp__4E88ABD4" FromRole="PointTypes" ToRole="RoutePoints" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="IdRole" />
+          </Key>
+          <Property Name="IdRole" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NameRole" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Users__IdRole__3E52440B" FromRole="Roles" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="RoutePoints">
+          <Key>
+            <PropertyRef Name="IdPoint" />
+          </Key>
+          <Property Name="IdPoint" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PointName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdType" Type="Int32" />
+          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DateAddedPoint" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="PointTypes" Relationship="Self.FK__RoutePoin__IdTyp__4E88ABD4" FromRole="RoutePoints" ToRole="PointTypes" />
+          <NavigationProperty Name="Routes" Relationship="Self.RoutePointsForRoute" FromRole="RoutePoints" ToRole="Routes" />
+        </EntityType>
+        <EntityType Name="Routes">
+          <Key>
+            <PropertyRef Name="IdRoute" />
+          </Key>
+          <Property Name="IdRoute" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdUser" Type="Int32" />
+          <Property Name="IdCategory" Type="Int32" />
+          <Property Name="TitleRoute" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DescriptionRoute" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LengthPoint" Type="Decimal" Precision="7" Scale="2" />
+          <Property Name="StepsCount" Type="Int32" />
+          <Property Name="DateAddedRoute" Type="DateTime" Precision="7" />
+          <Property Name="ViewsCount" Type="Int32" />
+          <NavigationProperty Name="Categories" Relationship="Self.FK__Routes__IdCatego__46E78A0C" FromRole="Routes" ToRole="Categories" />
+          <NavigationProperty Name="Favorites" Relationship="Self.FK__Favorites__IdRou__60A75C0F" FromRole="Routes" ToRole="Favorites" />
+          <NavigationProperty Name="Hikes" Relationship="Self.FK__Hikes__IdRoute__5629CD9C" FromRole="Routes" ToRole="Hikes" />
+          <NavigationProperty Name="Photos" Relationship="Self.FK__Photos__IdRoute__6477ECF3" FromRole="Routes" ToRole="Photos" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__Routes__IdUser__45F365D3" FromRole="Routes" ToRole="Users" />
+          <NavigationProperty Name="RoutePoints" Relationship="Self.RoutePointsForRoute" FromRole="Routes" ToRole="RoutePoints" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="IdUser" />
+          </Key>
+          <Property Name="IdUser" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdRole" Type="Int32" />
+          <Property Name="UserName" Type="String" MaxLength="25" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProfileStatus" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="AccountStatus" Type="String" MaxLength="12" FixedLength="false" Unicode="true" />
+          <Property Name="ProfilePhoto" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DateAddedUser" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="Favorites" Relationship="Self.FK__Favorites__IdUse__5FB337D6" FromRole="Users" ToRole="Favorites" />
+          <NavigationProperty Name="HikeParticipants" Relationship="Self.FK__HikeParti__IdUse__5AEE82B9" FromRole="Users" ToRole="HikeParticipants" />
+          <NavigationProperty Name="Roles" Relationship="Self.FK__Users__IdRole__3E52440B" FromRole="Users" ToRole="Roles" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK__Routes__IdUser__45F365D3" FromRole="Users" ToRole="Routes" />
+        </EntityType>
+        <Association Name="FK__PointType__IdCat__4AB81AF0">
+          <End Role="Categories" Type="Self.Categories" Multiplicity="0..1" />
+          <End Role="PointTypes" Type="Self.PointTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="IdCategory" />
+            </Principal>
+            <Dependent Role="PointTypes">
+              <PropertyRef Name="IdCategory" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Routes__IdCatego__46E78A0C">
+          <End Role="Categories" Type="Self.Categories" Multiplicity="0..1" />
+          <End Role="Routes" Type="Self.Routes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="IdCategory" />
+            </Principal>
+            <Dependent Role="Routes">
+              <PropertyRef Name="IdCategory" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Favorites__IdRou__60A75C0F">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="1" />
+          <End Role="Favorites" Type="Self.Favorites" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="IdRoute" />
+            </Principal>
+            <Dependent Role="Favorites">
+              <PropertyRef Name="IdRoute" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Favorites__IdUse__5FB337D6">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Favorites" Type="Self.Favorites" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="Favorites">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__HikeParti__IdHik__59FA5E80">
+          <End Role="Hikes" Type="Self.Hikes" Multiplicity="0..1" />
+          <End Role="HikeParticipants" Type="Self.HikeParticipants" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Hikes">
+              <PropertyRef Name="IdHike" />
+            </Principal>
+            <Dependent Role="HikeParticipants">
+              <PropertyRef Name="IdHike" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__HikeParti__IdUse__5AEE82B9">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="HikeParticipants" Type="Self.HikeParticipants" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="HikeParticipants">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Hikes__IdRoute__5629CD9C">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="0..1" />
+          <End Role="Hikes" Type="Self.Hikes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="IdRoute" />
+            </Principal>
+            <Dependent Role="Hikes">
+              <PropertyRef Name="IdRoute" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Photos__IdRoute__6477ECF3">
+          <End Role="Routes" Type="Self.Routes" Multiplicity="0..1" />
+          <End Role="Photos" Type="Self.Photos" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Routes">
+              <PropertyRef Name="IdRoute" />
+            </Principal>
+            <Dependent Role="Photos">
+              <PropertyRef Name="IdRoute" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__RoutePoin__IdTyp__4E88ABD4">
+          <End Role="PointTypes" Type="Self.PointTypes" Multiplicity="0..1" />
+          <End Role="RoutePoints" Type="Self.RoutePoints" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PointTypes">
+              <PropertyRef Name="IdType" />
+            </Principal>
+            <Dependent Role="RoutePoints">
+              <PropertyRef Name="IdType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Users__IdRole__3E52440B">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="IdRole" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="IdRole" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Routes__IdUser__45F365D3">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Routes" Type="Self.Routes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="IdUser" />
+            </Principal>
+            <Dependent Role="Routes">
+              <PropertyRef Name="IdUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RoutePointsForRoute">
+          <End Role="RoutePoints" Type="Self.RoutePoints" Multiplicity="*" />
+          <End Role="Routes" Type="Self.Routes" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="TouristRoutesEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Categories" EntityType="Self.Categories" />
+          <EntitySet Name="Favorites" EntityType="Self.Favorites" />
+          <EntitySet Name="HikeParticipants" EntityType="Self.HikeParticipants" />
+          <EntitySet Name="Hikes" EntityType="Self.Hikes" />
+          <EntitySet Name="Photos" EntityType="Self.Photos" />
+          <EntitySet Name="PointTypes" EntityType="Self.PointTypes" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" />
+          <EntitySet Name="RoutePoints" EntityType="Self.RoutePoints" />
+          <EntitySet Name="Routes" EntityType="Self.Routes" />
+          <EntitySet Name="Users" EntityType="Self.Users" />
+          <AssociationSet Name="FK__PointType__IdCat__4AB81AF0" Association="Self.FK__PointType__IdCat__4AB81AF0">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="PointTypes" EntitySet="PointTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Routes__IdCatego__46E78A0C" Association="Self.FK__Routes__IdCatego__46E78A0C">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="Routes" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Favorites__IdRou__60A75C0F" Association="Self.FK__Favorites__IdRou__60A75C0F">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Favorites" EntitySet="Favorites" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Favorites__IdUse__5FB337D6" Association="Self.FK__Favorites__IdUse__5FB337D6">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Favorites" EntitySet="Favorites" />
+          </AssociationSet>
+          <AssociationSet Name="FK__HikeParti__IdHik__59FA5E80" Association="Self.FK__HikeParti__IdHik__59FA5E80">
+            <End Role="Hikes" EntitySet="Hikes" />
+            <End Role="HikeParticipants" EntitySet="HikeParticipants" />
+          </AssociationSet>
+          <AssociationSet Name="FK__HikeParti__IdUse__5AEE82B9" Association="Self.FK__HikeParti__IdUse__5AEE82B9">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="HikeParticipants" EntitySet="HikeParticipants" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Hikes__IdRoute__5629CD9C" Association="Self.FK__Hikes__IdRoute__5629CD9C">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Hikes" EntitySet="Hikes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Photos__IdRoute__6477ECF3" Association="Self.FK__Photos__IdRoute__6477ECF3">
+            <End Role="Routes" EntitySet="Routes" />
+            <End Role="Photos" EntitySet="Photos" />
+          </AssociationSet>
+          <AssociationSet Name="FK__RoutePoin__IdTyp__4E88ABD4" Association="Self.FK__RoutePoin__IdTyp__4E88ABD4">
+            <End Role="PointTypes" EntitySet="PointTypes" />
+            <End Role="RoutePoints" EntitySet="RoutePoints" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Users__IdRole__3E52440B" Association="Self.FK__Users__IdRole__3E52440B">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Routes__IdUser__45F365D3" Association="Self.FK__Routes__IdUser__45F365D3">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Routes" EntitySet="Routes" />
+          </AssociationSet>
+          <AssociationSet Name="RoutePointsForRoute" Association="Self.RoutePointsForRoute">
+            <End Role="RoutePoints" EntitySet="RoutePoints" />
+            <End Role="Routes" EntitySet="Routes" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище TouristRoutesModelContainer" CdmEntityContainer="TouristRoutesEntities">
+          <EntitySetMapping Name="Categories">
+            <EntityTypeMapping TypeName="TouristRoutesModel.Categories">
+              <MappingFragment StoreEntitySet="Categories">
+                <ScalarProperty Name="IdCategory" ColumnName="IdCategory" />
+                <ScalarProperty Name="NameCategory" ColumnName="NameCategory" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Favorites">
+            <EntityTypeMapping TypeName="TouristRoutesModel.Favorites">
+              <MappingFragment StoreEntitySet="Favorites">
+                <ScalarProperty Name="IdFavorite" ColumnName="IdFavorite" />
+                <ScalarProperty Name="IdUser" ColumnName="IdUser" />
+                <ScalarProperty Name="IdRoute" ColumnName="IdRoute" />
+                <ScalarProperty Name="DateAddedFavorite" ColumnName="DateAddedFavorite" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HikeParticipants">
+            <EntityTypeMapping TypeName="TouristRoutesModel.HikeParticipants">
+              <MappingFragment StoreEntitySet="HikeParticipants">
+                <ScalarProperty Name="IdParticipant" ColumnName="IdParticipant" />
+                <ScalarProperty Name="IdHike" ColumnName="IdHike" />
+                <ScalarProperty Name="IdUser" ColumnName="IdUser" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Hikes">
+            <EntityTypeMapping TypeName="TouristRoutesModel.Hikes">
+              <MappingFragment StoreEntitySet="Hikes">
+                <ScalarProperty Name="IdHike" ColumnName="IdHike" />
+                <ScalarProperty Name="IdRoute" ColumnName="IdRoute" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="DescriptionHike" ColumnName="DescriptionHike" />
+                <ScalarProperty Name="MaxParticipants" ColumnName="MaxParticipants" />
+                <ScalarProperty Name="DateAddedHike" ColumnName="DateAddedHike" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Photos">
+            <EntityTypeMapping TypeName="TouristRoutesModel.Photos">
+              <MappingFragment StoreEntitySet="Photos">
+                <ScalarProperty Name="IdPhoto" ColumnName="IdPhoto" />
+                <ScalarProperty Name="IdRoute" ColumnName="IdRoute" />
+                <ScalarProperty Name="Photo" ColumnName="Photo" />
+                <ScalarProperty Name="DateAddedPhoto" ColumnName="DateAddedPhoto" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PointTypes">
+            <EntityTypeMapping TypeName="TouristRoutesModel.PointTypes">
+              <MappingFragment StoreEntitySet="PointTypes">
+                <ScalarProperty Name="IdType" ColumnName="IdType" />
+                <ScalarProperty Name="NameType" ColumnName="NameType" />
+                <ScalarProperty Name="IdCategory" ColumnName="IdCategory" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="TouristRoutesModel.Roles">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="IdRole" ColumnName="IdRole" />
+                <ScalarProperty Name="NameRole" ColumnName="NameRole" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RoutePoints">
+            <EntityTypeMapping TypeName="TouristRoutesModel.RoutePoints">
+              <MappingFragment StoreEntitySet="RoutePoints">
+                <ScalarProperty Name="IdPoint" ColumnName="IdPoint" />
+                <ScalarProperty Name="PointName" ColumnName="PointName" />
+                <ScalarProperty Name="IdType" ColumnName="IdType" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="DateAddedPoint" ColumnName="DateAddedPoint" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Routes">
+            <EntityTypeMapping TypeName="TouristRoutesModel.Routes">
+              <MappingFragment StoreEntitySet="Routes">
+                <ScalarProperty Name="IdRoute" ColumnName="IdRoute" />
+                <ScalarProperty Name="IdUser" ColumnName="IdUser" />
+                <ScalarProperty Name="IdCategory" ColumnName="IdCategory" />
+                <ScalarProperty Name="TitleRoute" ColumnName="TitleRoute" />
+                <ScalarProperty Name="DescriptionRoute" ColumnName="DescriptionRoute" />
+                <ScalarProperty Name="LengthPoint" ColumnName="LengthPoint" />
+                <ScalarProperty Name="StepsCount" ColumnName="StepsCount" />
+                <ScalarProperty Name="DateAddedRoute" ColumnName="DateAddedRoute" />
+                <ScalarProperty Name="ViewsCount" ColumnName="ViewsCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="TouristRoutesModel.Users">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="IdUser" ColumnName="IdUser" />
+                <ScalarProperty Name="IdRole" ColumnName="IdRole" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="ProfileStatus" ColumnName="ProfileStatus" />
+                <ScalarProperty Name="AccountStatus" ColumnName="AccountStatus" />
+                <ScalarProperty Name="ProfilePhoto" ColumnName="ProfilePhoto" />
+                <ScalarProperty Name="DateAddedUser" ColumnName="DateAddedUser" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="RoutePointsForRoute" TypeName="TouristRoutesModel.RoutePointsForRoute" StoreEntitySet="RoutePointsForRoute">
+            <EndProperty Name="RoutePoints">
+              <ScalarProperty Name="IdPoint" ColumnName="IdPoint" />
+            </EndProperty>
+            <EndProperty Name="Routes">
+              <ScalarProperty Name="IdRoute" ColumnName="IdRoute" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
