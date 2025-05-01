@@ -6,7 +6,8 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d"
       d:DesignHeight="1100" d:DesignWidth="1700"
-      Title="Список точек">
+      Title="Список точек"
+      IsVisibleChanged="PointsPage_IsVisibleChanged">
     
     <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
         <Grid>

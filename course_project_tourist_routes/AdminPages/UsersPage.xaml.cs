@@ -117,33 +117,44 @@ namespace course_project_tourist_routes.AdminPages
 
         private async Task<ImageBrush> LoadUserPhotoAsync(string profilePhotoId, int userId)
         {
-            string defaultPhotoPath = Path.Combine(
-                Directory.GetParent(Environment.CurrentDirectory).Parent.FullName,
-                "Resources", "profile_photo.jpg");
+            // Путь к изображению по умолчанию
+            string defaultPhotoPath = "pack://application:,,,/Resources/profile_photo.jpg";
 
             if (string.IsNullOrEmpty(profilePhotoId))
                 return CreateImageBrush(defaultPhotoPath);
 
-            string photoPath = Path.Combine(CloudStorage.ProfilePhotosDirectoryPath, $"user_{userId}.jpg");
-
             try
             {
-                Directory.CreateDirectory(CloudStorage.ProfilePhotosDirectoryPath);
+                // Создаем директорию для хранения фото профилей
+                string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string appFolder = Path.Combine(localAppData, "TouristRoutes");
+                string profilePhotosDir = Path.Combine(appFolder, "profile_photos");
+                Directory.CreateDirectory(profilePhotosDir);
 
+                string photoPath = Path.Combine(profilePhotosDir, $"user_{userId}.jpg");
+
+                // Если файл уже существует и не пустой - используем его
+                if (File.Exists(photoPath) && new FileInfo(photoPath).Length > 0)
+                {
+                    return CreateImageBrush(photoPath);
+                }
+
+                // Загружаем фото из облака
+                await CloudStorage.DownloadProfilePhotoAsync(profilePhotoId, userId);
+
+                // Проверяем, что файл был загружен
                 if (File.Exists(photoPath))
-                    File.Delete(photoPath);
-
-                await Task.Run(() => CloudStorage.DownloadProfilePhoto(profilePhotoId, userId));
-
-                return File.Exists(photoPath) && new FileInfo(photoPath).Length > 0
-                    ? CreateImageBrush(photoPath)
-                    : CreateImageBrush(defaultPhotoPath);
+                {
+                    return CreateImageBrush(photoPath);
+                }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Ошибка загрузки фото: {ex.Message}");
-                return CreateImageBrush(defaultPhotoPath);
             }
+
+            // В случае любой ошибки возвращаем изображение по умолчанию
+            return CreateImageBrush(defaultPhotoPath);
         }
 
         private ImageBrush CreateImageBrush(string imagePath)
@@ -154,17 +165,19 @@ namespace course_project_tourist_routes.AdminPages
             {
                 var bitmap = new BitmapImage();
                 bitmap.BeginInit();
-                bitmap.UriSource = new Uri(imagePath, UriKind.Absolute);
+                bitmap.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
                 bitmap.EndInit();
                 bitmap.Freeze();
 
                 imageBrush.ImageSource = bitmap;
+                imageBrush.Stretch = Stretch.UniformToFill;
                 imageBrush.Freeze();
             }
             catch
             {
+                // Если что-то пошло не так, используем изображение по умолчанию
                 imageBrush.ImageSource = new BitmapImage(
                     new Uri("pack://application:,,,/Resources/profile_photo.jpg"));
                 imageBrush.Freeze();
@@ -224,7 +237,7 @@ namespace course_project_tourist_routes.AdminPages
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            CloudStorage.ClearProfilePhotosDirectory();
+            CloudStorage.ClearProfilePhotosDirectoryAsync();
             NavigationService.GoBack();
         }
 
@@ -284,14 +297,14 @@ namespace course_project_tourist_routes.AdminPages
                     {
                         if (!string.IsNullOrEmpty(user.ProfilePhoto))
                         {
-                            CloudStorage.DeleteFile(user.ProfilePhoto);
+                            CloudStorage.DeleteFileAsync(user.ProfilePhoto);
                         }
 
                         foreach (var route in user.Routes)
                         {
                             foreach (var photo in route.Photos.Where(p => !string.IsNullOrEmpty(p.Photo)))
                             {
-                                CloudStorage.DeleteFile(photo.Photo);
+                                CloudStorage.DeleteFileAsync(photo.Photo);
                             }
                         }
 
@@ -349,7 +362,7 @@ namespace course_project_tourist_routes.AdminPages
 
         private void AddAdminButton_Click(object sender, RoutedEventArgs e)
         {
-            // Реализация добавления администратора
+            NavigationService?.Navigate(new AddAdminPage());
         }
     }
 }

@@ -14,42 +14,15 @@ namespace course_project_tourist_routes.TravelerPages
     public partial class MyRoutesPage : Page
     {
         private int _userId;
-        private string _tempDirectory;
 
         public MyRoutesPage(int userId)
         {
             InitializeComponent();
             _userId = userId;
 
-            _tempDirectory = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "temp", "route_photos");
-            CleanupEntireTempDirectory();
+            CloudStorage.ClearRoutePhotosDirectoryAsync();
 
             LoadRoutes();
-        }
-
-        private void CleanupEntireTempDirectory()
-        {
-            try
-            {
-                if (Directory.Exists(_tempDirectory))
-                {
-                    foreach (var file in Directory.GetFiles(_tempDirectory))
-                    {
-                        try
-                        {
-                            File.Delete(file);
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine($"Не удалось удалить файл {file}: {ex.Message}");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Ошибка при очистке временной директории: {ex.Message}");
-            }
         }
 
         private void LoadRoutes(string searchText = null)
@@ -75,7 +48,6 @@ namespace course_project_tourist_routes.TravelerPages
                             r.IdRoute,
                             r.TitleRoute,
                             DescriptionRoute = r.DescriptionRoute ?? "",
-                            CategoryName = r.Categories.NameCategory,
                             r.DateAddedRoute
                         });
 
@@ -96,7 +68,7 @@ namespace course_project_tourist_routes.TravelerPages
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            CleanupEntireTempDirectory();
+            CloudStorage.ClearRoutePhotosDirectoryAsync();
             NavigationService.GoBack();
         }
 
@@ -106,7 +78,7 @@ namespace course_project_tourist_routes.TravelerPages
             {
                 dynamic selectedItem = RoutesListView.SelectedItem;
                 int routeId = selectedItem.IdRoute;
-                CleanupEntireTempDirectory();
+                CloudStorage.ClearRoutePhotosDirectoryAsync();
                 NavigationService?.Navigate(new OpenRoutePage(routeId, _userId));
                 RoutesListView.SelectedItem = null;
             }
@@ -119,7 +91,7 @@ namespace course_project_tourist_routes.TravelerPages
                 MessageBox.Show("Ошибка открытия маршрута для редактирования");
                 return;
             }
-            CleanupEntireTempDirectory();
+            CloudStorage.ClearRoutePhotosDirectoryAsync();
             //NavigationService?.Navigate(new EditRoutePage(routeId, _userId));
         }
 
@@ -140,12 +112,49 @@ namespace course_project_tourist_routes.TravelerPages
                 {
                     using (var context = new TouristRoutesEntities())
                     {
-                        var routeToDelete = context.Routes.FirstOrDefault(r => r.IdRoute == routeId);
+                        var routeToDelete = context.Routes
+                            .Include("Photos")
+                            .Include("RoutePoints")
+                            .Include("Favorites")
+                            .Include("Hikes")
+                            .FirstOrDefault(r => r.IdRoute == routeId);
 
                         if (routeToDelete != null)
                         {
+                            foreach (var photo in routeToDelete.Photos.ToList())
+                            {
+                                if (!string.IsNullOrEmpty(photo.Photo))
+                                {
+                                    try
+                                    {
+                                        CloudStorage.DeleteFileAsync(photo.Photo);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Debug.WriteLine($"Ошибка при удалении фото из Google Drive: {ex.Message}");
+                                    }
+                                }
+                                context.Photos.Remove(photo);
+                            }
+
+                            foreach (var point in routeToDelete.RoutePoints.ToList())
+                            {
+                                point.Routes.Remove(routeToDelete);
+                            }
+
+                            foreach (var favorite in routeToDelete.Favorites.ToList())
+                            {
+                                context.Favorites.Remove(favorite);
+                            }
+
+                            foreach (var tour in routeToDelete.Hikes.ToList())
+                            {
+                                context.Hikes.Remove(tour);
+                            }
+
                             context.Routes.Remove(routeToDelete);
                             context.SaveChanges();
+
                             LoadRoutes(SearchTextBox.Text);
                             MessageBox.Show("Маршрут успешно удален", "Успех",
                                 MessageBoxButton.OK, MessageBoxImage.Information);

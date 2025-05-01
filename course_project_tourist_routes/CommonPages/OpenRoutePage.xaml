@@ -59,6 +59,7 @@
                                 Style="{StaticResource ExitAndSettingsButtonStyle}"
                                 Width="60"
                                 Height="60"
+                                Visibility="Collapsed"
                                 Click="FavoriteButton_Click">
                             <materialDesign:PackIcon x:Name="FavoriteIcon" 
                                                   Kind="StarOutline" 
@@ -100,6 +101,22 @@
                                                        FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
+                                    <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
+                                        <materialDesign:PackIcon Kind="Eye" 
+                                       Foreground="#4A773C"
+                                       Width="20"
+                                       Height="27"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"                          
+                                       Margin="0,0,2,0"/>
+                                        <TextBlock x:Name="ViewsText"
+                                                   Foreground="#4A773C"
+                                                   FontWeight="Bold"
+                                                   FontSize="16"
+                                                   Text="0"
+                                                   TextAlignment="Center"
+                                                   VerticalAlignment="Center" Height="24"/>
+                                    </StackPanel>
                                 </StackPanel>
 
                                 <Grid Margin="0,10,0,0">
@@ -121,6 +138,8 @@
                                                    FontWeight="SemiBold"
                                                    FontSize="16"/>
                                     </StackPanel>
+
+
 
                                     <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="10,0,0,0">
                                         <materialDesign:PackIcon Kind="Walk" 

@@ -15,8 +15,6 @@ namespace course_project_tourist_routes.AdminPages
         public List<PointTypes> PointTypes { get; private set; }
         public string PageTitle { get; private set; }
 
-        public static event Action DataUpdated;
-
         private bool _isEditMode = false;
 
         public AddEditPointsPage(RoutePoints pointToEdit = null)
@@ -133,7 +131,6 @@ namespace course_project_tourist_routes.AdminPages
                         MessageBox.Show("Точка успешно сохранена!", "Успех",
                             MessageBoxButton.OK, MessageBoxImage.Information);
                     }
-                    DataUpdated?.Invoke();
 
                     if (NavigationService?.CanGoBack == true)
                     {

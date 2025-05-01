@@ -4,13 +4,14 @@
     
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     
-    <ImageBrush x:Key="imagebrush" Stretch="Uniform"/>
+    <ImageBrush x:Key="imagebrush" Stretch="UniformToFill"/>
+    <ImageBrush x:Key="imagebrushset" Stretch="UniformToFill"/>
     <Rectangle x:Key="avatarimage" Height="195" Width="195" Fill="{DynamicResource imagebrush}"/>
-    <Rectangle x:Key="avatarimageset" Height="100" Width="100" Fill="{DynamicResource imagebrush}"/>
+    <Rectangle x:Key="avatarimageset" Height="100" Width="100" Fill="{DynamicResource imagebrushset}"/>
 
-    <ImageBrush x:Key="photo1brush" Stretch="Uniform"/>
-    <ImageBrush x:Key="photo2brush" Stretch="Uniform"/>
-    <ImageBrush x:Key="photo3brush" Stretch="Uniform"/>
+    <ImageBrush x:Key="photo1brush" Stretch="UniformToFill"/>
+    <ImageBrush x:Key="photo2brush" Stretch="UniformToFill"/>
+    <ImageBrush x:Key="photo3brush" Stretch="UniformToFill"/>
 
     <Rectangle x:Key="photo1image" Height="100" Width="100" Fill="{DynamicResource photo1brush}"/>
     <Rectangle x:Key="photo2image" Height="100" Width="100" Fill="{DynamicResource photo2brush}"/>

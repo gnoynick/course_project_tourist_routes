@@ -1,7 +1,9 @@
 ﻿using course_project_tourist_routes.CommonPages;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace course_project_tourist_routes.AdminPages
@@ -16,12 +18,9 @@ namespace course_project_tourist_routes.AdminPages
         {
             Resources.Add("User", user);
             InitializeComponent();
+            StartClock();
 
-            CloudStorage.DownloadCurrentUserPhoto(user.ProfilePhoto);
-
-            SharedResources.ProfileImageBrush.ImageSource = CloudStorage.GetBitmapImage(CloudStorage.CurrentUserPhotoPath, true);
-
-            Resources["imagebrush"] = SharedResources.ProfileImageBrush;
+            InitializeAsync(user);
 
             _userId = userId;
             _userName = userName;
@@ -29,10 +28,34 @@ namespace course_project_tourist_routes.AdminPages
 
             AdminLogin.Text = userName;
             AdminStatus.Text = userStatus;
-
-            StartClock();
         }
 
+        private async void InitializeAsync(Users user)
+        {
+            try
+            {
+                await CloudStorage.DownloadCurrentUserPhotoAsync(user.ProfilePhoto);
+
+                var bitmapImage = await CloudStorage.GetBitmapImageAsync(CloudStorage.CurrentUserPhotoPath, true);
+
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    SharedResources.ProfileImageBrush.ImageSource = bitmapImage;
+                    Resources["imagebrush"] = SharedResources.ProfileImageBrush;
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка при загрузке фото профиля: {ex.Message}");
+
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    SharedResources.ProfileImageBrush.ImageSource =
+                        new BitmapImage(new Uri("pack://application:,,,/Resources/profile_photo.jpg"));
+                    Resources["imagebrush"] = SharedResources.ProfileImageBrush;
+                });
+            }
+        }
 
         public void UpdateUserInfo(string newLogin, string newStatus)
         {
@@ -122,6 +145,16 @@ namespace course_project_tourist_routes.AdminPages
         {
             ToggleSettingsFrameVisibility();
             NavigationService.Navigate(new RoutesPage(_userId));
+        }
+
+        private void RoutePointsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ReportsButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

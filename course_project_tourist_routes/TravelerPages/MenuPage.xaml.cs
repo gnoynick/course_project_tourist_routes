@@ -1,18 +1,8 @@
 ﻿using course_project_tourist_routes.CommonPages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using course_project_tourist_routes.TravelerPages;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace course_project_tourist_routes.AdminPages
 {
@@ -67,6 +57,10 @@ namespace course_project_tourist_routes.AdminPages
         {
             ToggleSettingsMenuFramesVisibility();
 
+            if (Window.GetWindow(this) is TravelerWindow travelerWindow)
+            {
+                travelerWindow.NavigationService.Navigate(new FavouritesPage(_userId));
+            }
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)

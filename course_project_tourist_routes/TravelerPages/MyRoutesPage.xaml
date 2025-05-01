@@ -89,7 +89,7 @@
                               Style="{StaticResource ListViewStyle}"
                               ItemContainerStyle="{StaticResource ListViewItemStyle}"
                               BorderThickness="0"
-                              SelectionChanged="RoutesListView_SelectionChanged">
+                              SelectionChanged="RoutesListView_SelectionChanged" d:ItemsSource="{d:SampleData ItemCount=5}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource RouteCardStyle}">
@@ -110,13 +110,9 @@
                                                    MaxHeight="60"
                                                    TextTrimming="CharacterEllipsis"/>
                                             <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                                <TextBlock Text="{Binding CategoryName}" 
-                                                       FontStyle="Italic" 
-                                                       Foreground="#8B7962"/>
                                                 <TextBlock Text="{Binding DateAddedRoute, StringFormat='Создан: {0:dd.MM.yyyy}'}" 
                                                        FontStyle="Italic" 
-                                                       Foreground="#8B7962"
-                                                       Margin="10,0,0,0"/>
+                                                       Foreground="#8B7962"/>
                                             </StackPanel>
                                         </StackPanel>
 

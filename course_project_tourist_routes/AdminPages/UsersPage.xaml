@@ -196,8 +196,7 @@
                                   ScrollViewer.VerticalScrollBarVisibility="Auto"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   ScrollViewer.IsDeferredScrollingEnabled="False"
-                                  Style="{StaticResource ListViewStyle}"
-                                  ItemContainerStyle="{StaticResource ListViewItemStyle}"
+                                  Style="{StaticResource NonSelectableListViewStyle}"
                                   BorderThickness="0" d:ItemsSource="{d:SampleData ItemCount=5}">
                         <ListView.ItemTemplate>
                             <DataTemplate>

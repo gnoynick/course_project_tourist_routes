@@ -36,12 +36,22 @@ namespace course_project_tourist_routes.CommonPages
             InitializeComponent();
             _userId = userId;
             this.DataContext = this;
+
             LoadData();
-            AddEditPointsPage.DataUpdated += () =>
-            {
-                Dispatcher.Invoke(() => LoadData());
-            };
             AdminButtonsVisibility();
+        }
+
+        private void PointsPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (Visibility == Visibility.Visible)
+            {
+                using (var context = new TouristRoutesEntities())
+                {
+                    context.ChangeTracker.Entries().ToList().ForEach(x => x.Reload());
+                }
+
+                LoadData();
+            }
         }
 
         public void AdminButtonsVisibility()
@@ -55,7 +65,7 @@ namespace course_project_tourist_routes.CommonPages
                         .Select(u => u.Roles.NameRole)
                         .FirstOrDefault();
 
-                    IsAdmin = (role == "Admin");
+                    IsAdmin = (role == "Администратор");
                     AddNewPointButton.Visibility = IsAdmin ? Visibility.Visible : Visibility.Collapsed;
                 }
             }

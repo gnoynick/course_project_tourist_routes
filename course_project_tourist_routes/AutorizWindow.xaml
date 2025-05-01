@@ -125,6 +125,7 @@
                         FontSize="16"
                         FontWeight="Bold"
                         Cursor="Hand"
+                        IsDefault="True"
                         Click="SignInButton_Click"/>
 
                 <TextBlock Text="Нет аккаунта? Зарегистрируйтесь!" 

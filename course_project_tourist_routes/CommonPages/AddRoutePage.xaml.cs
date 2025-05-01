@@ -24,6 +24,12 @@ namespace course_project_tourist_routes.CommonPages
             _userId = userId;
             LoadCategories();
             PointsDataGrid.ItemsSource = _selectedPoints;
+
+            UpdateAddPhotoButtonsState();
+
+            AddPhoto1Button.IsEnabled = true;
+            AddPhoto2Button.IsEnabled = false;
+            AddPhoto3Button.IsEnabled = false;
         }
 
         private void LoadCategories()
@@ -35,7 +41,7 @@ namespace course_project_tourist_routes.CommonPages
                     bool isTraveler = context.Users
                         .Where(u => u.IdUser == _userId)
                         .Select(u => u.Roles.NameRole)
-                        .FirstOrDefault() == "Traveler";
+                        .FirstOrDefault() == "Путешественник";
 
                     if (isTraveler)
                     {
@@ -153,6 +159,32 @@ namespace course_project_tourist_routes.CommonPages
             }
         }
 
+        private void UpdateAddPhotoButtonsState()
+        {
+            int lastAddedIndex = -1;
+            for (int i = 0; i < _photoPaths.Count; i++)
+            {
+                if (_photoPaths[i] != null)
+                {
+                    lastAddedIndex = i;
+                }
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                var addButton = FindName($"AddPhoto{i + 1}Button") as Button;
+                if (addButton != null)
+                {
+                    addButton.IsEnabled = (i == 0) || (i > 0 && _photoPaths[i - 1] != null);
+
+                    if (_photoPaths[i] != null)
+                    {
+                        addButton.IsEnabled = false;
+                    }
+                }
+            }
+        }
+
         private void UpdatePhotoUI(int photoIndex, bool showPhoto)
         {
             var photoButton = FindName($"Photo{photoIndex + 1}Button") as Button;
@@ -165,6 +197,8 @@ namespace course_project_tourist_routes.CommonPages
                 removeButton.Visibility = showPhoto ? Visibility.Visible : Visibility.Collapsed;
                 addButton.Visibility = showPhoto ? Visibility.Collapsed : Visibility.Visible;
             }
+
+            UpdateAddPhotoButtonsState();
         }
 
         private int GetPhotoIndex(string buttonName)
@@ -205,6 +239,30 @@ namespace course_project_tourist_routes.CommonPages
             PhotoBackButton.Visibility = Visibility.Collapsed;
         }
 
+        private void ShiftPhotosAfterDeletion(int deletedIndex)
+        {
+            for (int i = deletedIndex; i < _photoPaths.Count - 1; i++)
+            {
+                if (_photoPaths[i + 1] != null)
+                {
+                    _photoPaths[i] = _photoPaths[i + 1];
+                    Resources[$"photo{i + 1}brush"] = Resources[$"photo{i + 2}brush"];
+
+                    UpdatePhotoUI(i, true);
+
+                    _photoPaths[i + 1] = null;
+                    Resources[$"photo{i + 2}brush"] = new ImageBrush();
+                    UpdatePhotoUI(i + 1, false);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            UpdateAddPhotoButtonsState();
+        }
+
         private void RemovePhotoButton_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
@@ -215,18 +273,13 @@ namespace course_project_tourist_routes.CommonPages
             else if (button.Name == "RemovePhoto2Button") photoIndex = 1;
             else if (button.Name == "RemovePhoto3Button") photoIndex = 2;
 
-            if (photoIndex >= 0)
+            if (photoIndex >= 0 && _photoPaths[photoIndex] != null)
             {
                 _photoPaths[photoIndex] = null;
                 Resources[$"photo{photoIndex + 1}brush"] = new ImageBrush();
                 UpdatePhotoUI(photoIndex, false);
-            }
 
-            if (photoIndex >= 0)
-            {
-                _photoPaths[photoIndex] = null;
-                Resources[$"photo{photoIndex + 1}brush"] = new ImageBrush();
-                UpdatePhotoUI(photoIndex, false);
+                ShiftPhotosAfterDeletion(photoIndex);
             }
         }
 
@@ -383,7 +436,7 @@ namespace course_project_tourist_routes.CommonPages
                         {
                             string fileName = $"Route_{routeId}_Photo_{i + 1}";
                             string fileId = await Task.Run(() =>
-                                CloudStorage.UploadRoutePhoto(_photoPaths[i], fileName));
+                                CloudStorage.UploadRoutePhotoAsync(_photoPaths[i], fileName));
 
                             if (!string.IsNullOrEmpty(fileId))
                             {
@@ -467,6 +520,10 @@ namespace course_project_tourist_routes.CommonPages
                 Resources[$"photo{i + 1}brush"] = new ImageBrush();
                 UpdatePhotoUI(i, false);
             }
+
+            AddPhoto1Button.IsEnabled = true;
+            AddPhoto2Button.IsEnabled = false;
+            AddPhoto3Button.IsEnabled = false;
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

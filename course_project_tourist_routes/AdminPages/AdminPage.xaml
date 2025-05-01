@@ -160,7 +160,7 @@
                         <Button x:Name="UsersButton" 
                                 Style="{StaticResource ButtonStyle}" 
                                 FontSize="20" Padding="30,20"
-                                Margin="15" Width="300" Height="80" Click="UsersButton_Click">
+                                Margin="15" Width="300" Height="50" Click="UsersButton_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <materialDesign:PackIcon Kind="AccountGroup" 
                                                         Foreground="White"
@@ -170,9 +170,36 @@
                                 <TextBlock Text="Пользователи" Foreground="White"/>
                             </StackPanel>
                         </Button>
+
                         <Button Style="{StaticResource ButtonStyle}" 
                                 FontSize="20" Padding="30,20"
-                                Margin="15" Width="300" Height="80" Click="AddRouteButton_Click">
+                                Margin="15" Width="300" Height="50" Click="Button_Click">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <materialDesign:PackIcon Kind="MapSearch" 
+                                                        Foreground="White"
+                                                        Width="24"
+                                                        Height="26"
+                                                        Margin="0,0,10,0"/>
+                                <TextBlock Text="Маршруты" Foreground="White"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource ButtonStyle}" 
+                                FontSize="20" Padding="30,20"
+                                Margin="15" Width="300" Height="50" Click="RoutePointsButton_Click">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <materialDesign:PackIcon Kind="Pin" 
+                                                        Foreground="White"
+                                                        Width="24"
+                                                        Height="26"
+                                                        Margin="0,0,10,0"/>
+                                <TextBlock Text="Точки маршрутов" Foreground="White"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource ButtonStyle}" 
+                                FontSize="20" Padding="30,20"
+                                Margin="15" Width="300" Height="50" Click="AddRouteButton_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <materialDesign:PackIcon Kind="MapMarkerPlus" 
                                                         Foreground="White"
@@ -182,16 +209,17 @@
                                 <TextBlock Text="Добавить маршрут" Foreground="White"/>
                             </StackPanel>
                         </Button>
+
                         <Button Style="{StaticResource ButtonStyle}" 
                                 FontSize="20" Padding="30,20"
-                                Margin="15" Width="300" Height="80" Click="Button_Click">
+                                Margin="15" Width="300" Height="50" Click="ReportsButton_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Kind="MapSearch" 
+                                <materialDesign:PackIcon Kind="FileChart" 
                                                         Foreground="White"
                                                         Width="24"
                                                         Height="26"
                                                         Margin="0,0,10,0"/>
-                                <TextBlock Text="Маршруты" Foreground="White"/>
+                                <TextBlock Text="Отчёты" Foreground="White"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>

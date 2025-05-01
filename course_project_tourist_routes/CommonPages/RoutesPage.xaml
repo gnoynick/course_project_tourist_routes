@@ -7,7 +7,8 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
       d:DesignHeight="700" d:DesignWidth="1300"
-      Title="Маршруты">
+      Title="Маршруты"
+      IsVisibleChanged="RoutesPage_IsVisibleChanged">
     <Grid>
         <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
             <Grid>
@@ -73,7 +74,6 @@
                             </StackPanel>
                             <TextBox x:Name="SearchTextBox" 
                                      Width="250"
-                                     TextAlignment="Center"
                                      Style="{StaticResource StyledTextBox}"
                                      Margin="0,5,10,0"
                                      Tag="Поиск по названию..."
@@ -186,7 +186,7 @@
                               Style="{StaticResource ListViewStyle}"
                               ItemContainerStyle="{StaticResource ListViewItemStyle}"
                               BorderThickness="0"
-                              SelectionChanged="RoutesListView_SelectionChanged">
+                              SelectionChanged="RoutesListView_SelectionChanged" d:ItemsSource="{d:SampleData ItemCount=5}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource RouteCardStyle}">
@@ -206,6 +206,19 @@
                                                    TextWrapping="Wrap"
                                                    MaxHeight="60"
                                                    TextTrimming="CharacterEllipsis"/>
+
+                                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                                <materialDesign:PackIcon Kind="Eye" 
+                                 Width="12"
+                                 Height="12"
+                                 Margin="0,0,3,0"
+                                 Foreground="#8B7962"/>
+                                                <TextBlock Text="{Binding ViewsCount}" 
+                   FontStyle="Italic" 
+                   FontSize="11"
+                   Foreground="#8B7962"/>
+                                            </StackPanel>
+                                            
                                             <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                                 <materialDesign:PackIcon Kind="Tag" 
                                                                          Width="12"

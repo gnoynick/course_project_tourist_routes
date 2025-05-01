@@ -45,12 +45,25 @@ namespace course_project_tourist_routes.AdminPages
                     if (currentUser != null)
                     {
                         _currentUserRoleId = (int)currentUser.IdRole;
-                        _isCurrentUserAdmin = currentUser.Roles.NameRole == "Admin";
+                        _isCurrentUserAdmin = currentUser.Roles.NameRole == "Администратор";
+                    }
+
+                    var route = await db.Routes.FirstOrDefaultAsync(r => r.IdRoute == _routeId);
+                    if (route != null)
+                    {
+                        bool isAdminOrAuthor = _isCurrentUserAdmin || _userId == route.IdUser;
+
+                        if (!isAdminOrAuthor)
+                        {
+                            route.ViewsCount = (route.ViewsCount ?? 0) + 1;
+                            await db.SaveChangesAsync();
+                        }
+                        ViewsText.Text = route.ViewsCount?.ToString() ?? "0";
                     }
 
                     CheckFavoriteStatus();
 
-                    var route = await db.Routes
+                    route = await db.Routes
                         .Include(r => r.Categories)
                         .Include(r => r.Users)
                         .Include(r => r.RoutePoints.Select(p => p.PointTypes))
@@ -63,10 +76,20 @@ namespace course_project_tourist_routes.AdminPages
                     RouteTitleText.Text = route.TitleRoute;
                     CategoryText.Text = route.Categories?.NameCategory ?? "Без категории";
 
+                    bool isAuthor = _userId == _routeAuthorId;
+
+                    bool showFavoriteButton = !_isCurrentUserAdmin && !isAuthor;
+                    FavoriteButton.Visibility = showFavoriteButton ? Visibility.Visible : Visibility.Collapsed;
+
+                    if (showFavoriteButton)
+                    {
+                        CheckFavoriteStatus();
+                    }
+
                     if (route.Categories?.NameCategory == "Пользовательские" && route.Users != null)
                     {
                         AuthorBorder.Visibility = Visibility.Visible;
-                        AuthorText.Text = $"{route.Users.UserName}";
+                        AuthorText.Text = isAuthor ? "Вы" : $"{route.Users.UserName}";
                     }
 
                     DescriptionText.Text = route.DescriptionRoute ?? "Описание отсутствует";
@@ -98,7 +121,7 @@ namespace course_project_tourist_routes.AdminPages
                     return;
                 }
 
-                CloudStorage.ClearRoutePhotosDirectory();
+                CloudStorage.ClearRoutePhotosDirectoryAsync();
                 string dir = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "temp", "route_photos");
 
                 for (int i = 0; i < Math.Min(photos.Count, 3); i++)
@@ -112,7 +135,7 @@ namespace course_project_tourist_routes.AdminPages
                         _tempPhotoPaths.Add(path);
 
                         await Task.WhenAll(
-                            Task.Run(() => CloudStorage.DownloadRoutePhoto(photo.Photo, path))
+                            Task.Run(() => CloudStorage.DownloadRoutePhotoAsync(photo.Photo, path))
                         );
 
                         await Dispatcher.InvokeAsync(() => ShowPhoto(i, path));
@@ -173,26 +196,14 @@ namespace course_project_tourist_routes.AdminPages
 
         private void CheckFavoriteStatus()
         {
-            if (_userId == 0) return;
-
             try
             {
                 using (var db = new TouristRoutesEntities())
                 {
-                    bool isTraveler = !_isCurrentUserAdmin && _userId != _routeAuthorId;
-
-                    if (isTraveler)
-                    {
-                        FavoriteButton.Visibility = Visibility.Visible;
-                        _isFavorite = db.Favorites.Any(f => f.IdUser == _userId && f.IdRoute == _routeId);
-                        FavoriteIcon.Kind = _isFavorite ?
-                            MaterialDesignThemes.Wpf.PackIconKind.Star :
-                            MaterialDesignThemes.Wpf.PackIconKind.StarOutline;
-                    }
-                    else
-                    {
-                        FavoriteButton.Visibility = Visibility.Collapsed;
-                    }
+                    _isFavorite = db.Favorites.Any(f => f.IdUser == _userId && f.IdRoute == _routeId);
+                    FavoriteIcon.Kind = _isFavorite ?
+                        MaterialDesignThemes.Wpf.PackIconKind.Star :
+                        MaterialDesignThemes.Wpf.PackIconKind.StarOutline;
                 }
             }
             catch (Exception ex)
@@ -202,9 +213,15 @@ namespace course_project_tourist_routes.AdminPages
             }
         }
 
+        public event Action<int> RouteViewed;
+
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            CloudStorage.ClearRoutePhotosDirectory();
+            CloudStorage.ClearRoutePhotosDirectoryAsync();
+
+            // Вызываем событие, если оно подписано
+            RouteViewed?.Invoke(_routeId);
+
             NavigationService?.GoBack();
         }
 
@@ -237,7 +254,8 @@ namespace course_project_tourist_routes.AdminPages
                     var favorite = new Favorites
                     {
                         IdUser = _userId,
-                        IdRoute = _routeId
+                        IdRoute = _routeId,
+                        DateAddedFavorite = DateTime.Now
                     };
                     db.Favorites.Add(favorite);
                     db.SaveChanges();

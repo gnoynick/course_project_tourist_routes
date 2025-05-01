@@ -7,7 +7,8 @@
       xmlns:local="clr-namespace:course_project_tourist_routes.AdminPages"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="1400"
-      Title="TravelerPage">
+      Title="TravelerPage"
+      IsVisibleChanged="TravelerPage_IsVisibleChanged">
     <Grid>
         <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
             <Grid>

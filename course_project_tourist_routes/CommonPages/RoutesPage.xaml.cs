@@ -5,10 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Data.Entity;
-using course_project_tourist_routes.CommonPages;
-using System.Threading.Tasks;
 
 namespace course_project_tourist_routes.AdminPages
 {
@@ -18,19 +15,30 @@ namespace course_project_tourist_routes.AdminPages
         private List<Categories> _categories = new List<Categories>();
         private List<string> _countries = new List<string>();
         private List<string> _cities = new List<string>();
-        private string _tempDirectory;
 
         public RoutesPage(int userId)
         {
             InitializeComponent();
             _userId = userId;
 
-            _tempDirectory = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "temp", "route_photos");
-            CloudStorage.ClearRoutePhotosDirectory();
+            CloudStorage.ClearRoutePhotosDirectoryAsync();
 
             LoadCategories();
             LoadCountriesAndCities();
             LoadRoutes();
+        }
+
+        private void RoutesPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (Visibility == Visibility.Visible)
+            {
+                using (var context = new TouristRoutesEntities())
+                {
+                    context.ChangeTracker.Entries().ToList().ForEach(x => x.Reload());
+                }
+
+                LoadRoutes();
+            }
         }
 
         private void LoadCountriesAndCities()
@@ -133,6 +141,7 @@ namespace course_project_tourist_routes.AdminPages
             }
         }
 
+
         private void LoadRoutes(int? categoryId = null, string country = null, string city = null, string searchText = null)
         {
             try
@@ -184,6 +193,7 @@ namespace course_project_tourist_routes.AdminPages
                             AuthorInfo = r.Categories.NameCategory == "Пользовательские" ? $"Автор: {r.Users.UserName}" : "",
                             Countries = string.Join(", ", r.RoutePoints.Select(p => p.Country).Distinct()),
                             Cities = string.Join(", ", r.RoutePoints.Select(p => p.City).Distinct()),
+                            ViewsCount = $"Просмотров: {r.ViewsCount ?? 0}",
                             r.IdCategory,
                             r.IdUser,
                             AuthorRole = r.Users.Roles.IdRole,
@@ -208,7 +218,7 @@ namespace course_project_tourist_routes.AdminPages
             var searchText = SearchTextBox.Text;
 
             LoadRoutes(
-                selectedCategory?.IdCategory == 0 ? null : (int?)selectedCategory?.IdCategory,
+                selectedCategory?.IdCategory == 0 ? null : (selectedCategory?.IdCategory),
                 selectedCountry,
                 selectedCity,
                 searchText
@@ -242,7 +252,7 @@ namespace course_project_tourist_routes.AdminPages
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            CloudStorage.ClearRoutePhotosDirectory();
+            CloudStorage.ClearRoutePhotosDirectoryAsync();
             NavigationService.GoBack();
         }
 
@@ -262,7 +272,7 @@ namespace course_project_tourist_routes.AdminPages
             {
                 dynamic selectedItem = RoutesListView.SelectedItem;
                 int routeId = selectedItem.IdRoute;
-                CloudStorage.ClearRoutePhotosDirectory();
+                CloudStorage.ClearRoutePhotosDirectoryAsync();
                 NavigationService?.Navigate(new OpenRoutePage(routeId, _userId));
                 RoutesListView.SelectedItem = null;
             }
@@ -275,7 +285,7 @@ namespace course_project_tourist_routes.AdminPages
                 MessageBox.Show("Ошибка открытия маршрута для редактирования");
                 return;
             }
-            CloudStorage.ClearRoutePhotosDirectory();
+            CloudStorage.ClearRoutePhotosDirectoryAsync();
             //NavigationService?.Navigate(new EditRoutePage(routeId, _userId));
         }
 
@@ -310,7 +320,7 @@ namespace course_project_tourist_routes.AdminPages
                                 {
                                     try
                                     {
-                                        CloudStorage.DeleteFile(photo.Photo);
+                                        CloudStorage.DeleteFileAsync(photo.Photo);
                                     }
                                     catch (Exception ex)
                                     {

@@ -1,8 +1,10 @@
 ﻿using course_project_tourist_routes.TravelerPages;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace course_project_tourist_routes.AdminPages
@@ -18,10 +20,7 @@ namespace course_project_tourist_routes.AdminPages
             Resources.Add("User", user);
             InitializeComponent();
 
-            CloudStorage.DownloadCurrentUserPhoto(user.ProfilePhoto);
-
-            SharedResources.ProfileImageBrush.ImageSource = CloudStorage.GetBitmapImage(CloudStorage.CurrentUserPhotoPath, true);
-            Resources["imagebrush"] = SharedResources.ProfileImageBrush;
+            InitializeAsync(user);
 
             _userId = userId;
             _userName = userName;
@@ -32,6 +31,46 @@ namespace course_project_tourist_routes.AdminPages
 
             LoadRoutes();
             StartClock();
+        }
+
+        private void TravelerPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (Visibility == Visibility.Visible)
+            {
+                using (var context = new TouristRoutesEntities())
+                {
+                    context.ChangeTracker.Entries().ToList().ForEach(x => x.Reload());
+                }
+
+                LoadRoutes();
+            }
+        }
+
+        private async void InitializeAsync(Users user)
+        {
+            try
+            {
+                await CloudStorage.DownloadCurrentUserPhotoAsync(user.ProfilePhoto);
+
+                var bitmapImage = await CloudStorage.GetBitmapImageAsync(CloudStorage.CurrentUserPhotoPath, true);
+
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    SharedResources.ProfileImageBrush.ImageSource = bitmapImage;
+                    Resources["imagebrush"] = SharedResources.ProfileImageBrush;
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка при загрузке фото профиля: {ex.Message}");
+
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    SharedResources.ProfileImageBrush.ImageSource =
+                        new BitmapImage(new Uri("pack://application:,,,/Resources/profile_photo.jpg"));
+                    Resources["imagebrush"] = SharedResources.ProfileImageBrush;
+                });
+            }
         }
 
         public void LoadRoutes()
@@ -59,6 +98,7 @@ namespace course_project_tourist_routes.AdminPages
                 MessageBox.Show("Ошибка при загрузке маршрутов: " + ex.Message);
             }
         }
+
 
         public void UpdateUserInfo(string newLogin, string newStatus)
         {

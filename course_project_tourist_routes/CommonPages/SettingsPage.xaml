@@ -7,7 +7,8 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="380"
-      Title="SettingsPage">
+      Title="SettingsPage"
+      IsVisibleChanged="SettingsPage_IsVisibleChanged">
     <Border Background="#4A773C" CornerRadius="10">
         <Grid>
             <Border Background="#D1E2C4" CornerRadius="10" Margin="20">
@@ -54,7 +55,7 @@
                                     </Button>
                                 </StackPanel>
 
-                                <Border Style="{StaticResource ProfilePhotoContainerStyle}" Width="107" Height="100">
+                                <Border Style="{StaticResource ProfilePhotoContainerStyle}" Width="100" Height="100">
                                     <Grid>
                                         <!-- Кнопка с фото профиля -->
                                         <Button x:Name="ProfilePhoto" 

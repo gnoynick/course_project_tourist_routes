@@ -21,13 +21,15 @@ namespace course_project_tourist_routes
         private readonly int _userId;
         private AdminPage _adminPage;
         private TravelerPage _travelerPage;
+        private Users _currentUser;
+        private ImageSource _previousAvatar;
         private string _newImagePath;
-        ImageSource PreviousAvatar;
-        BitmapImage NewAvatar;
-        string NewAvatarPath;
+        private ImageBrush _currentImageBrush;
+        private bool _isPhotoLoaded = false;
+
 
         public SettingsPage(int userId, string login, string status, AdminPage adminPage, Users user)
-    : this(userId, login, status, user)
+            : this(userId, login, status, user)
         {
             _adminPage = adminPage;
         }
@@ -38,27 +40,88 @@ namespace course_project_tourist_routes
             _travelerPage = travelerPage;
         }
 
-        private async void InitializeProfilePhotoAsync(string fileId)
+        public SettingsPage(int userId, string login, string status, Users user)
+        {
+            InitializeComponent();
+            _currentUser = user;
+            _userId = userId;
+            _originalLogin = login;
+            _originalStatus = status;
+
+            _currentImageBrush = new ImageBrush();
+            Resources["imagebrushset"] = _currentImageBrush;
+
+            // Загружаем фото только при первом открытии
+            Loaded += SettingsPage_Loaded;
+        }
+
+        private async void SettingsPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!_isPhotoLoaded)
+            {
+                await LoadProfilePhotoAsync();
+                _isPhotoLoaded = true;
+            }
+        }
+
+        private void SettingsPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (Visibility == Visibility.Visible)
+            {
+                using (var context = new TouristRoutesEntities())
+                {
+                    context.ChangeTracker.Entries().ToList().ForEach(x => x.Reload());
+                }
+
+                LoadProfilePhotoAsync();
+            }
+        }
+
+        private async Task LoadProfilePhotoAsync()
         {
             try
             {
                 PhotoLoadingProgress.Visibility = Visibility.Visible;
                 ProfilePhoto.Visibility = Visibility.Collapsed;
 
-                await Task.Run(() =>
+                string photoPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "TouristRoutes",
+                    "current_profile_photo.jpg");
+
+                // Если файл уже существует и не пустой - используем его
+                if (File.Exists(photoPath) && new FileInfo(photoPath).Length > 0)
                 {
-                    CloudStorage.DownloadCurrentUserPhoto(fileId);
-                });
+                    using (var stream = new FileStream(photoPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.StreamSource = stream;
+                        image.EndInit();
+                        image.Freeze();
+                        UpdateProfileImage(image);
+                    }
+                }
+                else // Иначе загружаем из облака или используем стандартное
+                {
+                    await CloudStorage.DownloadCurrentUserPhotoAsync(_currentUser.ProfilePhoto);
 
-                var bitmapImage = CloudStorage.GetBitmapImage(CloudStorage.CurrentUserPhotoPath, true);
-                var imageBrush = new ImageBrush { ImageSource = bitmapImage };
-
-                SharedResources.ProfileImageBrush = imageBrush;
-                Resources["imagebrush"] = imageBrush;
+                    if (File.Exists(photoPath))
+                    {
+                        var image = new BitmapImage(new Uri(photoPath));
+                        UpdateProfileImage(image);
+                    }
+                    else
+                    {
+                        UpdateProfileImage(new BitmapImage(new Uri("pack://application:,,,/Resources/profile_photo.jpg")));
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка загрузки фото профиля: {ex.Message}");
+                Debug.WriteLine($"Ошибка загрузки фото: {ex.Message}");
+                UpdateProfileImage(new BitmapImage(new Uri("pack://application:,,,/Resources/profile_photo.jpg")));
             }
             finally
             {
@@ -67,166 +130,156 @@ namespace course_project_tourist_routes
             }
         }
 
-        private SettingsPage(int userId, string login, string status, Users user)
+        private void UpdateProfileImage(BitmapImage image)
         {
-            Resources.Add("User", user);
-            InitializeComponent();
+            _currentImageBrush.ImageSource = image;
+            //_currentImageBrush.Stretch = Stretch.UniformToFill;
+            SharedResources.ProfileImageBrush = _currentImageBrush;
 
-            InitializeProfilePhotoAsync(user.ProfilePhoto);
-
-            _userId = userId;
-            _originalLogin = login;
-            _originalStatus = status;
-            LoginTextBox.Text = login;
-            StatusTextBox.Text = status;
+            // Обновляем на связанных страницах
+            if (_adminPage != null)
+                _adminPage.Resources["imagebrush"] = _currentImageBrush;
+            else if (_travelerPage != null)
+                _travelerPage.Resources["imagebrush"] = _currentImageBrush;
         }
 
-        private async void ChangePhotoButton_Click(object sender, RoutedEventArgs e)
+        private void ChangePhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            var dialog = new OpenFileDialog
             {
-                Filter = "JPEG files (*.jpg;*.jpeg;) | *.jpg;*.jpeg; | PNG files (*.png) | *.png",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
+                Filter = "Изображения|*.jpg;*.jpeg;*.png",
+                Title = "Выберите новое фото профиля"
             };
-            if (openFileDialog.ShowDialog() == true)
+
+            if (dialog.ShowDialog() == true)
             {
                 try
                 {
-                    NewAvatarPath = openFileDialog.FileName;
-                    NewAvatar = await Task.Run(() => CloudStorage.GetBitmapImage(NewAvatarPath));
+                    // Сохраняем текущее фото для возможной отмены
+                    _previousAvatar = _currentImageBrush.ImageSource;
 
-                    var imageBrush = (ImageBrush)Resources["imagebrush"];
-                    PreviousAvatar = imageBrush.ImageSource;
-                    imageBrush.ImageSource = NewAvatar;
+                    // Загружаем новое изображение
+                    var newImage = new BitmapImage(new Uri(dialog.FileName));
+                    UpdateProfileImage(newImage);
 
+                    // Сохраняем путь к новому изображению
+                    _newImagePath = dialog.FileName;
+
+                    // Показываем кнопки подтверждения/отмены
                     CancelPhotoStackPanel.Visibility = Visibility.Visible;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при загрузке изображения: {ex.Message}", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Ошибка загрузки изображения: {ex.Message}",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
         private async void SavePhotoButton_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(_newImagePath))
+            {
+                MessageBox.Show("Не выбрано новое фото", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
-                if (string.IsNullOrEmpty(NewAvatarPath))
+                PhotoLoadingProgress.Visibility = Visibility.Visible;
+                SavePhotoButton.IsEnabled = false;
+
+                // 1. Загружаем фото в Google Drive
+                string newFileId = await CloudStorage.UploadProfilePhotoAsync(
+                    _newImagePath,
+                    $"user_id: {_userId}",
+                    _currentUser.ProfilePhoto);
+
+                if (string.IsNullOrEmpty(newFileId))
                 {
-                    MessageBox.Show("Не выбрано новое фото", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Не удалось сохранить фото", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                PhotoLoadingProgress.Visibility = Visibility.Visible;
-                ProfilePhoto.Visibility = Visibility.Collapsed;
-                SavePhotoButton.IsEnabled = false;
-                CancelPhotoButton.IsEnabled = false;
-
-                await Task.Run(() => File.Copy(NewAvatarPath, CloudStorage.CurrentUserPhotoPath, true));
-
-                using (var context = new TouristRoutesEntities())
+                // 2. Обновляем фото в базе данных
+                using (var db = new TouristRoutesEntities())
                 {
-                    var user = (Users)Resources["User"];
-                    string oldFileId = user.ProfilePhoto;
-
-                    string newFileId = await Task.Run(() =>
-                        CloudStorage.UploadProfilePhoto(
-                            CloudStorage.CurrentUserPhotoPath,
-                            $"ID_{user.IdUser}",
-                            null));
-
-                    if (string.IsNullOrEmpty(newFileId))
+                    var user = db.Users.FirstOrDefault(u => u.IdUser == _userId);
+                    if (user != null)
                     {
-                        MessageBox.Show("Не удалось загрузить фото", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
+                        user.ProfilePhoto = newFileId;
+                        await db.SaveChangesAsync();
+                        _currentUser.ProfilePhoto = newFileId;
                     }
-
-                    var dbUser = context.Users.SingleOrDefault(u => u.IdUser == user.IdUser);
-                    if (dbUser != null)
-                    {
-                        string previousFileId = dbUser.ProfilePhoto;
-                        dbUser.ProfilePhoto = newFileId;
-                        await context.SaveChangesAsync();
-
-                        if (!string.IsNullOrEmpty(previousFileId))
-                        {
-                            await Task.Run(() => CloudStorage.DeleteFile(previousFileId));
-                        }
-                    }
-
-                    await UpdatePhoto(newFileId);
-
-                    MessageBox.Show("Фото профиля успешно изменено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
+
+                // 3. Немедленно обновляем фото в интерфейсе без перезагрузки страницы
+                await UpdateProfileImageImmediately(_newImagePath);
+
+                MessageBox.Show("Фото профиля успешно обновлено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при изменении фото: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка сохранения фото: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
-                try { File.Delete(CloudStorage.CurrentUserPhotoPath); } catch { }
-                CancelPhotoStackPanel.Visibility = Visibility.Collapsed;
-                SavePhotoButton.IsEnabled = true;
-                CancelPhotoButton.IsEnabled = true;
                 PhotoLoadingProgress.Visibility = Visibility.Collapsed;
-                ProfilePhoto.Visibility = Visibility.Visible;
+                SavePhotoButton.IsEnabled = true;
+                CancelPhotoStackPanel.Visibility = Visibility.Collapsed;
+                _newImagePath = null;
             }
         }
 
-        private async Task UpdatePhoto(string fileId)
+        private async Task UpdateProfileImageImmediately(string imagePath)
         {
             try
             {
-                await Task.Run(() => CloudStorage.DownloadCurrentUserPhoto(fileId));
-                var newImage = await Task.Run(() => CloudStorage.GetBitmapImage(CloudStorage.CurrentUserPhotoPath, true));
+                // Создаем новое изображение
+                var newImage = new BitmapImage();
+                newImage.BeginInit();
+                newImage.UriSource = new Uri(imagePath);
+                newImage.CacheOption = BitmapCacheOption.OnLoad;
+                newImage.EndInit();
+                newImage.Freeze();
 
-                Application.Current.Dispatcher.Invoke(() =>
+                // Обновляем интерфейс
+                UpdateProfileImage(newImage);
+
+                // Сохраняем копию с обработкой блокировки файла
+                string tempPhotoPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "TouristRoutes",
+                    "current_profile_photo.jpg");
+
+                Directory.CreateDirectory(Path.GetDirectoryName(tempPhotoPath));
+
+                // Удаляем старый файл если существует
+                if (File.Exists(tempPhotoPath))
                 {
-                    var imageBrush = (ImageBrush)Resources["imagebrush"];
-                    imageBrush.ImageSource = newImage;
-                    SharedResources.ProfileImageBrush.ImageSource = newImage;
+                    File.Delete(tempPhotoPath);
+                }
 
-                    if (_adminPage != null)
-                        _adminPage.Resources["imagebrush"] = SharedResources.ProfileImageBrush;
-                    else if (_travelerPage != null)
-                        _travelerPage.Resources["imagebrush"] = SharedResources.ProfileImageBrush;
-                });
+                // Копируем с задержкой для гарантии освобождения ресурсов
+                await Task.Delay(100);
+                File.Copy(imagePath, tempPhotoPath);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка при обновлении фото: {ex.Message}");
+                Debug.WriteLine($"Ошибка обновления фото: {ex.Message}");
+                MessageBox.Show("Не удалось сохранить фото локально", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
         private void CancelPhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (_previousAvatar != null)
             {
-                if (PreviousAvatar != null)
-                {
-                    var imageBrush = (ImageBrush)Resources["imagebrush"];
-                    imageBrush.ImageSource = PreviousAvatar;
-                    SharedResources.ProfileImageBrush.ImageSource = PreviousAvatar;
-                }
-
-                CancelPhotoStackPanel.Visibility = Visibility.Collapsed;
-                _newImagePath = null;
-                NewAvatar = null;
-                NewAvatarPath = null;
-
-                if (File.Exists(CloudStorage.CurrentUserPhotoPath))
-                {
-                    File.Delete(CloudStorage.CurrentUserPhotoPath);
-                }
+                var brush = new ImageBrush { ImageSource = _previousAvatar, Stretch = Stretch.UniformToFill };
+                Resources["imagebrushset"] = brush;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при отмене изменения фото: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            CancelPhotoStackPanel.Visibility = Visibility.Collapsed;
+            _newImagePath = null;
         }
 
         private void LoginTextBox_PreviewKeyDown(object sender, KeyEventArgs e)

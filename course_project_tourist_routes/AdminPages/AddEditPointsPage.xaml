@@ -17,7 +17,7 @@
             </Grid.RowDefinitions>
 
             <!-- Header -->
-            <Border Grid.Row="0" Background="#4A773C" CornerRadius="10" Margin="10,10,10,0" Padding="15">
+            <Border Grid.Row="0" Background="#4A773C" CornerRadius="10" Margin="10" Padding="15">
                 <Grid>
                     <Button x:Name="BackButton" 
                             Style="{StaticResource ExitAndSettingsButtonStyle}" 
@@ -43,111 +43,113 @@
                 </Grid>
             </Border>
 
-            <!-- Main Content -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,15">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="150"/>
-                        <ColumnDefinition Width="*" MinWidth="300"/>
-                    </Grid.ColumnDefinitions>
+            <!-- Центральная часть с формой -->
+            <Grid Grid.Row="1" VerticalAlignment="Center">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20,10" HorizontalAlignment="Center">
+                    <Grid Width="600">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="150"/>
+                            <ColumnDefinition Width="*" MinWidth="300"/>
+                        </Grid.ColumnDefinitions>
 
-                    <!-- Point Name -->
-                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
-                        <materialDesign:PackIcon Kind="Text" 
-                                               Foreground="#4A773C" 
-                                               Width="24" 
-                                               Height="24"
-                                               Margin="0,0,5,0"/>
-                        <TextBlock Text="Название точки:"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#4A773C"/>
-                    </StackPanel>
-                    <TextBox Grid.Row="0" Grid.Column="1" 
-                             Text="{Binding CurrentPoint.PointName, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource StyledTextBox}"
-                             Margin="0,0,0,15"/>
+                        <!-- Название точки -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
+                            <materialDesign:PackIcon Kind="Text" 
+                                                   Foreground="#4A773C" 
+                                                   Width="24" 
+                                                   Height="24"
+                                                   Margin="0,0,5,0"/>
+                            <TextBlock Text="Название точки:"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="#4A773C"/>
+                        </StackPanel>
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                 Text="{Binding CurrentPoint.PointName, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource StyledTextBox}"
+                                 Margin="0,0,0,15"/>
 
-                    <!-- Point Type -->
-                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
-                        <materialDesign:PackIcon Kind="Tag" 
-                                               Foreground="#4A773C" 
-                                               Width="24" 
-                                               Height="24"
-                                               Margin="0,0,5,0"/>
-                        <TextBlock Text="Тип точки:"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#4A773C"/>
-                    </StackPanel>
-                    <ComboBox Grid.Row="1" Grid.Column="1" 
-                              x:Name="PointTypeComboBox"
-                              Style="{StaticResource StyledComboBox}"
-                              Margin="0,0,0,15">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Tag" 
-                                                           Width="20"
-                                                           Height="20"
-                                                           Margin="0,0,5,0"
-                                                           Foreground="#4A773C"/>
-                                    <TextBlock Text="{Binding NameType}" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                        <!-- Тип точки -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
+                            <materialDesign:PackIcon Kind="Tag" 
+                                                   Foreground="#4A773C" 
+                                                   Width="24" 
+                                                   Height="24"
+                                                   Margin="0,0,5,0"/>
+                            <TextBlock Text="Тип точки:"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="#4A773C"/>
+                        </StackPanel>
+                        <ComboBox Grid.Row="1" Grid.Column="1" 
+                                  x:Name="PointTypeComboBox"
+                                  Style="{StaticResource StyledComboBox}"
+                                  Margin="0,0,0,15">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Tag" 
+                                                               Width="20"
+                                                               Height="20"
+                                                               Margin="0,0,5,0"
+                                                               Foreground="#4A773C"/>
+                                        <TextBlock Text="{Binding NameType}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
-                    <!-- Country -->
-                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
-                        <materialDesign:PackIcon Kind="Earth" 
-                                               Foreground="#4A773C" 
-                                               Width="24" 
-                                               Height="24"
-                                               Margin="0,0,5,0"/>
-                        <TextBlock Text="Страна:"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#4A773C"/>
-                    </StackPanel>
-                    <TextBox Grid.Row="2" Grid.Column="1" 
-                             Text="{Binding CurrentPoint.Country, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource StyledTextBox}"
-                             Margin="0,0,0,15"/>
+                        <!-- Страна -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
+                            <materialDesign:PackIcon Kind="Earth" 
+                                                   Foreground="#4A773C" 
+                                                   Width="24" 
+                                                   Height="24"
+                                                   Margin="0,0,5,0"/>
+                            <TextBlock Text="Страна:"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="#4A773C"/>
+                        </StackPanel>
+                        <TextBox Grid.Row="2" Grid.Column="1" 
+                                 Text="{Binding CurrentPoint.Country, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource StyledTextBox}"
+                                 Margin="0,0,0,15"/>
 
-                    <!-- City -->
-                    <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
-                        <materialDesign:PackIcon Kind="City" 
-                                               Foreground="#4A773C" 
-                                               Width="24" 
-                                               Height="24"
-                                               Margin="0,0,5,0"/>
-                        <TextBlock Text="Город:"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#4A773C"/>
-                    </StackPanel>
-                    <TextBox Grid.Row="3" Grid.Column="1" 
-                             Text="{Binding CurrentPoint.City, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource StyledTextBox}"
-                             Margin="0,0,0,15"/>
-                </Grid>
-            </ScrollViewer>
+                        <!-- Город -->
+                        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
+                            <materialDesign:PackIcon Kind="City" 
+                                                   Foreground="#4A773C" 
+                                                   Width="24" 
+                                                   Height="24"
+                                                   Margin="0,0,5,0"/>
+                            <TextBlock Text="Город:"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="#4A773C"/>
+                        </StackPanel>
+                        <TextBox Grid.Row="3" Grid.Column="1" 
+                                 Text="{Binding CurrentPoint.City, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource StyledTextBox}"
+                                 Margin="0,0,0,15"/>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
 
-            <!-- Action Buttons -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <!-- Кнопки -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <Button x:Name="CancelButton" 
                         Style="{StaticResource ButtonStyle}"
-                        Width="120"
-                        Height="40"
-                        Margin="0,0,10,0"
+                        Width="150"
+                        Height="45"
+                        Margin="0,0,15,0"
                         Click="CancelButton_Click">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="Close" 
@@ -155,13 +157,13 @@
                                                Height="20"
                                                Margin="0,0,5,0"
                                                Foreground="White"/>
-                        <TextBlock Text="Отмена" VerticalAlignment="Center"/>
+                        <TextBlock Text="Отмена" VerticalAlignment="Center" FontSize="14"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="SaveButton" 
                         Style="{StaticResource ButtonStyle}"
-                        Width="120"
-                        Height="40"
+                        Width="150"
+                        Height="45"
                         Click="SaveButton_Click">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="ContentSave" 
@@ -169,7 +171,7 @@
                                                Height="20"
                                                Margin="0,0,5,0"
                                                Foreground="White"/>
-                        <TextBlock Text="Сохранить" VerticalAlignment="Center"/>
+                        <TextBlock Text="Сохранить" VerticalAlignment="Center" FontSize="14"/>
                     </StackPanel>
                 </Button>
             </StackPanel>

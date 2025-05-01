@@ -11,6 +11,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Net.Http;
+using System.Threading;
 
 namespace course_project_tourist_routes
 {
@@ -19,20 +20,12 @@ namespace course_project_tourist_routes
         private const string ProfilePhotosDirectoryID = "1QOS_QWmIY9LF3FyDfLSIkh6NcVkYIfoC";
         private const string RoutePhotosDirectoryID = "1to-5jvJKdutPUfnP12DSlgtR_pEKZDIK";
 
-        public static string ProfilePhotosDirectoryPath = Path.Combine(
-            Directory.GetParent(Environment.CurrentDirectory).Parent.FullName,
-            "temp",
-            "profile_photos");
+        public static string ProfilePhotosDirectoryPath = "pack://application:,,,/temp/profile_photos/";
+        public static string CurrentUserPhotoPath = "pack://application:,,,/temp/current_profile_photo.jpg";
+        public static string RoutePhotosDirectoryPath = "pack://application:,,,/temp/route_photos/";
+        public static string RoutePhotosTempPath = "pack://application:,,,/temp/route_photo_temp.jpg";
 
-        public static string CurrentUserPhotoPath = Path.Combine(
-            Directory.GetParent(Environment.CurrentDirectory).Parent.FullName,
-            "temp",
-            "current_profile_photo.jpg");
-
-        public static string RoutePhotosDirectoryPath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "temp", "route_photos");
-        public static string RoutePhotosTempPath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "temp", "route_photo_temp.jpg");
-
-        private static async Task<string> GetServiceAccountKeyFromGist()
+        private static async Task<string> GetServiceAccountKeyFromGistAsync(CancellationToken cancellationToken = default)
         {
             try
             {
@@ -42,7 +35,7 @@ namespace course_project_tourist_routes
 
                     httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
 
-                    var response = await httpClient.GetAsync(gistUrl);
+                    var response = await httpClient.GetAsync(gistUrl, cancellationToken);
                     response.EnsureSuccessStatusCode();
 
                     return await response.Content.ReadAsStringAsync();
@@ -50,14 +43,17 @@ namespace course_project_tourist_routes
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Не удалось загрузить ключ сервисного аккаунта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    MessageBox.Show($"Не удалось загрузить ключ сервисного аккаунта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
                 throw;
             }
         }
 
-        private static DriveService GetDriveService()
+        private static async Task<DriveService> GetDriveServiceAsync(CancellationToken cancellationToken = default)
         {
-            var jsonKey = GetServiceAccountKeyFromGist().GetAwaiter().GetResult();
+            var jsonKey = await GetServiceAccountKeyFromGistAsync(cancellationToken);
 
             var credential = GoogleCredential.FromJson(jsonKey)
                 .CreateScoped(DriveService.ScopeConstants.Drive);
@@ -68,170 +64,196 @@ namespace course_project_tourist_routes
             });
         }
 
-        public static void DeleteFile(string fileId)
+        public static async Task DeleteFileAsync(string fileId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(fileId)) return;
 
             try
             {
-                var driveService = GetDriveService();
+                var driveService = await GetDriveServiceAsync(cancellationToken);
 
                 try
                 {
                     var getRequest = driveService.Files.Get(fileId);
-                    getRequest.Execute();
+                    await getRequest.ExecuteAsync(cancellationToken);
                 }
                 catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == HttpStatusCode.NotFound)
                 {
                     return;
                 }
 
-                driveService.Files.Delete(fileId).Execute();
+                await driveService.Files.Delete(fileId).ExecuteAsync(cancellationToken);
             }
             catch (Google.GoogleApiException ex)
             {
                 string errorMessage = ex.Error?.Message ?? ex.Message;
-                MessageBox.Show($"Ошибка при удалении файла: {errorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    MessageBox.Show($"Ошибка при удалении файла: {errorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Общая ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    MessageBox.Show($"Общая ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
         }
 
-        public static BitmapImage GetBitmapImage(string imagePath, bool cache = false)
+        public static async Task<BitmapImage> GetBitmapImageAsync(string imagePath, bool cache = false, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(imagePath) || !File.Exists(imagePath))
-            {
-                return new BitmapImage();
-            }
-
-            var bitmapImage = new BitmapImage();
-
             try
             {
-                bitmapImage.BeginInit();
-                bitmapImage.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
-                bitmapImage.CacheOption = cache ? BitmapCacheOption.OnLoad : BitmapCacheOption.None;
-                bitmapImage.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                bitmapImage.EndInit();
-
-                if (bitmapImage.CanFreeze)
+                return await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    bitmapImage.Freeze();
+                    var image = new BitmapImage();
+                    image.BeginInit();
+                    image.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+                    image.CacheOption = cache ? BitmapCacheOption.OnLoad : BitmapCacheOption.None;
+                    image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                    image.EndInit();
+
+                    if (image.CanFreeze)
+                    {
+                        image.Freeze();
+                    }
+
+                    return image;
+                }, System.Windows.Threading.DispatcherPriority.Background, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading image from {imagePath}: {ex.ToString()}");
+                return new BitmapImage();
+            }
+        }
+
+        public static async Task EnsureDefaultProfilePhotoExistsAsync(bool forceReplace = false, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TouristRoutes");
+                string currentPhotoPath = Path.Combine(appDataPath, "current_profile_photo.jpg");
+                string defaultPhotoPath = "Resources/profile_photo.jpg"; // Относительный путь в проекте
+
+                if (forceReplace || !File.Exists(currentPhotoPath))
+                {
+                    Directory.CreateDirectory(appDataPath);
+
+                    // Копируем из ресурсов приложения
+                    var defaultUri = new Uri(defaultPhotoPath, UriKind.Relative);
+                    var resourceInfo = Application.GetResourceStream(defaultUri);
+
+                    if (resourceInfo != null)
+                    {
+                        using (var defaultStream = resourceInfo.Stream)
+                        using (var fileStream = new FileStream(currentPhotoPath, FileMode.Create))
+                        {
+                            await defaultStream.CopyToAsync(fileStream);
+                        }
+                    }
+
+                    // Обновляем путь для использования в приложении
+                    CurrentUserPhotoPath = $"file:///{currentPhotoPath.Replace('\\', '/')}";
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка загрузки изображения: {ex.Message}");
-                return new BitmapImage();
-            }
-
-            return bitmapImage;
-        }
-
-        public static void EnsureDefaultProfilePhotoExists(bool forceReplace = false)
-        {
-            string defaultPhotoPath = Path.Combine(
-                Directory.GetParent(Environment.CurrentDirectory).Parent.FullName,
-                "Resources",
-                "profile_photo.jpg");
-
-            if (forceReplace || !File.Exists(CurrentUserPhotoPath))
-            {
-                if (File.Exists(defaultPhotoPath))
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    File.Copy(defaultPhotoPath, CurrentUserPhotoPath, true);
-                }
-                else
-                {
-                    MessageBox.Show("Заглушка для фото профиля не найдена!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                    MessageBox.Show($"Не удалось установить фото по умолчанию: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
         }
 
-        public static string UploadProfilePhoto(string filePath, string fileName, string oldFileId = null)
+        public static async Task<string> UploadProfilePhotoAsync(string filePath, string fileName, string oldFileId = null, CancellationToken cancellationToken = default)
         {
-            return UploadPhoto(filePath, fileName, oldFileId, ProfilePhotosDirectoryID);
+            return await UploadPhotoAsync(filePath, fileName, oldFileId, ProfilePhotosDirectoryID, cancellationToken);
         }
 
-        public static void DownloadProfilePhoto(string fileId, int userId)
+        public static async Task DownloadProfilePhotoAsync(string fileId, int userId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(fileId)) return;
 
-            string userPhotoPath = Path.Combine(
-                ProfilePhotosDirectoryPath,
-                $"user_{userId}.jpg");
-
             try
             {
-                Directory.CreateDirectory(ProfilePhotosDirectoryPath);
+                // Получаем физический путь к директории
+                string profilePhotosDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TouristRoutes", "profile_photos");
+                string userPhotoPath = Path.Combine(profilePhotosDir, $"user_{userId}.jpg");
 
-                using (var stream = new FileStream(
-                    userPhotoPath,
-                    FileMode.Create,
-                    FileAccess.Write,
-                    FileShare.ReadWrite))
+                Directory.CreateDirectory(profilePhotosDir);
+
+                var driveService = await GetDriveServiceAsync(cancellationToken);
+                var request = driveService.Files.Get(fileId);
+
+                using (var fileStream = new FileStream(userPhotoPath, FileMode.Create, FileAccess.Write))
                 {
-                    var driveService = GetDriveService();
-                    var request = driveService.Files.Get(fileId);
-                    request.Download(stream);
+                    await request.DownloadAsync(fileStream, cancellationToken);
                 }
+
+                // Обновляем путь для использования в приложении
+                ProfilePhotosDirectoryPath = $"file:///{profilePhotosDir.Replace('\\', '/')}/";
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка загрузки фото: {ex.Message}");
+                Debug.WriteLine($"Ошибка загрузки фото профиля: {ex.Message}");
                 throw;
             }
         }
 
-        public static void DownloadCurrentUserPhoto(string fileId)
+        public static async Task DownloadCurrentUserPhotoAsync(string fileId, CancellationToken cancellationToken = default)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(CurrentUserPhotoPath));
-
-            if (string.IsNullOrEmpty(fileId))
-            {
-                EnsureDefaultProfilePhotoExists(true);
-                return;
-            }
-
             try
             {
-                var driveService = GetDriveService();
+                string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TouristRoutes");
+                string currentPhotoPath = Path.Combine(appDataPath, "current_profile_photo.jpg");
+
+                if (string.IsNullOrEmpty(fileId))
+                {
+                    await EnsureDefaultProfilePhotoExistsAsync(true, cancellationToken);
+                    return;
+                }
+
+                Directory.CreateDirectory(appDataPath);
+
+                var driveService = await GetDriveServiceAsync(cancellationToken);
                 var request = driveService.Files.Get(fileId);
 
-                using (var stream = new FileStream(CurrentUserPhotoPath, FileMode.Create))
+                using (var fileStream = new FileStream(currentPhotoPath, FileMode.Create))
                 {
-                    request.Download(stream);
+                    await request.DownloadAsync(fileStream, cancellationToken);
                 }
+
+                // Обновляем путь для использования в приложении
+                CurrentUserPhotoPath = $"file:///{currentPhotoPath.Replace('\\', '/')}";
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Ошибка при загрузке фото текущего пользователя: {ex.Message}");
-                EnsureDefaultProfilePhotoExists(true);
+                await EnsureDefaultProfilePhotoExistsAsync(true, cancellationToken);
             }
         }
 
-
-        public static string UploadRoutePhoto(string filePath, string fileName, string oldFileId = null)
+        public static async Task<string> UploadRoutePhotoAsync(string filePath, string fileName, string oldFileId = null, CancellationToken cancellationToken = default)
         {
-            return UploadPhoto(filePath, fileName, oldFileId, RoutePhotosDirectoryID);
+            return await UploadPhotoAsync(filePath, fileName, oldFileId, RoutePhotosDirectoryID, cancellationToken);
         }
 
-        public static void DownloadRoutePhoto(string fileId, string savePath)
+        public static async Task DownloadRoutePhotoAsync(string fileId, string savePath, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(fileId)) return;
 
             try
             {
-                var driveService = GetDriveService();
+                var driveService = await GetDriveServiceAsync(cancellationToken);
                 var request = driveService.Files.Get(fileId);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(savePath));
 
                 using (var stream = new FileStream(savePath, FileMode.Create))
                 {
-                    request.Download(stream);
+                    await request.DownloadAsync(stream, cancellationToken);
                 }
             }
             catch (Exception ex)
@@ -240,11 +262,11 @@ namespace course_project_tourist_routes
             }
         }
 
-        public static async Task<string> CreateRouteFolder(string routeName)
+        public static async Task<string> CreateRouteFolderAsync(string routeName, CancellationToken cancellationToken = default)
         {
             try
             {
-                var driveService = GetDriveService();
+                var driveService = await GetDriveServiceAsync(cancellationToken);
 
                 var folderMetadata = new Google.Apis.Drive.v3.Data.File()
                 {
@@ -255,26 +277,32 @@ namespace course_project_tourist_routes
 
                 var request = driveService.Files.Create(folderMetadata);
                 request.Fields = "id";
-                var folder = await request.ExecuteAsync();
+                var folder = await request.ExecuteAsync(cancellationToken);
 
                 return folder.Id;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при создании папки для маршрута: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    MessageBox.Show($"Ошибка при создании папки для маршрута: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
                 return null;
             }
         }
 
-        public static void ClearRoutePhotosDirectory()
+        public static async Task ClearRoutePhotosDirectoryAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                if (Directory.Exists(RoutePhotosDirectoryPath))
+                await Task.Run(() =>
                 {
-                    Directory.Delete(RoutePhotosDirectoryPath, true);
-                    Directory.CreateDirectory(RoutePhotosDirectoryPath);
-                }
+                    if (Directory.Exists(RoutePhotosDirectoryPath))
+                    {
+                        Directory.Delete(RoutePhotosDirectoryPath, true);
+                        Directory.CreateDirectory(RoutePhotosDirectoryPath);
+                    }
+                }, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -282,15 +310,18 @@ namespace course_project_tourist_routes
             }
         }
 
-        public static void ClearProfilePhotosDirectory()
+        public static async Task ClearProfilePhotosDirectoryAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                if (Directory.Exists(ProfilePhotosDirectoryPath))
+                await Task.Run(() =>
                 {
-                    Directory.Delete(ProfilePhotosDirectoryPath, true);
-                    Directory.CreateDirectory(ProfilePhotosDirectoryPath);
-                }
+                    if (Directory.Exists(ProfilePhotosDirectoryPath))
+                    {
+                        Directory.Delete(ProfilePhotosDirectoryPath, true);
+                        Directory.CreateDirectory(ProfilePhotosDirectoryPath);
+                    }
+                }, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -298,11 +329,11 @@ namespace course_project_tourist_routes
             }
         }
 
-        private static string UploadPhoto(string filePath, string fileName, string oldFileId, string parentDirectoryId)
+        private static async Task<string> UploadPhotoAsync(string filePath, string fileName, string oldFileId, string parentDirectoryId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var driveService = GetDriveService();
+                var driveService = await GetDriveServiceAsync(cancellationToken);
 
                 var fileMetadata = new Google.Apis.Drive.v3.Data.File()
                 {
@@ -316,11 +347,14 @@ namespace course_project_tourist_routes
                 {
                     var request = driveService.Files.Create(fileMetadata, stream, fileMetadata.MimeType);
                     request.Fields = "id";
-                    var results = request.Upload();
+                    var results = await request.UploadAsync(cancellationToken);
 
                     if (results.Status == Google.Apis.Upload.UploadStatus.Failed)
                     {
-                        MessageBox.Show("Не удалось загрузить файл!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            MessageBox.Show("Не удалось загрузить файл!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        });
                         return null;
                     }
                     uploadedFileId = request.ResponseBody.Id;
@@ -328,14 +362,17 @@ namespace course_project_tourist_routes
 
                 if (!string.IsNullOrEmpty(oldFileId))
                 {
-                    DeleteFile(oldFileId);
+                    await DeleteFileAsync(oldFileId, cancellationToken);
                 }
 
                 return uploadedFileId;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при загрузке фото: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    MessageBox.Show($"Ошибка при загрузке фото: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
                 return null;
             }
         }

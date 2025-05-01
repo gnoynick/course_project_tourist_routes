@@ -52,7 +52,7 @@
                     </Grid>
                 </Border>
 
-                <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,30,0,0" Width="400">
+                <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="15"/>
