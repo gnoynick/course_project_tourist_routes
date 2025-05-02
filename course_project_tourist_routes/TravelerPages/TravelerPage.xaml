@@ -6,7 +6,7 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:local="clr-namespace:course_project_tourist_routes.AdminPages"
       mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1400"
+      d:DesignHeight="900" d:DesignWidth="1600"
       Title="TravelerPage"
       IsVisibleChanged="TravelerPage_IsVisibleChanged">
     <Grid>
@@ -121,18 +121,27 @@
                         </TextBlock>
                     </StackPanel>
 
-                    <Frame x:Name="MenuFrame" Grid.Column="0" x:FieldModifier="public" NavigationUIVisibility="Hidden" Visibility="Collapsed" Margin="10,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="380"/>
+                    <Frame x:Name="MenuFrame" Grid.Column="0" x:FieldModifier="public" NavigationUIVisibility="Hidden" Visibility="Collapsed" Margin="10,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 
                     <Border Grid.Column="1" Background="#F0FFF0" CornerRadius="10" Padding="15" Margin="20" Height="380" Width="225">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Border Style="{StaticResource ProfilePhotoContainerStyle}" Width="200" Height="200">
-                                <Button x:Name="ProfilePhoto"
+                                <Grid>
+                                    <ProgressBar x:Name="ProfilePhotoProgress" 
+                                           Style="{StaticResource RotatingProgressStyle}"
+                                           Minimum="0" Maximum="100"
+                                           Value="0"
+                                           Visibility="Collapsed"
+                                           IsIndeterminate="True"/>
+                                    <Button x:Name="ProfilePhoto"
                                         Width="195" Height="195"
                                         Content="{DynamicResource avatarimage}" 
                                         Background="Transparent" 
                                         BorderBrush="Transparent"
                                         BorderThickness="0"
-                                        Click="ProfilePhoto_Click"/>
+                                        Click="ProfilePhoto_Click"
+                                        Visibility="Collapsed"/>
+                                </Grid>
                             </Border>
 
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,10">
@@ -255,7 +264,7 @@
                         </TextBlock>
                     </StackPanel>
                     
-                    <Frame x:Name="SettingsFrame" Grid.Column="3" x:FieldModifier="public" NavigationUIVisibility="Hidden" Visibility="Collapsed" Margin="0,0,10,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="380"/>
+                    <Frame x:Name="SettingsFrame" Grid.Column="3" x:FieldModifier="public" NavigationUIVisibility="Hidden" Visibility="Collapsed" Margin="0,0,10,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                 
                 </Grid>
             </Grid>
@@ -263,6 +272,7 @@
         <Rectangle x:Name="SupRect" Fill="#5A5A42" Opacity="0.6" Visibility="Collapsed"/>
         <Rectangle x:Name="FullScreenAvatar" Fill="{DynamicResource imagebrush}" Visibility="Collapsed" Width="700" Height="700" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Button x:Name="BackButton" 
+                IsCancel="True"
                 Style="{StaticResource ExitAndSettingsButtonStyle}" Visibility="Collapsed"
                 HorizontalAlignment="Left" VerticalAlignment="Bottom"
                 Width="100" Height="104" Margin="25"

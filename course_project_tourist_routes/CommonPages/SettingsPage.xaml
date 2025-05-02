@@ -57,34 +57,29 @@
 
                                 <Border Style="{StaticResource ProfilePhotoContainerStyle}" Width="100" Height="100">
                                     <Grid>
-                                        <!-- Кнопка с фото профиля -->
                                         <Button x:Name="ProfilePhoto" 
-                Width="100" 
-                Height="100" 
-                Content="{DynamicResource avatarimageset}" 
-                Background="Transparent" 
-                BorderBrush="Transparent"
-                BorderThickness="0"
-                Visibility="Collapsed"/>
-
-                                        <!-- Прогресс-бар загрузки -->
+                                                Width="100" 
+                                                Height="100" 
+                                                Content="{DynamicResource avatarimageset}" 
+                                                Background="Transparent" 
+                                                BorderBrush="Transparent"
+                                                BorderThickness="0"
+                                                Visibility="Collapsed"/>
                                         <ProgressBar x:Name="PhotoLoadingProgress" 
-                    Style="{StaticResource RotatingProgressStyle}"
-                    Width="50"
-                    Height="50"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Minimum="0" 
-                    Maximum="100"
-                    Value="0"
-                    Visibility="Collapsed"
-                    IsIndeterminate="True"/>
+                                                     Style="{StaticResource RotatingProgressStyle}"
+                                                     Width="50"
+                                                     Height="50"
+                                                     HorizontalAlignment="Center"
+                                                     VerticalAlignment="Center"
+                                                     Value="0"
+                                                     Visibility="Collapsed"
+                                                     IsIndeterminate="True"/>
                                     </Grid>
                                 </Border>
 
                                 <StackPanel x:Name="CancelPhotoStackPanel" 
                                             Orientation="Horizontal" 
-                                            HorizontalAlignment="Right" 
+                                            HorizontalAlignment="Center" 
                                             Visibility="Collapsed"
                                             Margin="0,5,0,0">
                                     <Button x:Name="SavePhotoButton"
@@ -150,7 +145,7 @@
 
                                 <StackPanel x:Name="LoginButtonsPanel" 
                                             Orientation="Horizontal" 
-                                            HorizontalAlignment="Right"
+                                            HorizontalAlignment="Center"
                                             Visibility="Collapsed">
                                     <Button x:Name="SaveLoginButton" 
                                             Style="{StaticResource ButtonStyle}" 
@@ -214,7 +209,7 @@
 
                                 <StackPanel x:Name="StatusButtonsPanel" 
                                             Orientation="Horizontal" 
-                                            HorizontalAlignment="Right"
+                                            HorizontalAlignment="Center"
                                             Visibility="Collapsed">
                                     <Button x:Name="SaveStatusButton" 
                                             Style="{StaticResource ButtonStyle}" 

@@ -3,13 +3,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Data.Entity;
 using System.Windows.Media;
-using System.Diagnostics;
 
 namespace course_project_tourist_routes.AdminPages
 {
@@ -22,6 +20,8 @@ namespace course_project_tourist_routes.AdminPages
         private int _currentUserRoleId;
         private bool _isCurrentUserAdmin;
         private List<string> _tempPhotoPaths = new List<string>();
+        private int _currentPhotoIndex = 0;
+        private int _totalPhotos = 0;
 
         public OpenRoutePage(int routeId, int userId)
         {
@@ -102,8 +102,7 @@ namespace course_project_tourist_routes.AdminPages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при загрузке данных маршрута: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при загрузке данных маршрута: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -111,18 +110,31 @@ namespace course_project_tourist_routes.AdminPages
         {
             try
             {
-                Photo1Progress.Visibility = Visibility.Visible;
-                Photo2Progress.Visibility = Visibility.Visible;
-                Photo3Progress.Visibility = Visibility.Visible;
+                HideAllLoadersAndButtons();
 
                 if (photos == null || !photos.Any())
                 {
-                    HideAllLoaders();
                     return;
                 }
 
-                CloudStorage.ClearRoutePhotosDirectoryAsync();
-                string dir = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "temp", "route_photos");
+                for (int i = 0; i < Math.Min(photos.Count, 3); i++)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            Photo1Progress.Visibility = Visibility.Visible;
+                            break;
+                        case 1:
+                            Photo2Progress.Visibility = Visibility.Visible;
+                            break;
+                        case 2:
+                            Photo3Progress.Visibility = Visibility.Visible;
+                            break;
+                    }
+                }
+
+                await CloudStorage.ClearRoutePhotosDirectoryAsync();
+                string dir = CloudStorage.RoutePhotosDirectoryPath;
 
                 for (int i = 0; i < Math.Min(photos.Count, 3); i++)
                 {
@@ -143,19 +155,13 @@ namespace course_project_tourist_routes.AdminPages
                     catch (Exception ex)
                     {
                         await Dispatcher.InvokeAsync(() =>
-                            MessageBox.Show($"Ошибка загрузки: {ex.Message}", "Ошибка",
-                                MessageBoxButton.OK, MessageBoxImage.Error));
+                            MessageBox.Show($"Ошибка загрузки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error));
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                HideAllLoaders();
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -187,11 +193,14 @@ namespace course_project_tourist_routes.AdminPages
             }
         }
 
-        private void HideAllLoaders()
+        private void HideAllLoadersAndButtons()
         {
             Photo1Progress.Visibility = Visibility.Collapsed;
             Photo2Progress.Visibility = Visibility.Collapsed;
             Photo3Progress.Visibility = Visibility.Collapsed;
+            Photo1Button.Visibility = Visibility.Collapsed;
+            Photo2Button.Visibility = Visibility.Collapsed;
+            Photo3Button.Visibility = Visibility.Collapsed;
         }
 
         private void CheckFavoriteStatus()
@@ -208,8 +217,7 @@ namespace course_project_tourist_routes.AdminPages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при проверке статуса избранного: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при проверке статуса избранного: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -217,11 +225,6 @@ namespace course_project_tourist_routes.AdminPages
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            CloudStorage.ClearRoutePhotosDirectoryAsync();
-
-            // Вызываем событие, если оно подписано
-            RouteViewed?.Invoke(_routeId);
-
             NavigationService?.GoBack();
         }
 
@@ -240,8 +243,7 @@ namespace course_project_tourist_routes.AdminPages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при обновлении избранного: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при обновлении избранного: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -261,14 +263,12 @@ namespace course_project_tourist_routes.AdminPages
                     db.SaveChanges();
                     FavoriteIcon.Kind = MaterialDesignThemes.Wpf.PackIconKind.Star;
                     _isFavorite = true;
-                    MessageBox.Show("Маршрут добавлен в избранное", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Маршрут добавлен в избранное", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при добавлении в избранное: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при добавлении в избранное: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -285,15 +285,13 @@ namespace course_project_tourist_routes.AdminPages
                         db.SaveChanges();
                         FavoriteIcon.Kind = MaterialDesignThemes.Wpf.PackIconKind.StarOutline;
                         _isFavorite = false;
-                        MessageBox.Show("Маршрут удален из избранного", "Успех",
-                            MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Маршрут удален из избранного", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при удалении из избранного: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при удалении из избранного: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -302,29 +300,81 @@ namespace course_project_tourist_routes.AdminPages
             var button = sender as Button;
             if (button == null) return;
 
+            _totalPhotos = 0;
+            if (Photo1Button.Visibility == Visibility.Visible) _totalPhotos++;
+            if (Photo2Button.Visibility == Visibility.Visible) _totalPhotos++;
+            if (Photo3Button.Visibility == Visibility.Visible) _totalPhotos++;
+
             if (button.Name == "Photo1Button")
             {
+                _currentPhotoIndex = 0;
                 FullScreenPhoto.Fill = (ImageBrush)Resources["photo1brush"];
             }
             else if (button.Name == "Photo2Button")
             {
+                _currentPhotoIndex = 1;
                 FullScreenPhoto.Fill = (ImageBrush)Resources["photo2brush"];
             }
             else if (button.Name == "Photo3Button")
             {
+                _currentPhotoIndex = 2;
                 FullScreenPhoto.Fill = (ImageBrush)Resources["photo3brush"];
             }
 
+            UpdateNavigationButtons();
             SupRect.Visibility = Visibility.Visible;
-            FullScreenPhoto.Visibility = Visibility.Visible;
-            PhotoBackButton.Visibility = Visibility.Visible;
+            FullScreenPhotoGrid.Visibility = Visibility.Visible;
+            BackButton.IsCancel = false;
         }
 
-        private void PhotoBackButton_Click(object sender, RoutedEventArgs e)
+        private void UpdateNavigationButtons()
+        {
+            ClosePhotoButton.Visibility = Visibility.Visible;
+
+            PrevPhotoButton.Visibility = (_totalPhotos > 1 && _currentPhotoIndex > 0) ? Visibility.Visible : Visibility.Collapsed;
+            NextPhotoButton.Visibility = (_totalPhotos > 1 && _currentPhotoIndex < _totalPhotos - 1) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void ClosePhotoButton_Click(object sender, RoutedEventArgs e)
         {
             SupRect.Visibility = Visibility.Collapsed;
-            FullScreenPhoto.Visibility = Visibility.Collapsed;
-            PhotoBackButton.Visibility = Visibility.Collapsed;
+            FullScreenPhotoGrid.Visibility = Visibility.Collapsed;
+            BackButton.IsCancel = true;
+        }
+
+        private void PrevPhotoButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentPhotoIndex > 0)
+            {
+                _currentPhotoIndex--;
+                ShowPhotoAtCurrentIndex();
+            }
+        }
+
+        private void NextPhotoButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentPhotoIndex < _totalPhotos - 1)
+            {
+                _currentPhotoIndex++;
+                ShowPhotoAtCurrentIndex();
+            }
+        }
+
+        private void ShowPhotoAtCurrentIndex()
+        {
+            switch (_currentPhotoIndex)
+            {
+                case 0:
+                    FullScreenPhoto.Fill = (ImageBrush)Resources["photo1brush"];
+                    break;
+                case 1:
+                    FullScreenPhoto.Fill = (ImageBrush)Resources["photo2brush"];
+                    break;
+                case 2:
+                    FullScreenPhoto.Fill = (ImageBrush)Resources["photo3brush"];
+                    break;
+            }
+            UpdateNavigationButtons();
         }
     }
 }

@@ -86,6 +86,8 @@ namespace course_project_tourist_routes.AdminPages
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
+                CloudStorage.ClearRoutePhotosDirectoryAsync();
+                CloudStorage.ClearProfilePhotosDirectoryAsync();
                 new AutorizWindow().Show();
                 Window.GetWindow(this)?.Close();
             }

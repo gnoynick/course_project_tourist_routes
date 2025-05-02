@@ -3,9 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using course_project_tourist_routes.AdminPages;
 using course_project_tourist_routes.CommonPages;
 
@@ -19,8 +17,6 @@ namespace course_project_tourist_routes.TravelerPages
         {
             InitializeComponent();
             _userId = userId;
-
-            CloudStorage.ClearRoutePhotosDirectoryAsync();
 
             LoadRoutes();
         }
@@ -68,7 +64,6 @@ namespace course_project_tourist_routes.TravelerPages
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            CloudStorage.ClearRoutePhotosDirectoryAsync();
             NavigationService.GoBack();
         }
 
@@ -78,7 +73,6 @@ namespace course_project_tourist_routes.TravelerPages
             {
                 dynamic selectedItem = RoutesListView.SelectedItem;
                 int routeId = selectedItem.IdRoute;
-                CloudStorage.ClearRoutePhotosDirectoryAsync();
                 NavigationService?.Navigate(new OpenRoutePage(routeId, _userId));
                 RoutesListView.SelectedItem = null;
             }
@@ -92,7 +86,7 @@ namespace course_project_tourist_routes.TravelerPages
                 return;
             }
             CloudStorage.ClearRoutePhotosDirectoryAsync();
-            //NavigationService?.Navigate(new EditRoutePage(routeId, _userId));
+            NavigationService?.Navigate(new EditRoutePage(_userId, routeId));
         }
 
         private void DeleteRouteButton_Click(object sender, RoutedEventArgs e)

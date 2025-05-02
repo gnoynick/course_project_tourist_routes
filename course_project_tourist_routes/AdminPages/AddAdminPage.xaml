@@ -9,7 +9,6 @@
       d:DesignHeight="600" d:DesignWidth="1000"
       Title="AddAdminPage"
       Background="#F3F0E6">
-
     <Grid>
         <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
             <Grid>
@@ -31,6 +30,7 @@
                                 VerticalAlignment="Center"
                                 Width="60"
                                 Height="60" 
+                                IsCancel="True"
                                 Click="BackButton_Click">
                             <materialDesign:PackIcon Kind="ArrowLeftBold" 
                                                   Foreground="#F0FFF0"
@@ -65,7 +65,6 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Логин -->
                     <StackPanel Grid.Row="0">
                         <TextBlock Text="Логин:" 
                                    Foreground="#5A5A42" 
@@ -91,7 +90,6 @@
                         </Grid>
                     </StackPanel>
 
-                    <!-- Эл. почта -->
                     <StackPanel Grid.Row="2">
                         <TextBlock Text="Эл. почта:" 
                                    Foreground="#5A5A42" 
@@ -117,7 +115,6 @@
                         </Grid>
                     </StackPanel>
 
-                    <!-- Пароль -->
                     <StackPanel Grid.Row="4">
                         <TextBlock Text="Пароль:" 
                                    Foreground="#5A5A42" 
@@ -167,7 +164,6 @@
                         </Grid>
                     </StackPanel>
 
-                    <!-- Повторите пароль -->
                     <StackPanel Grid.Row="6">
                         <TextBlock Text="Повторите пароль:" 
                                    Foreground="#5A5A42" 
@@ -217,7 +213,6 @@
                         </Grid>
                     </StackPanel>
 
-                    <!-- Кнопка добавления -->
                     <Button x:Name="CreateAdminButton" 
                             Content="ДОБАВИТЬ АДМИНИСТРАТОРА" 
                             Grid.Row="8"
@@ -229,6 +224,7 @@
                             FontSize="16"
                             FontWeight="Bold"
                             Cursor="Hand"
+                            IsDefault="True"
                             Click="CreateAdminButton_Click"/>
                 </Grid>
             </Grid>

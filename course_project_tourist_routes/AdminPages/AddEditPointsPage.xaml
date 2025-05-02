@@ -7,7 +7,6 @@
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800"
       Title="{Binding PageTitle}">
-
     <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
         <Grid>
             <Grid.RowDefinitions>
@@ -16,15 +15,15 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Header -->
             <Border Grid.Row="0" Background="#4A773C" CornerRadius="10" Margin="10" Padding="15">
                 <Grid>
                     <Button x:Name="BackButton" 
                             Style="{StaticResource ExitAndSettingsButtonStyle}" 
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            Width="50"
-                            Height="50" 
+                            Width="60"
+                            Height="60" 
+                            IsCancel="True"
                             Click="CancelButton_Click">
                         <materialDesign:PackIcon Kind="ArrowLeftBold" Foreground="#F0FFF0" Width="40" Height="40"/>
                     </Button>
@@ -43,7 +42,6 @@
                 </Grid>
             </Border>
 
-            <!-- Центральная часть с формой -->
             <Grid Grid.Row="1" VerticalAlignment="Center">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20,10" HorizontalAlignment="Center">
                     <Grid Width="600">
@@ -59,7 +57,6 @@
                             <ColumnDefinition Width="*" MinWidth="300"/>
                         </Grid.ColumnDefinitions>
 
-                        <!-- Название точки -->
                         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
                             <materialDesign:PackIcon Kind="Text" 
                                                    Foreground="#4A773C" 
@@ -76,7 +73,6 @@
                                  Style="{StaticResource StyledTextBox}"
                                  Margin="0,0,0,15"/>
 
-                        <!-- Тип точки -->
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
                             <materialDesign:PackIcon Kind="Tag" 
                                                    Foreground="#4A773C" 
@@ -106,7 +102,6 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
 
-                        <!-- Страна -->
                         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
                             <materialDesign:PackIcon Kind="Earth" 
                                                    Foreground="#4A773C" 
@@ -123,7 +118,6 @@
                                  Style="{StaticResource StyledTextBox}"
                                  Margin="0,0,0,15"/>
 
-                        <!-- Город -->
                         <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,15">
                             <materialDesign:PackIcon Kind="City" 
                                                    Foreground="#4A773C" 
@@ -143,7 +137,6 @@
                 </ScrollViewer>
             </Grid>
 
-            <!-- Кнопки -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <Button x:Name="CancelButton" 
                         Style="{StaticResource ButtonStyle}"
@@ -164,6 +157,7 @@
                         Style="{StaticResource ButtonStyle}"
                         Width="150"
                         Height="45"
+                        IsDefault="True"
                         Click="SaveButton_Click">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="ContentSave" 

@@ -30,6 +30,19 @@ namespace course_project_tourist_routes.AdminPages
             LoadUsers();
         }
 
+        private void UsersPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (Visibility == Visibility.Visible)
+            {
+                using (var context = new TouristRoutesEntities())
+                {
+                    context.ChangeTracker.Entries().ToList().ForEach(x => x.Reload());
+                }
+
+                LoadUsers();
+            }
+        }
+
         private void LoadRoles()
         {
             try
@@ -119,9 +132,10 @@ namespace course_project_tourist_routes.AdminPages
         {
             // Путь к изображению по умолчанию
             string defaultPhotoPath = "pack://application:,,,/Resources/profile_photo.jpg";
+            var defaultBrush = CreateImageBrush(defaultPhotoPath);
 
             if (string.IsNullOrEmpty(profilePhotoId))
-                return CreateImageBrush(defaultPhotoPath);
+                return defaultBrush;
 
             try
             {
@@ -133,19 +147,31 @@ namespace course_project_tourist_routes.AdminPages
 
                 string photoPath = Path.Combine(profilePhotosDir, $"user_{userId}.jpg");
 
-                // Если файл уже существует и не пустой - используем его
-                if (File.Exists(photoPath) && new FileInfo(photoPath).Length > 0)
+                // Удаляем старый файл, если он поврежден
+                if (File.Exists(photoPath) && new FileInfo(photoPath).Length == 0)
                 {
-                    return CreateImageBrush(photoPath);
+                    File.Delete(photoPath);
+                }
+
+                // Если файл существует и валиден - используем его
+                if (File.Exists(photoPath))
+                {
+                    var brush = CreateImageBrush(photoPath);
+                    if (brush.ImageSource != null)
+                        return brush;
+
+                    File.Delete(photoPath); // Удаляем если изображение не загрузилось
                 }
 
                 // Загружаем фото из облака
                 await CloudStorage.DownloadProfilePhotoAsync(profilePhotoId, userId);
 
-                // Проверяем, что файл был загружен
+                // Проверяем загрузку и создаем ImageBrush
                 if (File.Exists(photoPath))
                 {
-                    return CreateImageBrush(photoPath);
+                    var brush = CreateImageBrush(photoPath);
+                    if (brush.ImageSource != null)
+                        return brush;
                 }
             }
             catch (Exception ex)
@@ -153,14 +179,11 @@ namespace course_project_tourist_routes.AdminPages
                 Debug.WriteLine($"Ошибка загрузки фото: {ex.Message}");
             }
 
-            // В случае любой ошибки возвращаем изображение по умолчанию
-            return CreateImageBrush(defaultPhotoPath);
+            return defaultBrush;
         }
 
         private ImageBrush CreateImageBrush(string imagePath)
         {
-            var imageBrush = new ImageBrush();
-
             try
             {
                 var bitmap = new BitmapImage();
@@ -169,21 +192,24 @@ namespace course_project_tourist_routes.AdminPages
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
                 bitmap.EndInit();
-                bitmap.Freeze();
 
-                imageBrush.ImageSource = bitmap;
-                imageBrush.Stretch = Stretch.UniformToFill;
-                imageBrush.Freeze();
+                if (bitmap.CanFreeze)
+                    bitmap.Freeze();
+
+                return new ImageBrush
+                {
+                    ImageSource = bitmap,
+                    Stretch = Stretch.UniformToFill
+                };
             }
             catch
             {
-                // Если что-то пошло не так, используем изображение по умолчанию
-                imageBrush.ImageSource = new BitmapImage(
-                    new Uri("pack://application:,,,/Resources/profile_photo.jpg"));
-                imageBrush.Freeze();
+                return new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri("pack://application:,,,/Resources/profile_photo.jpg")),
+                    Stretch = Stretch.UniformToFill
+                };
             }
-
-            return imageBrush;
         }
 
         private ImageBrush CreateDefaultImageBrush()
@@ -237,7 +263,7 @@ namespace course_project_tourist_routes.AdminPages
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            CloudStorage.ClearProfilePhotosDirectoryAsync();
+            _userPhotosCache.Clear();
             NavigationService.GoBack();
         }
 

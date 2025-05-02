@@ -8,7 +8,6 @@
       d:DesignHeight="1100" d:DesignWidth="1700"
       Title="Список точек"
       IsVisibleChanged="PointsPage_IsVisibleChanged">
-    
     <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
         <Grid>
             <Grid.RowDefinitions>
@@ -23,8 +22,9 @@
                             Style="{StaticResource ExitAndSettingsButtonStyle}" 
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            Width="50"
-                            Height="50" 
+                            Width="60"
+                            Height="60"
+                            IsCancel="True"
                             Click="BackButton_Click">
                         <materialDesign:PackIcon Kind="ArrowLeftBold" Foreground="#F0FFF0" Width="40" Height="40"/>
                     </Button>

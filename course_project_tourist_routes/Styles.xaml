@@ -3,7 +3,9 @@
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-    
+
+    <ImageBrush x:Key="DefaultImageBrush" Stretch="Uniform"/>
+
     <ImageBrush x:Key="imagebrush" Stretch="UniformToFill"/>
     <ImageBrush x:Key="imagebrushset" Stretch="UniformToFill"/>
     <Rectangle x:Key="avatarimage" Height="195" Width="195" Fill="{DynamicResource imagebrush}"/>

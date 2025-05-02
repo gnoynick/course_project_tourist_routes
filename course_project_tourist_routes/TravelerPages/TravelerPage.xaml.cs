@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -15,10 +16,22 @@ namespace course_project_tourist_routes.AdminPages
         private string _userName;
         private string _userStatus;
 
+        private void SetButtonsEnabled(bool isEnabled)
+        {
+            MenuButton.IsEnabled = isEnabled;
+            Settings.IsEnabled = isEnabled;
+            MyRoutesButton.IsEnabled = isEnabled;
+        }
+
         public TravelerPage(int userId, string userName, string userStatus, TravelerWindow travelerWindow, Users user)
         {
             Resources.Add("User", user);
             InitializeComponent();
+
+            ProfilePhotoProgress.Visibility = Visibility.Visible;
+            ProfilePhoto.Visibility = Visibility.Collapsed;
+
+            SetButtonsEnabled(false);
 
             InitializeAsync(user);
 
@@ -37,6 +50,8 @@ namespace course_project_tourist_routes.AdminPages
         {
             if (Visibility == Visibility.Visible)
             {
+                SetButtonsEnabled(false);
+
                 using (var context = new TouristRoutesEntities())
                 {
                     context.ChangeTracker.Entries().ToList().ForEach(x => x.Reload());
@@ -58,6 +73,9 @@ namespace course_project_tourist_routes.AdminPages
                 {
                     SharedResources.ProfileImageBrush.ImageSource = bitmapImage;
                     Resources["imagebrush"] = SharedResources.ProfileImageBrush;
+                    ProfilePhotoProgress.Visibility = Visibility.Collapsed;
+                    ProfilePhoto.Visibility = Visibility.Visible;
+                    SetButtonsEnabled(true);
                 });
             }
             catch (Exception ex)
@@ -122,12 +140,34 @@ namespace course_project_tourist_routes.AdminPages
             DateTimeTextBlock.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                if (MenuFrame.Visibility == Visibility.Visible)
+                {
+                    MenuFrame.Visibility = Visibility.Collapsed;
+                    e.Handled = true;
+                }
+                else if (SettingsFrame.Visibility == Visibility.Visible)
+                {
+                    SettingsFrame.Visibility = Visibility.Collapsed;
+                    e.Handled = true;
+                }
+            }
+            base.OnKeyDown(e);
+        }
+
         private void Menu_Click(object sender, RoutedEventArgs e)
         {
             if (MenuFrame.Visibility == Visibility.Collapsed)
             {
-                MenuFrame.Visibility = Visibility.Visible;
+                if (SettingsFrame.Visibility == Visibility.Visible)
+                {
+                    SettingsFrame.Visibility = Visibility.Collapsed;
+                }
 
+                MenuFrame.Visibility = Visibility.Visible;
                 MenuPage menuPage = new MenuPage(_userId);
                 MenuFrame.Navigate(menuPage);
             }
@@ -148,8 +188,12 @@ namespace course_project_tourist_routes.AdminPages
         {
             if (SettingsFrame.Visibility == Visibility.Collapsed)
             {
-                SettingsFrame.Visibility = Visibility.Visible;
+                if (MenuFrame.Visibility == Visibility.Visible)
+                {
+                    MenuFrame.Visibility = Visibility.Collapsed;
+                }
 
+                SettingsFrame.Visibility = Visibility.Visible;
                 SettingsPage settingsPage = new SettingsPage(_userId, _userName, _userStatus, this, (Users)FindResource("User"));
                 settingsPage.ProfilePhoto.Click += ProfilePhoto_Click;
                 SettingsFrame.Navigate(settingsPage);
@@ -185,6 +229,8 @@ namespace course_project_tourist_routes.AdminPages
 
         private void ListViewRoutes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (!MenuButton.IsEnabled) return;
+
             if (ListViewRoutes.SelectedItem != null)
             {
                 dynamic selectedItem = ListViewRoutes.SelectedItem;

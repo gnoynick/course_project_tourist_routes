@@ -6,6 +6,7 @@ using System.Windows.Navigation;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Data.Entity;
+using course_project_tourist_routes.CommonPages;
 
 namespace course_project_tourist_routes.AdminPages
 {
@@ -20,8 +21,6 @@ namespace course_project_tourist_routes.AdminPages
         {
             InitializeComponent();
             _userId = userId;
-
-            CloudStorage.ClearRoutePhotosDirectoryAsync();
 
             LoadCategories();
             LoadCountriesAndCities();
@@ -252,7 +251,6 @@ namespace course_project_tourist_routes.AdminPages
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            CloudStorage.ClearRoutePhotosDirectoryAsync();
             NavigationService.GoBack();
         }
 
@@ -272,7 +270,6 @@ namespace course_project_tourist_routes.AdminPages
             {
                 dynamic selectedItem = RoutesListView.SelectedItem;
                 int routeId = selectedItem.IdRoute;
-                CloudStorage.ClearRoutePhotosDirectoryAsync();
                 NavigationService?.Navigate(new OpenRoutePage(routeId, _userId));
                 RoutesListView.SelectedItem = null;
             }
@@ -285,8 +282,7 @@ namespace course_project_tourist_routes.AdminPages
                 MessageBox.Show("Ошибка открытия маршрута для редактирования");
                 return;
             }
-            CloudStorage.ClearRoutePhotosDirectoryAsync();
-            //NavigationService?.Navigate(new EditRoutePage(routeId, _userId));
+            NavigationService?.Navigate(new EditRoutePage(_userId, routeId));
         }
 
         private void DeleteRouteButton_Click(object sender, RoutedEventArgs e)

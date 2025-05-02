@@ -8,7 +8,6 @@
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="380"
       Title="PanelPage">
-
     <Border Background="#4A773C" CornerRadius="10">
         <Grid>
             <Border Background="#D1E2C4" CornerRadius="10" Margin="20">
@@ -39,8 +38,8 @@
                             FontSize="20" Padding="30,20"
                             Margin="20" Width="260" Height="70" Click="OrganizeHikeButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <materialDesign:PackIcon Kind="Tent" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
-                            <TextBlock Text="Походы" FontSize="18" Foreground="white"/>
+                            <materialDesign:PackIcon Kind="WalletTravel" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
+                            <TextBlock Text="Путешествия" FontSize="18" Foreground="white"/>
                         </StackPanel>
                     </Button>
 
@@ -50,7 +49,7 @@
                             Margin="20" Width="260" Height="70" Click="FavoritesButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <materialDesign:PackIcon Kind="Star" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
-                            <TextBlock Text="Избранное" FontSize="18" Foreground="white"/>
+                            <TextBlock Text="Избранные" FontSize="18" Foreground="white"/>
                         </StackPanel>
                     </Button>
 

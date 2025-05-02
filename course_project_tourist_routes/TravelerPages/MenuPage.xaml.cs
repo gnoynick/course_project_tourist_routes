@@ -73,6 +73,8 @@ namespace course_project_tourist_routes.AdminPages
 
             if (result == MessageBoxResult.Yes)
             {
+                CloudStorage.ClearRoutePhotosDirectoryAsync();
+                CloudStorage.ClearProfilePhotosDirectoryAsync();
                 AutorizWindow mainWindow = new AutorizWindow();
                 mainWindow.Show();
                 Window.GetWindow(this).Close();

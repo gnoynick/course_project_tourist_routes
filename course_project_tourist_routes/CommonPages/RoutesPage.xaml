@@ -31,6 +31,7 @@
                                 VerticalAlignment="Center"
                                 Width="60"
                                 Height="60" 
+                                IsCancel="True"
                                 Click="BackButton_Click">
                             <materialDesign:PackIcon Kind="ArrowLeftBold" 
                                                   Foreground="#F0FFF0"

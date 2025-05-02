@@ -15,14 +15,15 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="#4A773C" CornerRadius="10,10,0,0" Margin="10,10,10,0" Padding="15">
+            <Border Grid.Row="0" Background="#4A773C" CornerRadius="10" Margin="10,10,10,5" Padding="15">
                 <Grid>
                     <Button x:Name="BackButton"
                             Style="{StaticResource ExitAndSettingsButtonStyle}"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            Width="50"
-                            Height="50"
+                            Width="60"
+                            Height="60"
+                            IsCancel="True"
                             Click="BackButton_Click">
                         <materialDesign:PackIcon Kind="ArrowLeftBold" Foreground="#F0FFF0" Width="40" Height="40"/>
                     </Button>
@@ -485,8 +486,10 @@
                 </StackPanel>
                 <Button x:Name="SaveButton" 
                     Style="{StaticResource ButtonStyle}"
+                        Margin="0,0,0,10"
                         Width="250"
                         Height="30"
+                        IsDefault="True"
                         Click="SaveButton_Click">
                     
                     <StackPanel Orientation="Horizontal">

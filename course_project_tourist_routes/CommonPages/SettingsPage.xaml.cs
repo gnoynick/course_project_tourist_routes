@@ -48,10 +48,12 @@ namespace course_project_tourist_routes
             _originalLogin = login;
             _originalStatus = status;
 
+            LoginTextBox.Text = login;
+            StatusTextBox.Text = status;
+
             _currentImageBrush = new ImageBrush();
             Resources["imagebrushset"] = _currentImageBrush;
 
-            // Загружаем фото только при первом открытии
             Loaded += SettingsPage_Loaded;
         }
 
@@ -84,12 +86,8 @@ namespace course_project_tourist_routes
                 PhotoLoadingProgress.Visibility = Visibility.Visible;
                 ProfilePhoto.Visibility = Visibility.Collapsed;
 
-                string photoPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "TouristRoutes",
-                    "current_profile_photo.jpg");
+                string photoPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TouristRoutes", "current_profile_photo.jpg");
 
-                // Если файл уже существует и не пустой - используем его
                 if (File.Exists(photoPath) && new FileInfo(photoPath).Length > 0)
                 {
                     using (var stream = new FileStream(photoPath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -103,7 +101,7 @@ namespace course_project_tourist_routes
                         UpdateProfileImage(image);
                     }
                 }
-                else // Иначе загружаем из облака или используем стандартное
+                else
                 {
                     await CloudStorage.DownloadCurrentUserPhotoAsync(_currentUser.ProfilePhoto);
 
@@ -133,10 +131,8 @@ namespace course_project_tourist_routes
         private void UpdateProfileImage(BitmapImage image)
         {
             _currentImageBrush.ImageSource = image;
-            //_currentImageBrush.Stretch = Stretch.UniformToFill;
             SharedResources.ProfileImageBrush = _currentImageBrush;
 
-            // Обновляем на связанных страницах
             if (_adminPage != null)
                 _adminPage.Resources["imagebrush"] = _currentImageBrush;
             else if (_travelerPage != null)
@@ -155,23 +151,18 @@ namespace course_project_tourist_routes
             {
                 try
                 {
-                    // Сохраняем текущее фото для возможной отмены
                     _previousAvatar = _currentImageBrush.ImageSource;
 
-                    // Загружаем новое изображение
                     var newImage = new BitmapImage(new Uri(dialog.FileName));
                     UpdateProfileImage(newImage);
 
-                    // Сохраняем путь к новому изображению
                     _newImagePath = dialog.FileName;
 
-                    // Показываем кнопки подтверждения/отмены
                     CancelPhotoStackPanel.Visibility = Visibility.Visible;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка загрузки изображения: {ex.Message}",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Ошибка загрузки изображения: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -189,11 +180,7 @@ namespace course_project_tourist_routes
                 PhotoLoadingProgress.Visibility = Visibility.Visible;
                 SavePhotoButton.IsEnabled = false;
 
-                // 1. Загружаем фото в Google Drive
-                string newFileId = await CloudStorage.UploadProfilePhotoAsync(
-                    _newImagePath,
-                    $"user_id: {_userId}",
-                    _currentUser.ProfilePhoto);
+                string newFileId = await CloudStorage.UploadProfilePhotoAsync(_newImagePath, $"user_id{_userId}", _currentUser.ProfilePhoto);
 
                 if (string.IsNullOrEmpty(newFileId))
                 {
@@ -201,7 +188,6 @@ namespace course_project_tourist_routes
                     return;
                 }
 
-                // 2. Обновляем фото в базе данных
                 using (var db = new TouristRoutesEntities())
                 {
                     var user = db.Users.FirstOrDefault(u => u.IdUser == _userId);
@@ -213,7 +199,6 @@ namespace course_project_tourist_routes
                     }
                 }
 
-                // 3. Немедленно обновляем фото в интерфейсе без перезагрузки страницы
                 await UpdateProfileImageImmediately(_newImagePath);
 
                 MessageBox.Show("Фото профиля успешно обновлено!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -235,7 +220,6 @@ namespace course_project_tourist_routes
         {
             try
             {
-                // Создаем новое изображение
                 var newImage = new BitmapImage();
                 newImage.BeginInit();
                 newImage.UriSource = new Uri(imagePath);
@@ -243,24 +227,17 @@ namespace course_project_tourist_routes
                 newImage.EndInit();
                 newImage.Freeze();
 
-                // Обновляем интерфейс
                 UpdateProfileImage(newImage);
 
-                // Сохраняем копию с обработкой блокировки файла
-                string tempPhotoPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "TouristRoutes",
-                    "current_profile_photo.jpg");
+                string tempPhotoPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TouristRoutes", "current_profile_photo.jpg");
 
                 Directory.CreateDirectory(Path.GetDirectoryName(tempPhotoPath));
 
-                // Удаляем старый файл если существует
                 if (File.Exists(tempPhotoPath))
                 {
                     File.Delete(tempPhotoPath);
                 }
 
-                // Копируем с задержкой для гарантии освобождения ресурсов
                 await Task.Delay(100);
                 File.Copy(imagePath, tempPhotoPath);
             }
@@ -449,9 +426,7 @@ namespace course_project_tourist_routes
 
         private void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить профиль? Это действие нельзя отменить.", "Подтверждение удаления",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
+            MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить профиль? Это действие нельзя отменить.", "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
             if (result == MessageBoxResult.Yes)
             {
