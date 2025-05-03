@@ -1,8 +1,11 @@
 ﻿using course_project_tourist_routes.CommonPages;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -13,6 +16,7 @@ namespace course_project_tourist_routes.AdminPages
         private readonly int _userId;
         private string _userName;
         private string _userStatus;
+        private bool _isAnimating;
 
         public AdminPage(int userId, string userName, string userStatus, AdminWindow adminWindow, Users user)
         {
@@ -35,7 +39,6 @@ namespace course_project_tourist_routes.AdminPages
             try
             {
                 await CloudStorage.DownloadCurrentUserPhotoAsync(user.ProfilePhoto);
-
                 var bitmapImage = await CloudStorage.GetBitmapImageAsync(CloudStorage.CurrentUserPhotoPath, true);
 
                 await Application.Current.Dispatcher.InvokeAsync(() =>
@@ -61,22 +64,77 @@ namespace course_project_tourist_routes.AdminPages
         {
             AdminLogin.Text = newLogin;
             AdminStatus.Text = newStatus;
-
             _userName = newLogin;
             _userStatus = newStatus;
         }
 
         private void StartClock()
         {
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
+            DispatcherTimer timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
             timer.Tick += Timer_Tick;
             timer.Start();
+            Timer_Tick(null, null);
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
             DateTimeTextBlock.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                if (SettingsFrame.Visibility == Visibility.Visible)
+                {
+                    _ = AnimateFrameOut(SettingsFrame, "SettingsFrameSlideOut");
+                    e.Handled = true;
+                }
+                else if (FullScreenAvatar.Visibility == Visibility.Visible)
+                {
+                    BackButton_Click(null, null);
+                    e.Handled = true;
+                }
+            }
+            base.OnKeyDown(e);
+        }
+
+        private async Task AnimateFrameIn(FrameworkElement frame, string animationKey)
+        {
+            if (_isAnimating) return;
+
+            _isAnimating = true;
+            try
+            {
+                var storyboard = (Storyboard)FindResource(animationKey);
+                storyboard.Begin(frame);
+                await Task.Delay(300);
+            }
+            finally
+            {
+                _isAnimating = false;
+            }
+        }
+
+        private async Task AnimateFrameOut(FrameworkElement frame, string animationKey)
+        {
+            if (_isAnimating) return;
+
+            _isAnimating = true;
+            try
+            {
+                var storyboard = (Storyboard)FindResource(animationKey);
+                storyboard.Begin(frame);
+                await Task.Delay(300);
+                frame.Visibility = Visibility.Collapsed;
+            }
+            finally
+            {
+                _isAnimating = false;
+            }
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
@@ -93,44 +151,44 @@ namespace course_project_tourist_routes.AdminPages
             }
         }
 
-        private void ProfilePhoto_Click(Object sender, RoutedEventArgs e)
+        private void ProfilePhoto_Click(object sender, RoutedEventArgs e)
         {
             SupRect.Visibility = Visibility.Visible;
             FullScreenAvatar.Visibility = Visibility.Visible;
             BackButton.Visibility = Visibility.Visible;
         }
 
-        private void Settings_Click(object sender, RoutedEventArgs e)
+        private async void Settings_Click(object sender, RoutedEventArgs e)
         {
             if (SettingsFrame.Visibility == Visibility.Collapsed)
             {
                 SettingsFrame.Visibility = Visibility.Visible;
-
                 SettingsPage settingsPage = new SettingsPage(_userId, _userName, _userStatus, this, (Users)FindResource("User"));
                 settingsPage.ProfilePhoto.Click += ProfilePhoto_Click;
                 SettingsFrame.Navigate(settingsPage);
+                await AnimateFrameIn(SettingsFrame, "SettingsFrameSlideIn");
             }
             else
             {
-                SettingsFrame.Visibility = Visibility.Collapsed;
+                await AnimateFrameOut(SettingsFrame, "SettingsFrameSlideOut");
             }
         }
 
-        public void ToggleSettingsFrameVisibility()
+        public async void ToggleSettingsFrameVisibility()
         {
             if (SettingsFrame.Visibility == Visibility.Visible)
             {
-                SettingsFrame.Visibility = Visibility.Collapsed;
+                await AnimateFrameOut(SettingsFrame, "SettingsFrameSlideOut");
             }
         }
 
-        private void UsersButton_Click(object sender, RoutedEventArgs e)
+        private async void UsersButton_Click(object sender, RoutedEventArgs e)
         {
             ToggleSettingsFrameVisibility();
             NavigationService.Navigate(new UsersPage(_userId));
         }
 
-        private void AddRouteButton_Click(object sender, RoutedEventArgs e)
+        private async void AddRouteButton_Click(object sender, RoutedEventArgs e)
         {
             ToggleSettingsFrameVisibility();
             NavigationService.Navigate(new AddRoutePage(_userId));
@@ -143,20 +201,22 @@ namespace course_project_tourist_routes.AdminPages
             BackButton.Visibility = Visibility.Collapsed;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             ToggleSettingsFrameVisibility();
             NavigationService.Navigate(new RoutesPage(_userId));
         }
 
-        private void RoutePointsButton_Click(object sender, RoutedEventArgs e)
+        private async void RoutePointsButton_Click(object sender, RoutedEventArgs e)
         {
-
+            ToggleSettingsFrameVisibility();
+            // NavigationService.Navigate(new RoutePointsPage(_userId));
         }
 
-        private void ReportsButton_Click(object sender, RoutedEventArgs e)
+        private async void ReportsButton_Click(object sender, RoutedEventArgs e)
         {
-
+            ToggleSettingsFrameVisibility();
+            // NavigationService.Navigate(new ReportsPage(_userId));
         }
     }
 }

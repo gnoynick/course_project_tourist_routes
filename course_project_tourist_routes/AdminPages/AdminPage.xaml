@@ -262,7 +262,16 @@
                             </TextBlock.RenderTransform>
                         </TextBlock>
                     </StackPanel>
-                    <Frame x:Name="SettingsFrame" Grid.Column="3" NavigationUIVisibility="Hidden" Visibility="Collapsed" Margin="0,0,10,10" />
+
+                    <Frame x:Name="SettingsFrame" Grid.Column="3" 
+               NavigationUIVisibility="Hidden" Visibility="Collapsed" 
+               Margin="0,0,10,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+               Opacity="0" RenderTransformOrigin="0.5,0.5">
+                        <Frame.RenderTransform>
+                            <TranslateTransform X="400"/>
+                        </Frame.RenderTransform>
+                    </Frame>
+
                 </Grid>
             </Grid>
         </Border>

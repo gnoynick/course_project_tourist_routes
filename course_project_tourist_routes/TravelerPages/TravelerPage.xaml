@@ -10,64 +10,6 @@
       Title="TravelerPage"
       IsVisibleChanged="TravelerPage_IsVisibleChanged">
     <Grid>
-        <Grid.Resources>
-            <Storyboard x:Key="MenuFrameSlideIn">
-                <DoubleAnimation Storyboard.TargetName="MenuFrame"
-                                 Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
-                                 From="-400" To="0" Duration="0:0:0.3"
-                                 AccelerationRatio="0.3" DecelerationRatio="0.7">
-                    <DoubleAnimation.EasingFunction>
-                        <CubicEase EasingMode="EaseOut"/>
-                    </DoubleAnimation.EasingFunction>
-                </DoubleAnimation>
-                <DoubleAnimation Storyboard.TargetName="MenuFrame"
-                                 Storyboard.TargetProperty="Opacity"
-                                 From="0" To="1" Duration="0:0:0.2"/>
-            </Storyboard>
-
-            <Storyboard x:Key="MenuFrameSlideOut">
-                <DoubleAnimation Storyboard.TargetName="MenuFrame"
-                                 Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
-                                 From="0" To="-400" Duration="0:0:0.3"
-                                 AccelerationRatio="0.3" DecelerationRatio="0.7">
-                    <DoubleAnimation.EasingFunction>
-                        <CubicEase EasingMode="EaseIn"/>
-                    </DoubleAnimation.EasingFunction>
-                </DoubleAnimation>
-                <DoubleAnimation Storyboard.TargetName="MenuFrame"
-                                 Storyboard.TargetProperty="Opacity"
-                                 From="1" To="0" Duration="0:0:0.2"/>
-            </Storyboard>
-
-            <Storyboard x:Key="SettingsFrameSlideIn">
-                <DoubleAnimation Storyboard.TargetName="SettingsFrame"
-                                 Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
-                                 From="400" To="0" Duration="0:0:0.3"
-                                 AccelerationRatio="0.3" DecelerationRatio="0.7">
-                    <DoubleAnimation.EasingFunction>
-                        <CubicEase EasingMode="EaseOut"/>
-                    </DoubleAnimation.EasingFunction>
-                </DoubleAnimation>
-                <DoubleAnimation Storyboard.TargetName="SettingsFrame"
-                                 Storyboard.TargetProperty="Opacity"
-                                 From="0" To="1" Duration="0:0:0.2"/>
-            </Storyboard>
-
-            <Storyboard x:Key="SettingsFrameSlideOut">
-                <DoubleAnimation Storyboard.TargetName="SettingsFrame"
-                                 Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
-                                 From="0" To="400" Duration="0:0:0.3"
-                                 AccelerationRatio="0.3" DecelerationRatio="0.7">
-                    <DoubleAnimation.EasingFunction>
-                        <CubicEase EasingMode="EaseIn"/>
-                    </DoubleAnimation.EasingFunction>
-                </DoubleAnimation>
-                <DoubleAnimation Storyboard.TargetName="SettingsFrame"
-                                 Storyboard.TargetProperty="Opacity"
-                                 From="1" To="0" Duration="0:0:0.2"/>
-            </Storyboard>
-        </Grid.Resources>
-
         <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
             <Grid>
                 <Grid.RowDefinitions>

@@ -74,6 +74,9 @@
                         </StackPanel>
                         <TextBox x:Name="SearchTextBox" 
                                  Width="250"
+                                 TextAlignment="Left"
+                                 HorizontalContentAlignment="Center"
+                                 VerticalContentAlignment="Center"
                                  Style="{StaticResource StyledTextBox}"
                                  Margin="0,5,10,0"
                                  Tag="Поиск по названию..."

@@ -261,7 +261,7 @@
                                                    IsIndeterminate="True"/>
                                         <Button x:Name="Photo1Button" 
                                                Width="100" Height="100" 
-                                               Style="{StaticResource ProfilePhotoButtonStyle}"
+                                               Style="{StaticResource PhotoButtonStyle}"
                                                Content="{DynamicResource photo1image}" 
                                                Background="Transparent" 
                                                BorderBrush="Transparent"
@@ -279,7 +279,7 @@
                                                    IsIndeterminate="True"/>
                                         <Button x:Name="Photo2Button" 
                                                Width="100" Height="100" 
-                                               Style="{StaticResource ProfilePhotoButtonStyle}"
+                                               Style="{StaticResource PhotoButtonStyle}"
                                                Content="{DynamicResource photo2image}" 
                                                Background="Transparent" 
                                                BorderBrush="Transparent"
@@ -297,7 +297,7 @@
                                                    IsIndeterminate="True"/>
                                         <Button x:Name="Photo3Button" 
                                                Width="100" Height="100" 
-                                               Style="{StaticResource ProfilePhotoButtonStyle}"
+                                               Style="{StaticResource PhotoButtonStyle}"
                                                Content="{DynamicResource photo3image}" 
                                                Background="Transparent" 
                                                BorderBrush="Transparent"

@@ -57,11 +57,11 @@
 
                         <Button x:Name="AddAdminButton"
                                     Grid.Column="2"
-                                    Style="{StaticResource HoverButtonStyle}"
+                                    Style="{StaticResource ExitAndSettingsButtonStyle}"
                                     Width="200"
                                     Height="40"
                                     Margin="10,0,0,0"
-                                    Click="AddAdminButton_Click">
+                                    Click="AddAdminButton_Click" Cursor="Hand">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="AccountPlus" 
                                                           Width="20"
@@ -93,8 +93,10 @@
                                            Margin="0,0,10,0"/>
                         </StackPanel>
                         <TextBox x:Name="SearchTextBox" 
-                                     Width="250"
-                                    TextAlignment="Center"
+                                    Width="250"
+                                    TextAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
                                      Style="{StaticResource StyledTextBox}"
                                      Margin="0,5,10,0"
                                      Tag="Поиск по логину или email..."
@@ -265,10 +267,10 @@
                                                     VerticalAlignment="Center" 
                                                     Margin="10">
                                             <Button x:Name="ToggleStatusButton"
-                                                    Style="{StaticResource ButtonStyle}"
-                                                    Width="30"
+                                                    Style="{StaticResource HoverButtonStyle}"
+                                                    Width="40"
                                                     Height="30"
-                                                    Margin="0,0,5,0"
+                                                    Margin="0,0,10,0"
                                                     Tag="{Binding IdUser}"
                                                     Click="ToggleStatusButton_Click"
                                                     ToolTip="{Binding AccountStatusButtonTooltip}">
@@ -278,8 +280,8 @@
                                                                       Foreground="White"/>
                                             </Button>
                                             <Button x:Name="DeleteButton"
-                                                    Style="{StaticResource ButtonStyle}"
-                                                    Width="30"
+                                                    Style="{StaticResource HoverButtonStyle}"
+                                                    Width="40"
                                                     Height="30"
                                                     Tag="{Binding IdUser}"
                                                     Click="DeleteButton_Click"

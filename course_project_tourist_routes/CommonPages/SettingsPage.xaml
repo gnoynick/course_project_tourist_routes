@@ -60,6 +60,7 @@
                                         <Button x:Name="ProfilePhoto" 
                                                 Width="100" 
                                                 Height="100" 
+                                                Style="{StaticResource ProfilePhotoButtonStyle}"
                                                 Content="{DynamicResource avatarimageset}" 
                                                 Background="Transparent" 
                                                 BorderBrush="Transparent"
