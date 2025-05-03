@@ -11,12 +11,20 @@
     <Border Background="#4A773C" CornerRadius="10">
         <Grid>
             <Border Background="#D1E2C4" CornerRadius="10" Margin="20">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,15">
+                        <materialDesign:PackIcon Kind="Menu" Width="32" Height="37" Margin="0,0,10,0" Foreground="#4A773C"/>
+                        <TextBlock Text="Меню" 
+                                   FontSize="28" 
+                                   FontWeight="Bold" 
+                                   Foreground="#4A773C"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
 
                     <Button x:Name="FindRouteButton" 
-                            Style="{StaticResource ButtonStyle}" 
+                            Style="{StaticResource HoverButtonStyle}" 
                             FontSize="20" Padding="30,20"
-                            Margin="20" Width="260" Height="70" Click="FindRouteButton_Click">
+                            Margin="15" Width="260" Height="70" Click="FindRouteButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <materialDesign:PackIcon Kind="MapSearch" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
                             <TextBlock Text="Найти маршрут" FontSize="18" Foreground="white"/>
@@ -24,19 +32,19 @@
                     </Button>
 
                     <Button x:Name="AddRouteButton" 
-                            Style="{StaticResource ButtonStyle}" 
-                            FontSize="20" Padding="30,20"
+                            Style="{StaticResource HoverButtonStyle}" 
+                            FontSize="15" Padding="30,20"
                             Margin="20" Width="260" Height="70" Click="AddRouteButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <materialDesign:PackIcon Kind="MapMarkerPlus" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
+                            <materialDesign:PackIcon Kind="MapPlus" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
                             <TextBlock Text="Добавить маршрут" FontSize="18" Foreground="white"/>
                         </StackPanel>
                     </Button>
 
                     <Button x:Name="OrganizeHikeButton" 
-                            Style="{StaticResource ButtonStyle}" 
+                            Style="{StaticResource HoverButtonStyle}" 
                             FontSize="20" Padding="30,20"
-                            Margin="20" Width="260" Height="70" Click="OrganizeHikeButton_Click">
+                            Margin="15" Width="260" Height="70" Click="OrganizeHikeButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <materialDesign:PackIcon Kind="WalletTravel" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
                             <TextBlock Text="Путешествия" FontSize="18" Foreground="white"/>
@@ -44,9 +52,9 @@
                     </Button>
 
                     <Button x:Name="FavoritesButton" 
-                            Style="{StaticResource ButtonStyle}" 
+                            Style="{StaticResource HoverButtonStyle}" 
                             FontSize="20" Padding="30,20"
-                            Margin="20" Width="260" Height="70" Click="FavoritesButton_Click">
+                            Margin="15" Width="260" Height="70" Click="FavoritesButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <materialDesign:PackIcon Kind="Star" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
                             <TextBlock Text="Избранные" FontSize="18" Foreground="white"/>
@@ -54,9 +62,9 @@
                     </Button>
 
                     <Button x:Name="LogoutButton" 
-                            Style="{StaticResource ButtonStyle}" 
+                            Style="{StaticResource HoverButtonStyle}" 
                             FontSize="20" Padding="30,20"
-                            Margin="20" Width="260" Height="70" Click="LogoutButton_Click">
+                            Margin="15" Width="260" Height="70" Click="LogoutButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <materialDesign:PackIcon Kind="ExitToApp" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
                             <TextBlock Text="Выйти" FontSize="18" Foreground="white"/>

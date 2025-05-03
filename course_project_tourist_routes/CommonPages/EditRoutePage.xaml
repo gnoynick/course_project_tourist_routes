@@ -16,7 +16,6 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Шапка страницы -->
             <Border Grid.Row="0" Background="#4A773C" CornerRadius="10" Margin="10,10,10,5" Padding="15">
                 <Grid>
                     <Button x:Name="BackButton"
@@ -103,7 +102,7 @@
 
                         <StackPanel Grid.Column="0" Margin="0,0,10,0">
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                <materialDesign:PackIcon Kind="Ruler" 
+                                <materialDesign:PackIcon Kind="MapMarkerDistance" 
                                                        Foreground="#4A773C" 
                                                        Width="24" 
                                                        Height="24"
@@ -140,7 +139,7 @@
 
                     <StackPanel Margin="0,0,0,10">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                            <materialDesign:PackIcon Kind="Pin" 
+                            <materialDesign:PackIcon Kind="MapMarkerMultiple" 
                                                    Foreground="#4A773C" 
                                                    Width="24" 
                                                    Height="24"
@@ -153,7 +152,7 @@
                                        VerticalAlignment="Center"/>
                         </StackPanel>
 
-                        <Button Style="{StaticResource ButtonStyle}"
+                        <Button Style="{StaticResource HoverButtonStyle}"
                                 HorizontalAlignment="Left"
                                 Margin="0,0,0,10"
                                 Width="170"
@@ -262,7 +261,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <Button Style="{StaticResource ButtonStyle}"
+                        <Button Style="{StaticResource HoverButtonStyle}"
                                 HorizontalAlignment="Right"
                                 Margin="0,10,0,0"
                                 Width="170"
@@ -322,7 +321,8 @@
                                              Visibility="Collapsed"
                                              IsIndeterminate="True"/>
                                 <Button x:Name="Photo1Button" 
-                                        Width="100" Height="100" 
+                                        Width="100" Height="100"
+                                        Style="{StaticResource ProfilePhotoButtonStyle}"
                                         Content="{DynamicResource photo1image}" 
                                         Background="Transparent" 
                                         BorderBrush="Transparent"
@@ -349,6 +349,7 @@
                                              IsIndeterminate="True"/>
                                 <Button x:Name="Photo2Button" 
                                         Width="100" Height="100" 
+                                        Style="{StaticResource ProfilePhotoButtonStyle}"
                                         Content="{DynamicResource photo2image}" 
                                         Background="Transparent" 
                                         BorderBrush="Transparent"
@@ -375,6 +376,7 @@
                                              IsIndeterminate="True"/>
                                 <Button x:Name="Photo3Button" 
                                         Width="100" Height="100" 
+                                        Style="{StaticResource ProfilePhotoButtonStyle}"
                                         Content="{DynamicResource photo3image}" 
                                         Background="Transparent" 
                                         BorderBrush="Transparent"
@@ -443,7 +445,35 @@
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
-
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                <StackPanel x:Name="SavingProgressPanel"  Orientation="Vertical"  HorizontalAlignment="Center" Visibility="Collapsed" Margin="0,0,0,10">
+                    <TextBlock Text="Идёт сохранение изменений..." 
+                               Foreground="#4A773C"
+                               FontSize="14"
+                               HorizontalAlignment="Center"/>
+                    <ProgressBar Width="200" 
+                                 Height="6"
+                                 IsIndeterminate="True"
+                                 Foreground="#4A773C"
+                                 Margin="0,5,0,0"/>
+                </StackPanel>
+                <Button x:Name="SaveButton" 
+                        Style="{StaticResource HoverButtonStyle}"
+                        Margin="0,0,0,10"
+                        Width="250"
+                        Height="30"
+                        IsDefault="True"
+                        Click="SaveButton_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ContentSave" 
+                                               Width="20"
+                                               Height="20"
+                                               Margin="0,0,5,0"
+                                               Foreground="White"/>
+                        <TextBlock Text="Сохранить изменения"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
             <Rectangle x:Name="SupRect" 
                        Grid.Row="0" Grid.RowSpan="3"
                        Fill="#5A5A42" 
@@ -460,7 +490,7 @@
 
             <Button x:Name="PhotoBackButton" 
                     Grid.Row="0" Grid.RowSpan="3"
-                    Style="{StaticResource ExitAndSettingsButtonStyle}" 
+                    Style="{StaticResource HoverButtonStyle}" 
                     Visibility="Collapsed"
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Bottom"
@@ -473,36 +503,6 @@
                                   Width="60"
                                   Height="60"/>
             </Button>
-
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                <StackPanel x:Name="SavingProgressPanel"  Orientation="Vertical"  HorizontalAlignment="Center" Visibility="Collapsed" Margin="0,0,0,10">
-                    <TextBlock Text="Идёт сохранение изменений..." 
-                               Foreground="#4A773C"
-                               FontSize="14"
-                               HorizontalAlignment="Center"/>
-                    <ProgressBar Width="200" 
-                                 Height="6"
-                                 IsIndeterminate="True"
-                                 Foreground="#4A773C"
-                                 Margin="0,5,0,0"/>
-                </StackPanel>
-                <Button x:Name="SaveButton" 
-                        Style="{StaticResource ButtonStyle}"
-                        Margin="0,0,0,10"
-                        Width="250"
-                        Height="30"
-                        IsDefault="True"
-                        Click="SaveButton_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="ContentSave" 
-                                               Width="20"
-                                               Height="20"
-                                               Margin="0,0,5,0"
-                                               Foreground="White"/>
-                        <TextBlock Text="Сохранить изменения"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
         </Grid>
     </Border>
 </Page>

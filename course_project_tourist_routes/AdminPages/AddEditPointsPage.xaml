@@ -139,7 +139,7 @@
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                 <Button x:Name="CancelButton" 
-                        Style="{StaticResource ButtonStyle}"
+                        Style="{StaticResource HoverButtonStyle}"
                         Width="150"
                         Height="45"
                         Margin="0,0,15,0"
@@ -154,7 +154,7 @@
                     </StackPanel>
                 </Button>
                 <Button x:Name="SaveButton" 
-                        Style="{StaticResource ButtonStyle}"
+                        Style="{StaticResource HoverButtonStyle}"
                         Width="150"
                         Height="45"
                         IsDefault="True"

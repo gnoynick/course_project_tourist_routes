@@ -117,8 +117,19 @@ namespace course_project_tourist_routes.AdminPages
                     return;
                 }
 
+                string dir = CloudStorage.RoutePhotosDirectoryPath;
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
                 for (int i = 0; i < Math.Min(photos.Count, 3); i++)
                 {
+                    var photo = photos[i];
+                    if (string.IsNullOrEmpty(photo.Photo)) continue;
+
+                    string path = Path.Combine(dir, $"route_{_routeId}_photo_{i}.jpg");
+
                     switch (i)
                     {
                         case 0:
@@ -131,25 +142,17 @@ namespace course_project_tourist_routes.AdminPages
                             Photo3Progress.Visibility = Visibility.Visible;
                             break;
                     }
-                }
-
-                await CloudStorage.ClearRoutePhotosDirectoryAsync();
-                string dir = CloudStorage.RoutePhotosDirectoryPath;
-
-                for (int i = 0; i < Math.Min(photos.Count, 3); i++)
-                {
-                    var photo = photos[i];
-                    if (string.IsNullOrEmpty(photo.Photo)) continue;
 
                     try
                     {
-                        string path = Path.Combine(dir, $"route_{_routeId}_photo_{i}.jpg");
+                        if (File.Exists(path))
+                        {
+                            await Dispatcher.InvokeAsync(() => ShowPhoto(i, path));
+                            continue;
+                        }
+
+                        await CloudStorage.DownloadRoutePhotoAsync(photo.Photo, path);
                         _tempPhotoPaths.Add(path);
-
-                        await Task.WhenAll(
-                            Task.Run(() => CloudStorage.DownloadRoutePhotoAsync(photo.Photo, path))
-                        );
-
                         await Dispatcher.InvokeAsync(() => ShowPhoto(i, path));
                     }
                     catch (Exception ex)
@@ -263,7 +266,6 @@ namespace course_project_tourist_routes.AdminPages
                     db.SaveChanges();
                     FavoriteIcon.Kind = MaterialDesignThemes.Wpf.PackIconKind.Star;
                     _isFavorite = true;
-                    MessageBox.Show("Маршрут добавлен в избранное", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
@@ -285,7 +287,6 @@ namespace course_project_tourist_routes.AdminPages
                         db.SaveChanges();
                         FavoriteIcon.Kind = MaterialDesignThemes.Wpf.PackIconKind.StarOutline;
                         _isFavorite = false;
-                        MessageBox.Show("Маршрут удален из избранного", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }

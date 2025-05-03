@@ -153,24 +153,160 @@
         </Setter>
     </Style>
 
-    <Style TargetType="TextBlock" x:Key="UnderlinedTextBlockStyle">
-        <Setter Property="Foreground" Value="#4A773C"/>
-        <Setter Property="TextDecorations" Value="Underline"/>
+    <Style x:Key="HoverButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="1" ScaleY="1"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Cursor" Value="Hand"/>
         <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="#8B7962"/>
-            </Trigger>
+            <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                             To="1.05" Duration="0:0:0.2"/>
+                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                             To="1.05" Duration="0:0:0.2"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                             To="1" Duration="0:0:0.2"/>
+                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                             To="1" Duration="0:0:0.2"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="Border" x:Key="ProfilePhotoContainerStyle">
-        <Setter Property="Background" Value="#D1E2C4"/>
-        <Setter Property="BorderBrush" Value="#F0FFF0"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Style x:Key="ProfilePhotoButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="1" ScaleY="1"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border" 
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#4A773C"/>
+                            <Setter TargetName="border" Property="BorderThickness" Value="3"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                     To="1.05" Duration="0:0:0.2"/>
+                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                     To="1.05" Duration="0:0:0.2"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                     To="1" Duration="0:0:0.2"/>
+                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                     To="1" Duration="0:0:0.2"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Button" x:Key="MaterialDesignIconButton">
+        <Setter Property="Background" Value="#8B7962"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="#4A773C"/>
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Cursor" Value="Hand"/>
+
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="1" ScaleY="1"/>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border x:Name="border" 
+                            Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="15">
+                            <materialDesign:RippleAssist.Feedback>
+                                <SolidColorBrush Color="#4A773C" Opacity="0.2"/>
+                            </materialDesign:RippleAssist.Feedback>
+                            <ContentPresenter x:Name="contentPresenter"
+                                    HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                 To="1.05" Duration="0:0:0.2"/>
+                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                 To="1.05" Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                 To="1" Duration="0:0:0.2"/>
+                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                 To="1" Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#5A5A42"/>
+                            <Setter Property="Foreground" Value="#3A5A2C"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#4A773C"/>
+                            <Setter Property="Foreground" Value="#2A3A1C"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="Button" x:Key="ExitAndSettingsButtonStyle">
@@ -204,6 +340,48 @@
         </Setter>
     </Style>
 
+    <Style x:Key="TransparentButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="0"
+                        CornerRadius="10">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+        <Setter Property="Width" Value="100"/>
+        <Setter Property="Background" Value="#D32F2F"/>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="UnderlinedTextBlockStyle">
+        <Setter Property="Foreground" Value="#4A773C"/>
+        <Setter Property="TextDecorations" Value="Underline"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="#8B7962"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="StyledTextBlock" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="#4A773C"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,0,0,10"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
 
     <Style x:Key="RouteTextStyle" TargetType="TextBlock">
         <Setter Property="Foreground" Value="#4A773C"/>
@@ -215,6 +393,49 @@
                 <Setter Property="Foreground" Value="#2A5A1C"/>
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Border" x:Key="ProfilePhotoContainerStyle">
+        <Setter Property="Background" Value="#D1E2C4"/>
+        <Setter Property="BorderBrush" Value="#F0FFF0"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+    </Style>
+
+    <Style x:Key="RouteCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="#F0FFF0"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Margin" Value="0,5"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="#D1E2C4"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#E0F0D0"/>
+                <Setter Property="BorderBrush" Value="#4A773C"/>
+                <Setter Property="BorderThickness" Value="2"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="RoutePointCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="#E8F5E9"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="Margin" Value="0,0,0,5"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style x:Key="BorderedTextBlock" TargetType="Border">
+        <Setter Property="Background" Value="#F3F0E6"/>
+        <Setter Property="BorderBrush" Value="#8B7962"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
 
     <Style x:Key="ScrollViewerStyle" TargetType="ScrollViewer">
@@ -246,6 +467,30 @@
                                ViewportSize="{TemplateBinding ViewportHeight}"/>
                     </Grid>
                 </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="NonSelectableListViewStyle" TargetType="ListView">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Focusable" Value="False"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
             </Setter.Value>
         </Setter>
     </Style>
@@ -304,23 +549,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <Style x:Key="RouteCardStyle" TargetType="Border">
-        <Setter Property="Background" Value="#F0FFF0"/>
-        <Setter Property="CornerRadius" Value="10"/>
-        <Setter Property="Padding" Value="10"/>
-        <Setter Property="Margin" Value="0,5"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="BorderBrush" Value="#D1E2C4"/>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#E0F0D0"/>
-                <Setter Property="BorderBrush" Value="#4A773C"/>
-                <Setter Property="BorderThickness" Value="2"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
 
     <Style TargetType="ComboBox" x:Key="StyledComboBox">
         <Setter Property="Background" Value="#F3F0E6"/>
@@ -511,84 +739,6 @@
                 </Style>
             </Setter.Value>
         </Setter>
-    </Style>
-
-    <Style x:Key="TransparentButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" 
-                        BorderBrush="{TemplateBinding BorderBrush}" 
-                        BorderThickness="0"
-                        CornerRadius="10">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="Button" x:Key="MaterialDesignIconButton">
-        <Setter Property="Background" Value="#8B7962"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Foreground" Value="#4A773C"/>
-        <Setter Property="Width" Value="30"/>
-        <Setter Property="Height" Value="30"/>
-        <Setter Property="Padding" Value="5"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Grid>
-                        <Border x:Name="border" 
-                            Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="15">
-                            <materialDesign:RippleAssist.Feedback>
-                                <SolidColorBrush Color="#4A773C" Opacity="0.2"/>
-                            </materialDesign:RippleAssist.Feedback>
-                            <ContentPresenter x:Name="contentPresenter"
-                                        HorizontalAlignment="Center" 
-                                        VerticalAlignment="Center"/>
-                        </Border>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#5A5A42"/>
-                            <Setter Property="Foreground" Value="#3A5A2C"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#4A773C"/>
-                            <Setter Property="Foreground" Value="#2A3A1C"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="StyledTextBlock" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="#4A773C"/>
-        <Setter Property="FontSize" Value="15"/>
-        <Setter Property="TextWrapping" Value="Wrap"/>
-        <Setter Property="Margin" Value="0,0,0,10"/>
-        <Setter Property="Padding" Value="5"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-    </Style>
-
-    <Style x:Key="BorderedTextBlock" TargetType="Border">
-        <Setter Property="Background" Value="#F3F0E6"/>
-        <Setter Property="BorderBrush" Value="#8B7962"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="Padding" Value="5"/>
-        <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
 
     <Style x:Key="DataGridStyle" TargetType="DataGrid">
@@ -786,12 +936,6 @@
         <Setter Property="AlternatingRowBackground" Value="#F5FFF5"/>
     </Style>
 
-
-    <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
-        <Setter Property="Width" Value="100"/>
-        <Setter Property="Background" Value="#D32F2F"/>
-    </Style>
-
     <Style x:Key="RotatingProgressStyle" TargetType="ProgressBar">
         <Setter Property="Width" Value="50"/>
         <Setter Property="Height" Value="50"/>
@@ -838,36 +982,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <Style x:Key="RoutePointCardStyle" TargetType="Border">
-        <Setter Property="Background" Value="#E8F5E9"/>
-        <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="Margin" Value="0,0,0,5"/>
-        <Setter Property="Padding" Value="10"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-    </Style>
-
-    <Style x:Key="NonSelectableListViewStyle" TargetType="ListView">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ItemContainerStyle">
-            <Setter.Value>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="Background" Value="Transparent"/>
-                    <Setter Property="Focusable" Value="False"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListViewItem">
-                                <ContentPresenter />
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    
 </ResourceDictionary>

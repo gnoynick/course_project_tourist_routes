@@ -57,7 +57,7 @@
 
                         <Button x:Name="AddAdminButton"
                                     Grid.Column="2"
-                                    Style="{StaticResource ButtonStyle}"
+                                    Style="{StaticResource HoverButtonStyle}"
                                     Width="200"
                                     Height="40"
                                     Margin="10,0,0,0"
@@ -164,7 +164,7 @@
                         </ComboBox>
 
                         <Button x:Name="ResetFiltersButton"
-                                    Style="{StaticResource ButtonStyle}"
+                                    Style="{StaticResource HoverButtonStyle}"
                                     Width="40"
                                     Height="40"
                                     Margin="0,5,0,0"
@@ -181,14 +181,14 @@
                 <Grid Grid.Row="2" x:Name="LoadingGrid" Visibility="Visible" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Идёт загрузка пользователей..." 
-                   Foreground="#4A773C"
-                   FontSize="30"
-                   HorizontalAlignment="Center"/>
+                                   Foreground="#4A773C"
+                                   FontSize="30"
+                                   HorizontalAlignment="Center"/>
                         <ProgressBar Width="420" 
-                     Height="15"
-                     IsIndeterminate="True"
-                     Foreground="#4A773C"
-                     Margin="0,10,0,0"/>
+                                     Height="15"
+                                     IsIndeterminate="True"
+                                     Foreground="#4A773C"
+                                     Margin="0,10,0,0"/>
                     </StackPanel>
                 </Grid>
 
@@ -213,6 +213,7 @@
                                         <Grid Width="60" Height="60" Margin="10">
                                             <Button x:Name="UserPhotoButton" 
                                                        Width="60" Height="60" 
+                                                       Style="{StaticResource ProfilePhotoButtonStyle}"
                                                        Background="{Binding ProfilePhotoBrush}"
                                                        BorderBrush="Transparent"
                                                        BorderThickness="0"
@@ -313,7 +314,7 @@
 
         <Button x:Name="PhotoBackButton" 
             Grid.Row="0" Grid.RowSpan="2"
-            Style="{StaticResource ExitAndSettingsButtonStyle}" 
+            Style="{StaticResource HoverButtonStyle}" 
             Visibility="Collapsed"
             HorizontalAlignment="Left" 
             VerticalAlignment="Bottom"

@@ -117,7 +117,7 @@
                 <Button x:Name="SignInButton" 
                         Content="ВОЙТИ" 
                         Grid.Row="8"
-                        Style="{StaticResource ButtonStyle}" 
+                        Style="{StaticResource HoverButtonStyle}" 
                         HorizontalAlignment="Center" 
                         VerticalAlignment="Center" 
                         Height="42" 

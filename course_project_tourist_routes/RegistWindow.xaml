@@ -190,7 +190,7 @@
                 <Button x:Name="SignUpButton" 
                         Content="СОЗДАТЬ АККАУНТ" 
                         Grid.Row="14"
-                        Style="{StaticResource ButtonStyle}" 
+                        Style="{StaticResource HoverButtonStyle}" 
                         HorizontalAlignment="Center" VerticalAlignment="Center" 
                         Height="42" Width="300" 
                         FontSize="16"

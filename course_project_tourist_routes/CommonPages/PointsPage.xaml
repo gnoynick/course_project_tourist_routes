@@ -47,7 +47,7 @@
                     </Button>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <materialDesign:PackIcon Kind="Pin" 
+                        <materialDesign:PackIcon Kind="MapMarkerMultiple" 
                                    Foreground="White" 
                                    Width="36" 
                                    Height="36"
@@ -169,7 +169,7 @@
                             </StackPanel>
 
                             <Button Grid.Column="1" 
-                                    Style="{StaticResource ButtonStyle}"
+                                    Style="{StaticResource HoverButtonStyle}"
                                     Width="180"
                                     Height="30"
                                     Click="ResetFiltersButton_Click">

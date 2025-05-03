@@ -163,7 +163,7 @@
                             </ComboBox>
 
                             <Button x:Name="ResetFiltersButton"
-                                    Style="{StaticResource ButtonStyle}"
+                                    Style="{StaticResource HoverButtonStyle}"
                                     Width="40"
                                     Height="40"
                                     Margin="0,5,0,0"
@@ -263,10 +263,10 @@
                                                 VerticalAlignment="Center" 
                                                 Margin="5">
                                             <Button x:Name="EditButton"
-                                                Style="{StaticResource ButtonStyle}"
-                                                Width="30"
+                                                Style="{StaticResource HoverButtonStyle}"
+                                                Width="40"
                                                 Height="30"
-                                                Margin="0,0,5,0"
+                                                Margin="0,0,10,0"
                                                 Tag="{Binding IdRoute}"
                                                 Click="EditRouteButton_Click"
                                                 Visibility="{Binding CanEdit, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -277,8 +277,8 @@
                                                                   Foreground="White"/>
                                             </Button>
                                             <Button x:Name="DeleteButton"
-                                                Style="{StaticResource ButtonStyle}"
-                                                Width="30"
+                                                Style="{StaticResource HoverButtonStyle}"
+                                                Width="40"
                                                 Height="30"
                                                 Tag="{Binding IdRoute}"
                                                 Click="DeleteRouteButton_Click"

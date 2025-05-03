@@ -10,6 +10,64 @@
       Title="TravelerPage"
       IsVisibleChanged="TravelerPage_IsVisibleChanged">
     <Grid>
+        <Grid.Resources>
+            <Storyboard x:Key="MenuFrameSlideIn">
+                <DoubleAnimation Storyboard.TargetName="MenuFrame"
+                                 Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
+                                 From="-400" To="0" Duration="0:0:0.3"
+                                 AccelerationRatio="0.3" DecelerationRatio="0.7">
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseOut"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+                <DoubleAnimation Storyboard.TargetName="MenuFrame"
+                                 Storyboard.TargetProperty="Opacity"
+                                 From="0" To="1" Duration="0:0:0.2"/>
+            </Storyboard>
+
+            <Storyboard x:Key="MenuFrameSlideOut">
+                <DoubleAnimation Storyboard.TargetName="MenuFrame"
+                                 Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
+                                 From="0" To="-400" Duration="0:0:0.3"
+                                 AccelerationRatio="0.3" DecelerationRatio="0.7">
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseIn"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+                <DoubleAnimation Storyboard.TargetName="MenuFrame"
+                                 Storyboard.TargetProperty="Opacity"
+                                 From="1" To="0" Duration="0:0:0.2"/>
+            </Storyboard>
+
+            <Storyboard x:Key="SettingsFrameSlideIn">
+                <DoubleAnimation Storyboard.TargetName="SettingsFrame"
+                                 Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
+                                 From="400" To="0" Duration="0:0:0.3"
+                                 AccelerationRatio="0.3" DecelerationRatio="0.7">
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseOut"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+                <DoubleAnimation Storyboard.TargetName="SettingsFrame"
+                                 Storyboard.TargetProperty="Opacity"
+                                 From="0" To="1" Duration="0:0:0.2"/>
+            </Storyboard>
+
+            <Storyboard x:Key="SettingsFrameSlideOut">
+                <DoubleAnimation Storyboard.TargetName="SettingsFrame"
+                                 Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
+                                 From="0" To="400" Duration="0:0:0.3"
+                                 AccelerationRatio="0.3" DecelerationRatio="0.7">
+                    <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseIn"/>
+                    </DoubleAnimation.EasingFunction>
+                </DoubleAnimation>
+                <DoubleAnimation Storyboard.TargetName="SettingsFrame"
+                                 Storyboard.TargetProperty="Opacity"
+                                 From="1" To="0" Duration="0:0:0.2"/>
+            </Storyboard>
+        </Grid.Resources>
+
         <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
             <Grid>
                 <Grid.RowDefinitions>
@@ -121,7 +179,14 @@
                         </TextBlock>
                     </StackPanel>
 
-                    <Frame x:Name="MenuFrame" Grid.Column="0" x:FieldModifier="public" NavigationUIVisibility="Hidden" Visibility="Collapsed" Margin="10,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <Frame x:Name="MenuFrame" Grid.Column="0" x:FieldModifier="public" 
+                           NavigationUIVisibility="Hidden" Visibility="Collapsed" 
+                           Margin="10,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                           Opacity="0" RenderTransformOrigin="0.5,0.5">
+                        <Frame.RenderTransform>
+                            <TranslateTransform X="-400"/>
+                        </Frame.RenderTransform>
+                    </Frame>
 
                     <Border Grid.Column="1" Background="#F0FFF0" CornerRadius="10" Padding="15" Margin="20" Height="380" Width="225">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -135,6 +200,7 @@
                                            IsIndeterminate="True"/>
                                     <Button x:Name="ProfilePhoto"
                                         Width="195" Height="195"
+                                        Style="{StaticResource ProfilePhotoButtonStyle}"
                                         Content="{DynamicResource avatarimage}" 
                                         Background="Transparent" 
                                         BorderBrush="Transparent"
@@ -166,7 +232,7 @@
                             <StackPanel>
                                 <Border Background="#4A773C" CornerRadius="10,10,10,10" Padding="10">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <materialDesign:PackIcon Kind="MapMarkerMultiple" 
+                                        <materialDesign:PackIcon Kind="MapMarkerAccount" 
                                          Foreground="#F0FFF0"
                                          Width="24"
                                          Height="24"
@@ -206,7 +272,7 @@
                                 </Border>
 
                                 <Button x:Name="MyRoutesButton" 
-                                        Style="{StaticResource ButtonStyle}" 
+                                        Style="{StaticResource HoverButtonStyle}" 
                                         HorizontalAlignment="Stretch" 
                                         Click="MyRoutesButton_Click" 
                                         Height="30"
@@ -263,9 +329,16 @@
                             </TextBlock.RenderTransform>
                         </TextBlock>
                     </StackPanel>
-                    
-                    <Frame x:Name="SettingsFrame" Grid.Column="3" x:FieldModifier="public" NavigationUIVisibility="Hidden" Visibility="Collapsed" Margin="0,0,10,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                
+
+                    <Frame x:Name="SettingsFrame" Grid.Column="3" x:FieldModifier="public" 
+                           NavigationUIVisibility="Hidden" Visibility="Collapsed" 
+                           Margin="0,0,10,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                           Opacity="0" RenderTransformOrigin="0.5,0.5">
+                        <Frame.RenderTransform>
+                            <TranslateTransform X="400"/>
+                        </Frame.RenderTransform>
+                    </Frame>
+
                 </Grid>
             </Grid>
         </Border>

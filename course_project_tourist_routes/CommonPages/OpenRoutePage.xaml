@@ -42,7 +42,7 @@
                                     Orientation="Horizontal" 
                                     HorizontalAlignment="Center" 
                                     VerticalAlignment="Center">
-                            <materialDesign:PackIcon Kind="MapMarker" 
+                            <materialDesign:PackIcon Kind="MapCheck" 
                                                    Foreground="#F0FFF0" 
                                                    Width="32"
                                                    Height="37"
@@ -129,7 +129,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Orientation="Horizontal" Grid.Column="0">
-                                        <materialDesign:PackIcon Kind="Ruler" 
+                                        <materialDesign:PackIcon Kind="MapMarkerDistance" 
                                                                Foreground="#4A773C"
                                                                Width="20"
                                                                Height="20"
@@ -180,7 +180,7 @@
                         <Border Background="#F0FFF0" CornerRadius="10" Margin="0,0,0,10" Padding="5">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                    <materialDesign:PackIcon Kind="Pin" 
+                                    <materialDesign:PackIcon Kind="MapMarkerMultiple" 
                                                             Foreground="#4A773C"
                                                             Width="24"
                                                             Height="24"
@@ -261,6 +261,7 @@
                                                    IsIndeterminate="True"/>
                                         <Button x:Name="Photo1Button" 
                                                Width="100" Height="100" 
+                                               Style="{StaticResource ProfilePhotoButtonStyle}"
                                                Content="{DynamicResource photo1image}" 
                                                Background="Transparent" 
                                                BorderBrush="Transparent"
@@ -278,6 +279,7 @@
                                                    IsIndeterminate="True"/>
                                         <Button x:Name="Photo2Button" 
                                                Width="100" Height="100" 
+                                               Style="{StaticResource ProfilePhotoButtonStyle}"
                                                Content="{DynamicResource photo2image}" 
                                                Background="Transparent" 
                                                BorderBrush="Transparent"
@@ -295,6 +297,7 @@
                                                    IsIndeterminate="True"/>
                                         <Button x:Name="Photo3Button" 
                                                Width="100" Height="100" 
+                                               Style="{StaticResource ProfilePhotoButtonStyle}"
                                                Content="{DynamicResource photo3image}" 
                                                Background="Transparent" 
                                                BorderBrush="Transparent"
@@ -325,7 +328,7 @@
                                VerticalAlignment="Center"/>
                     
                     <Button x:Name="ClosePhotoButton"
-                            Style="{StaticResource ExitAndSettingsButtonStyle}"
+                            Style="{StaticResource HoverButtonStyle}"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
                             Margin="0,25,25,20"
@@ -340,7 +343,7 @@
                     </Button>
                     
                     <Button x:Name="PrevPhotoButton"
-                            Style="{StaticResource ExitAndSettingsButtonStyle}"
+                            Style="{StaticResource HoverButtonStyle}"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Margin="20"
@@ -355,7 +358,7 @@
                     </Button>
                     
                     <Button x:Name="NextPhotoButton"
-                            Style="{StaticResource ExitAndSettingsButtonStyle}"
+                            Style="{StaticResource HoverButtonStyle}"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Margin="20"

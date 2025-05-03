@@ -216,7 +216,7 @@
                     <Button x:Name="CreateAdminButton" 
                             Content="ДОБАВИТЬ АДМИНИСТРАТОРА" 
                             Grid.Row="8"
-                            Style="{StaticResource ButtonStyle}" 
+                            Style="{StaticResource HoverButtonStyle}" 
                             HorizontalAlignment="Center" 
                             VerticalAlignment="Center" 
                             Height="45" 

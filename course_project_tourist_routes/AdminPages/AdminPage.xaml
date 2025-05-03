@@ -45,7 +45,7 @@
 
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Kind="ShieldAccount" 
+                                <materialDesign:PackIcon Kind="AccountTie" 
                                                         Foreground="#F0FFF0"
                                                         Width="32"
                                                         Height="37"
@@ -132,6 +132,7 @@
                             <Border Style="{StaticResource ProfilePhotoContainerStyle}" Width="200" Height="200">
                                 <Button x:Name="ProfilePhoto"
                                         Width="195" Height="195"
+                                        Style="{StaticResource ProfilePhotoButtonStyle}"
                                         Content="{DynamicResource avatarimage}" 
                                         Background="Transparent" 
                                         BorderBrush="Transparent"
@@ -158,7 +159,7 @@
 
                     <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,20,0">
                         <Button x:Name="UsersButton" 
-                                Style="{StaticResource ButtonStyle}" 
+                                Style="{StaticResource HoverButtonStyle}" 
                                 FontSize="20" Padding="30,20"
                                 Margin="15" Width="300" Height="50" Click="UsersButton_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -171,7 +172,7 @@
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource ButtonStyle}" 
+                        <Button Style="{StaticResource HoverButtonStyle}" 
                                 FontSize="20" Padding="30,20"
                                 Margin="15" Width="300" Height="50" Click="Button_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -184,11 +185,11 @@
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource ButtonStyle}" 
+                        <Button Style="{StaticResource HoverButtonStyle}" 
                                 FontSize="20" Padding="30,20"
                                 Margin="15" Width="300" Height="50" Click="RoutePointsButton_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Kind="Pin" 
+                                <materialDesign:PackIcon Kind="MapMarkerMultiple" 
                                                         Foreground="White"
                                                         Width="24"
                                                         Height="26"
@@ -197,11 +198,11 @@
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource ButtonStyle}" 
+                        <Button Style="{StaticResource HoverButtonStyle}" 
                                 FontSize="20" Padding="30,20"
                                 Margin="15" Width="300" Height="50" Click="AddRouteButton_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Kind="MapMarkerPlus" 
+                                <materialDesign:PackIcon Kind="MapPlus" 
                                                         Foreground="White"
                                                         Width="24"
                                                         Height="26"
@@ -210,7 +211,7 @@
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource ButtonStyle}" 
+                        <Button Style="{StaticResource HoverButtonStyle}" 
                                 FontSize="20" Padding="30,20"
                                 Margin="15" Width="300" Height="50" Click="ReportsButton_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
