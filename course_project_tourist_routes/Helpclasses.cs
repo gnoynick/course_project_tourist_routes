@@ -20,7 +20,7 @@ namespace course_project_tourist_routes
         private const string ProfilePhotosDirectoryID = "1QOS_QWmIY9LF3FyDfLSIkh6NcVkYIfoC";
         private const string RoutePhotosDirectoryID = "1to-5jvJKdutPUfnP12DSlgtR_pEKZDIK";
 
-        public static string AppDataPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TouristRoutes");
+        public static string AppDataPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "TouristRoutes");
         public static string ProfilePhotosDirectoryPath => Path.Combine(AppDataPath, "profile_photos");
         public static string CurrentUserPhotoPath => Path.Combine(AppDataPath, "current_profile_photo.jpg");
         public static string RoutePhotosDirectoryPath => Path.Combine(AppDataPath, "route_photos");
@@ -126,7 +126,7 @@ namespace course_project_tourist_routes
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error loading image from {imagePath}: {ex.ToString()}");
+                Debug.WriteLine($"Error loading image from {imagePath}: {ex.Message}");
                 return new BitmapImage();
             }
         }

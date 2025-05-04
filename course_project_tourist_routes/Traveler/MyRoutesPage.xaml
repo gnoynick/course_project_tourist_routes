@@ -1,0 +1,159 @@
+﻿<Page x:Class="course_project_tourist_routes.Traveler.MyRoutesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:course_project_tourist_routes.Traveler"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="1200"
+      Title="Мои маршруты">
+    <Grid>
+        <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Background="#4A773C" CornerRadius="10" Margin="10,10,10,0" Padding="15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="BackButton" 
+                                Style="{StaticResource ExitAndSettingsButtonStyle}" 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center"
+                                Width="60"
+                                Height="60" 
+                                IsDefault="True"
+                                Click="BackButton_Click">
+                            <materialDesign:PackIcon Kind="ArrowLeftBold" 
+                                                  Foreground="#F0FFF0"
+                                                  Width="40"
+                                                  Height="40"/>
+                        </Button>
+
+                        <StackPanel Grid.Column="1" 
+                                    Orientation="Horizontal" 
+                                    HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="MapMarkerPath" 
+                                                   Foreground="#F0FFF0" 
+                                                   Width="32"
+                                                   Height="37"
+                                                   Margin="0,0,10,0"/>
+                            <TextBlock Text="Мои маршруты" 
+                                       Foreground="#F0FFF0" 
+                                       FontSize="28" 
+                                       FontWeight="Bold"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" CornerRadius="10" Margin="10,10,10,0" Padding="10">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <materialDesign:PackIcon Kind="Magnify" 
+                                                Foreground="#4A773C"
+                                                Width="24"
+                                                Height="24"
+                                                Margin="0,0,5,0"/>
+                            <TextBlock Text="Поиск" 
+                                   FontSize="16" 
+                                   FontWeight="Bold" 
+                                   Foreground="#4A773C"/>
+                        </StackPanel>
+
+                        <TextBox x:Name="SearchTextBox"
+                             Style="{StaticResource StyledTextBox}"
+                             Margin="0,5,0,0"
+                             TextChanged="SearchTextBox_TextChanged"
+                             materialDesign:HintAssist.Hint="Введите название маршрута">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="2" CornerRadius="10" Background="White" Margin="10" Padding="10">
+                    <ListView x:Name="RoutesListView" 
+                              ScrollViewer.CanContentScroll="True"
+                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              ScrollViewer.IsDeferredScrollingEnabled="False"
+                              Style="{StaticResource ListViewStyle}"
+                              ItemContainerStyle="{StaticResource ListViewItemStyle}"
+                              BorderThickness="0"
+                              SelectionChanged="RoutesListView_SelectionChanged" d:ItemsSource="{d:SampleData ItemCount=5}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource RouteCardStyle}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Margin="5">
+                                            <TextBlock Text="{Binding TitleRoute}" 
+                                                   FontSize="14" 
+                                                   FontWeight="Bold" 
+                                                   Style="{StaticResource RouteTextStyle}"/>
+                                            <TextBlock Text="{Binding DescriptionRoute}" 
+                                                   Style="{StaticResource RouteTextStyle}" 
+                                                   TextWrapping="Wrap"
+                                                   MaxHeight="60"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                                <TextBlock Text="{Binding DateAddedRoute, StringFormat='Создан: {0:dd.MM.yyyy}'}" 
+                                                       FontStyle="Italic" 
+                                                       Foreground="#8B7962"/>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" 
+                                                Orientation="Horizontal" 
+                                                VerticalAlignment="Center" 
+                                                Margin="5">
+                                            <Button x:Name="EditButton"
+                                                Style="{StaticResource HoverButtonStyle}"
+                                                Width="40"
+                                                Height="30"
+                                                Margin="0,0,10,0"
+                                                Tag="{Binding IdRoute}"
+                                                Click="EditRouteButton_Click"
+                                                ToolTip="Редактировать">
+                                                <materialDesign:PackIcon Kind="Pencil" 
+                                                                  Width="16" 
+                                                                  Height="16" 
+                                                                  Foreground="White"/>
+                                            </Button>
+                                            <Button x:Name="DeleteButton"
+                                                Style="{StaticResource HoverButtonStyle}"
+                                                Width="40"
+                                                Height="30"
+                                                Tag="{Binding IdRoute}"
+                                                Click="DeleteRouteButton_Click"
+                                                ToolTip="Удалить">
+                                                <materialDesign:PackIcon Kind="Delete" 
+                                                                  Width="16" 
+                                                                  Height="16" 
+                                                                  Foreground="White"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
