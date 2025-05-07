@@ -31,20 +31,10 @@
                         </StackPanel>
                     </Button>
 
-                    <Button x:Name="AddRouteButton" 
-                            Style="{StaticResource HoverButtonStyle}" 
-                            FontSize="15" Padding="30,20"
-                            Margin="20" Width="260" Height="70" Click="AddRouteButton_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <materialDesign:PackIcon Kind="MapPlus" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
-                            <TextBlock Text="Добавить маршрут" FontSize="18" Foreground="white"/>
-                        </StackPanel>
-                    </Button>
-
                     <Button x:Name="OrganizeHikeButton" 
                             Style="{StaticResource HoverButtonStyle}" 
                             FontSize="20" Padding="30,20"
-                            Margin="15" Width="260" Height="70" Click="OrganizeHikeButton_Click">
+                            Margin="15" Width="260" Height="70" Click="TravelEvensButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <materialDesign:PackIcon Kind="WalletTravel" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
                             <TextBlock Text="Путешествия" FontSize="18" Foreground="white"/>

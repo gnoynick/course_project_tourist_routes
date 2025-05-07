@@ -14,8 +14,8 @@ namespace course_project_tourist_routes
 
             try
             {
-                CloudStorage.ClearProfilePhotosDirectoryAsync();
-                CloudStorage.ClearRoutePhotosDirectoryAsync();
+                _ = CloudStorage.ClearProfilePhotosDirectoryAsync();
+                _ = CloudStorage.ClearRoutePhotosDirectoryAsync();
             }
             catch (Exception ex)
             {

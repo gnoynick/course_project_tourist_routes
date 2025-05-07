@@ -6,24 +6,57 @@ using System.Windows.Navigation;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Data.Entity;
+using System.Threading.Tasks;
+using System.Windows.Media;
+using System.IO;
+using System.Windows.Media.Imaging;
+using course_project_tourist_routes.Traveler;
 
 namespace course_project_tourist_routes.Common
 {
     public partial class RoutesPage : Page
     {
-        private int _userId;
+        private readonly int _userId;
         private List<Categories> _categories = new List<Categories>();
         private List<string> _countries = new List<string>();
         private List<string> _cities = new List<string>();
+        private Dictionary<int, ImageBrush> _routePhotosCache = new Dictionary<int, ImageBrush>();
+        public bool IsSelectionMode { get; set; }
 
-        public RoutesPage(int userId)
+        public RoutesPage(int userId, bool isSelectionMode = false)
         {
             InitializeComponent();
             _userId = userId;
+            IsSelectionMode = isSelectionMode;
 
-            LoadCategories();
-            LoadCountriesAndCities();
-            LoadRoutes();
+            if (IsSelectionMode)
+            {
+                AddRouteButton.Visibility = Visibility.Collapsed;
+            }
+
+            _ = LoadCategoriesAsync();
+            _ = LoadCountriesAndCitiesAsync();
+            _ = LoadRoutesAsync();
+        }
+
+        public event Action<dynamic> RouteSelected;
+
+        private void SelectButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button button) || !(button.Tag is int routeId))
+            {
+                return;
+            }
+
+            var selectedRoute = RoutesListView.Items
+                .Cast<dynamic>()
+                .FirstOrDefault(r => r.IdRoute == routeId);
+
+            if (selectedRoute != null)
+            {
+                RouteSelected?.Invoke(selectedRoute);
+                NavigationService.GoBack();
+            }
         }
 
         private void RoutesPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -35,29 +68,29 @@ namespace course_project_tourist_routes.Common
                     context.ChangeTracker.Entries().ToList().ForEach(x => x.Reload());
                 }
 
-                LoadRoutes();
+                _ = LoadRoutesAsync();
             }
         }
 
-        private void LoadCountriesAndCities()
+        private async Task LoadCountriesAndCitiesAsync()
         {
             try
             {
                 using (var context = new TouristRoutesEntities())
                 {
-                    _countries = context.RoutePoints
+                    _countries = await context.RoutePoints
                         .Where(p => !string.IsNullOrEmpty(p.Country))
                         .Select(p => p.Country)
                         .Distinct()
                         .OrderBy(c => c)
-                        .ToList();
+                        .ToListAsync();
 
-                    _cities = context.RoutePoints
+                    _cities = await context.RoutePoints
                         .Where(p => !string.IsNullOrEmpty(p.City))
                         .Select(p => p.City)
                         .Distinct()
                         .OrderBy(c => c)
-                        .ToList();
+                        .ToListAsync();
 
                     CountryComboBox.ItemsSource = new List<string> { "Все страны" }.Concat(_countries);
                     CityComboBox.ItemsSource = new List<string> { "Все города" }.Concat(_cities);
@@ -117,20 +150,23 @@ namespace course_project_tourist_routes.Common
             }
         }
 
-        private void LoadCategories()
+        private async Task LoadCategoriesAsync()
         {
             try
             {
                 using (var context = new TouristRoutesEntities())
                 {
-                    _categories = context.Categories.OrderBy(c => c.IdCategory).ToList();
+                    _categories = await context.Categories.OrderBy(c => c.IdCategory).ToListAsync();
 
                     var allItem = new Categories { IdCategory = 0, NameCategory = "Все" };
                     _categories.Insert(0, allItem);
 
-                    CategoryComboBox.ItemsSource = _categories;
-                    CategoryComboBox.SelectedValuePath = "IdCategory";
-                    CategoryComboBox.SelectedIndex = 0;
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        CategoryComboBox.ItemsSource = _categories;
+                        CategoryComboBox.SelectedValuePath = "IdCategory";
+                        CategoryComboBox.SelectedIndex = 0;
+                    });
                 }
             }
             catch (Exception ex)
@@ -139,9 +175,11 @@ namespace course_project_tourist_routes.Common
             }
         }
 
-
-        private void LoadRoutes(int? categoryId = null, string country = null, string city = null, string searchText = null)
+        private async Task LoadRoutesAsync(int? categoryId = null, string country = null, string city = null, string searchText = null)
         {
+            LoadingGrid.Visibility = Visibility.Visible;
+            RoutesListViewBorder.Visibility = Visibility.Collapsed;
+
             try
             {
                 using (var context = new TouristRoutesEntities())
@@ -149,12 +187,12 @@ namespace course_project_tourist_routes.Common
                     int currentUserRoleId = GetUserRoleId();
 
                     IQueryable<Routes> routesQuery = context.Routes
-                        .Include("Categories")
-                        .Include("Users")
-                        .Include("Users.Roles")
-                        .Include("RoutePoints");
+                        .Include(r => r.Categories)
+                        .Include(r => r.Users)
+                        .Include(r => r.Users.Roles)
+                        .Include(r => r.RoutePoints);
 
-                    if (currentUserRoleId == 2)
+                    if (currentUserRoleId == 2 && !IsSelectionMode)
                     {
                         routesQuery = routesQuery.Where(r => r.IdUser != _userId);
                     }
@@ -179,33 +217,175 @@ namespace course_project_tourist_routes.Common
                         routesQuery = routesQuery.Where(r => r.TitleRoute.Contains(searchText));
                     }
 
-                    var routes = routesQuery
+                    var routesList = await routesQuery
                         .OrderByDescending(r => r.IdRoute)
-                        .ToList()
+                        .ToListAsync();
+
+                    var loadPhotoTasks = routesList.Select(async route =>
+                    {
+                        var photoBrush = await LoadRoutePhotoAsync(route.IdRoute);
+                        _routePhotosCache[route.IdRoute] = photoBrush;
+                    }).ToList();
+
+                    await Task.WhenAll(loadPhotoTasks);
+
+                    var routes = routesList
                         .Select(r => new
                         {
                             r.IdRoute,
                             r.TitleRoute,
-                            DescriptionRoute = r.DescriptionRoute ?? "",
+                            DescriptionRoute = r.DescriptionRoute.Length > 30 ?
+                                r.DescriptionRoute.Substring(0, 30) + "..." :
+                                r.DescriptionRoute,
                             CategoryName = r.Categories.NameCategory,
                             AuthorInfo = r.Categories.NameCategory == "Пользовательские" ? $"Автор: {r.Users.UserName}" : "",
                             Countries = string.Join(", ", r.RoutePoints.Select(p => p.Country).Distinct()),
                             Cities = string.Join(", ", r.RoutePoints.Select(p => p.City).Distinct()),
                             ViewsCount = $"Просмотров: {r.ViewsCount ?? 0}",
+                            RoutePhotoBrush = _routePhotosCache.TryGetValue(r.IdRoute, out var brush) ?
+                                brush : CreateDefaultRouteImageBrush(),
                             r.IdCategory,
                             r.IdUser,
                             AuthorRole = r.Users.Roles.IdRole,
                             CanEdit = currentUserRoleId == 1 && r.Categories.NameCategory != "Пользовательские",
                             CanDelete = currentUserRoleId == 1
-                        });
+                        }).ToList();
 
-                    RoutesListView.ItemsSource = routes;
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        RoutesListView.ItemsSource = routes;
+                        LoadingGrid.Visibility = Visibility.Collapsed;
+                        RoutesListViewBorder.Visibility = Visibility.Visible;
+                    });
                 }
             }
             catch (Exception ex)
             {
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    LoadingGrid.Visibility = Visibility.Collapsed;
+                    RoutesListViewBorder.Visibility = Visibility.Visible;
+                });
                 MessageBox.Show($"Ошибка при загрузке маршрутов: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private async Task<ImageBrush> LoadRoutePhotoAsync(int routeId)
+        {
+            string defaultPhotoPath = "pack://application:,,,/Resources/route_placeholder.jpg";
+            var defaultBrush = CreateImageBrush(defaultPhotoPath);
+
+            try
+            {
+                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                string appFolder = Path.Combine(appDataPath, "TouristRoutes");
+                string routePhotosDir = Path.Combine(appFolder, "route_photos");
+                Directory.CreateDirectory(routePhotosDir);
+
+                string fileName = $"Route_{routeId}_Photo_1.jpg";
+                string photoPath = Path.Combine(routePhotosDir, fileName);
+
+                if (File.Exists(photoPath))
+                {
+                    var brush = CreateImageBrush(photoPath);
+                    if (brush.ImageSource != null)
+                        return brush;
+                }
+
+                string fileId = await GetRoutePhotoFileId(routeId);
+                if (!string.IsNullOrEmpty(fileId))
+                {
+                    await CloudStorage.DownloadRoutePhotoAsync(fileId, fileName);
+
+                    if (File.Exists(photoPath))
+                    {
+                        var brush = CreateImageBrush(photoPath);
+                        if (brush.ImageSource != null)
+                            return brush;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка загрузки фото маршрута: {ex.Message}");
+            }
+
+            return defaultBrush;
+        }
+
+        private async Task<string> GetRoutePhotoFileId(int routeId)
+        {
+            try
+            {
+                using (var context = new TouristRoutesEntities())
+                {
+                    var photo = await context.Photos
+                        .Where(p => p.IdRoute == routeId)
+                        .OrderBy(p => p.IdPhoto)
+                        .FirstOrDefaultAsync();
+
+                    return photo?.Photo;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private ImageBrush CreateImageBrush(string imagePath)
+        {
+            try
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                bitmap.EndInit();
+
+                if (bitmap.CanFreeze)
+                    bitmap.Freeze();
+
+                return new ImageBrush
+                {
+                    ImageSource = bitmap
+                };
+            }
+            catch
+            {
+                return CreateDefaultRouteImageBrush();
+            }
+        }
+
+        private ImageBrush CreateDefaultRouteImageBrush()
+        {
+            return new ImageBrush
+            {
+                ImageSource = new BitmapImage(
+                    new Uri("pack://application:,,,/Resources/route_placeholder.jpg")),
+                Stretch = Stretch.UniformToFill
+            };
+        }
+
+        private void RoutePhotoButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Background is ImageBrush brush)
+            {
+                BackButton.IsCancel = false;
+                FullScreenPhoto.Fill = brush;
+                SupRect.Visibility = Visibility.Visible;
+                FullScreenPhoto.Visibility = Visibility.Visible;
+                PhotoBackButton.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void PhotoBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            BackButton.IsCancel = true;
+            SupRect.Visibility = Visibility.Collapsed;
+            FullScreenPhoto.Visibility = Visibility.Collapsed;
+            PhotoBackButton.Visibility = Visibility.Collapsed;
         }
 
         private void ApplyFilters()
@@ -215,7 +395,7 @@ namespace course_project_tourist_routes.Common
             var selectedCity = CityComboBox.SelectedItem as string;
             var searchText = SearchTextBox.Text;
 
-            LoadRoutes(
+            _ = LoadRoutesAsync(
                 selectedCategory?.IdCategory == 0 ? null : (selectedCategory?.IdCategory),
                 selectedCountry,
                 selectedCity,
@@ -230,8 +410,7 @@ namespace course_project_tourist_routes.Common
 
         private void CountryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedCountry = CountryComboBox.SelectedItem as string;
-            if (selectedCountry != null)
+            if (CountryComboBox.SelectedItem is string selectedCountry)
             {
                 UpdateCitiesList(selectedCountry);
                 ApplyFilters();
@@ -304,7 +483,7 @@ namespace course_project_tourist_routes.Common
                             .Include(r => r.Photos)
                             .Include(r => r.RoutePoints)
                             .Include(r => r.Favorites)
-                            .Include(r => r.Hikes)
+                            .Include(r => r.TravelEvents)
                             .FirstOrDefault(r => r.IdRoute == routeId);
 
                         if (routeToDelete != null)
@@ -315,7 +494,7 @@ namespace course_project_tourist_routes.Common
                                 {
                                     try
                                     {
-                                        CloudStorage.DeleteFileAsync(photo.Photo);
+                                        _ = CloudStorage.DeleteFileAsync(photo.Photo);
                                     }
                                     catch (Exception ex)
                                     {
@@ -335,9 +514,9 @@ namespace course_project_tourist_routes.Common
                                 context.Favorites.Remove(favorite);
                             }
 
-                            foreach (var tour in routeToDelete.Hikes.ToList())
+                            foreach (var tour in routeToDelete.TravelEvents.ToList())
                             {
-                                context.Hikes.Remove(tour);
+                                context.TravelEvents.Remove(tour);
                             }
 
                             context.Routes.Remove(routeToDelete);
@@ -353,6 +532,11 @@ namespace course_project_tourist_routes.Common
                     MessageBox.Show($"Ошибка при удалении маршрута: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private void AddRouteButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new AddRoutePage(_userId));
         }
     }
 }

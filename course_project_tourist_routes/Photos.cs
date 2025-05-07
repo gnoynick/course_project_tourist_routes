@@ -17,7 +17,7 @@ namespace course_project_tourist_routes
         public int IdPhoto { get; set; }
         public Nullable<int> IdRoute { get; set; }
         public string Photo { get; set; }
-        public Nullable<System.DateTime> DateAddedPhoto { get; set; }
+        public System.DateTime DateAddedPhoto { get; set; }
     
         public virtual Routes Routes { get; set; }
     }

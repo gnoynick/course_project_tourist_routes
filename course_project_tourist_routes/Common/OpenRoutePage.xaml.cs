@@ -8,20 +8,22 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Data.Entity;
 using System.Windows.Media;
+using System.Diagnostics;
+using System.Windows.Input;
 
 namespace course_project_tourist_routes.Common
 {
     public partial class OpenRoutePage : Page
     {
-        private int _routeId;
-        private int _userId;
+        private readonly int _routeId;
+        private readonly int _userId;
         private bool _isFavorite;
         private int _routeAuthorId;
-        private int _currentUserRoleId;
         private bool _isCurrentUserAdmin;
-        private List<string> _tempPhotoPaths = new List<string>();
+        private readonly List<string> _tempPhotoPaths = new List<string>();
         private int _currentPhotoIndex = 0;
         private int _totalPhotos = 0;
+        private bool _photosLoaded = false;
 
         public OpenRoutePage(int routeId, int userId)
         {
@@ -29,7 +31,49 @@ namespace course_project_tourist_routes.Common
             _routeId = routeId;
             _userId = userId;
 
+            this.PreviewKeyDown += OpenRoutePage_KeyDown;
+
             LoadRouteData();
+        }
+
+        private void OpenRoutePage_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (FullScreenPhotoGrid.Visibility != Visibility.Visible) return;
+
+            switch (e.Key)
+            {
+                case Key.Left:
+                    if (_currentPhotoIndex > 0)
+                    {
+                        _currentPhotoIndex--;
+                        ShowPhotoAtCurrentIndex();
+                    }
+                    e.Handled = true;
+                    break;
+
+                case Key.Right:
+                    if (_currentPhotoIndex < _totalPhotos - 1)
+                    {
+                        _currentPhotoIndex++;
+                        ShowPhotoAtCurrentIndex();
+                    }
+                    e.Handled = true;
+                    break;
+            }
+        }
+
+        private void DisablePhotoButtons()
+        {
+            Photo1Button.IsEnabled = false;
+            Photo2Button.IsEnabled = false;
+            Photo3Button.IsEnabled = false;
+        }
+
+        private void EnablePhotoButtons()
+        {
+            Photo1Button.IsEnabled = true;
+            Photo2Button.IsEnabled = true;
+            Photo3Button.IsEnabled = true;
         }
 
         private async void LoadRouteData()
@@ -44,7 +88,6 @@ namespace course_project_tourist_routes.Common
 
                     if (currentUser != null)
                     {
-                        _currentUserRoleId = (int)currentUser.IdRole;
                         _isCurrentUserAdmin = currentUser.Roles.NameRole == "Администратор";
                     }
 
@@ -93,7 +136,7 @@ namespace course_project_tourist_routes.Common
                     }
 
                     DescriptionText.Text = route.DescriptionRoute ?? "Описание отсутствует";
-                    LengthText.Text = $"Длина: {route.LengthPoint?.ToString("0.00") ?? "0"} км";
+                    LengthText.Text = $"Длина: {route.LengthRoute.ToString("0.00") ?? "0"} км";
                     StepsText.Text = $"Шаги: {route.StepsCount?.ToString() ?? "0"}";
                     PointsListView.ItemsSource = route.RoutePoints?.ToList() ?? new List<RoutePoints>();
 
@@ -110,10 +153,13 @@ namespace course_project_tourist_routes.Common
         {
             try
             {
+                _photosLoaded = false;
+                DisablePhotoButtons();
                 HideAllLoadersAndButtons();
 
                 if (photos == null || !photos.Any())
                 {
+                    _photosLoaded = true;
                     return;
                 }
 
@@ -123,76 +169,121 @@ namespace course_project_tourist_routes.Common
                     Directory.CreateDirectory(dir);
                 }
 
+                var downloadTasks = new List<Task>();
                 for (int i = 0; i < Math.Min(photos.Count, 3); i++)
                 {
                     var photo = photos[i];
                     if (string.IsNullOrEmpty(photo.Photo)) continue;
 
-                    string path = Path.Combine(dir, $"route_{_routeId}_photo_{i}.jpg");
-
-                    switch (i)
+                    int index = i;
+                    downloadTasks.Add(Task.Run(async () =>
                     {
-                        case 0:
-                            Photo1Progress.Visibility = Visibility.Visible;
-                            break;
-                        case 1:
-                            Photo2Progress.Visibility = Visibility.Visible;
-                            break;
-                        case 2:
-                            Photo3Progress.Visibility = Visibility.Visible;
-                            break;
-                    }
+                        string fileName = $"route_{_routeId}_photo_{index + 1}.jpg"; // Изменено на index + 1
+                        string path = Path.Combine(dir, fileName);
 
-                    try
-                    {
-                        if (File.Exists(path))
-                        {
-                            await Dispatcher.InvokeAsync(() => ShowPhoto(i, path));
-                            continue;
-                        }
-
-                        await CloudStorage.DownloadRoutePhotoAsync(photo.Photo, path);
-                        _tempPhotoPaths.Add(path);
-                        await Dispatcher.InvokeAsync(() => ShowPhoto(i, path));
-                    }
-                    catch (Exception ex)
-                    {
                         await Dispatcher.InvokeAsync(() =>
-                            MessageBox.Show($"Ошибка загрузки: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error));
-                    }
+                        {
+                            switch (index)
+                            {
+                                case 0: Photo1Progress.Visibility = Visibility.Visible; break;
+                                case 1: Photo2Progress.Visibility = Visibility.Visible; break;
+                                case 2: Photo3Progress.Visibility = Visibility.Visible; break;
+                            }
+                        });
+
+                        try
+                        {
+                            if (!File.Exists(path) || new FileInfo(path).Length == 0)
+                            {
+                                await CloudStorage.DownloadRoutePhotoAsync(photo.Photo, fileName);
+                            }
+
+                            await Dispatcher.InvokeAsync(() => ShowPhoto(index, path));
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Ошибка загрузки фото {index + 1}: {ex.Message}");
+                            await Dispatcher.InvokeAsync(() => ShowDefaultPhoto(index));
+                        }
+                    }));
                 }
+
+                await Task.WhenAll(downloadTasks);
+                _photosLoaded = true;
+                EnablePhotoButtons();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                _photosLoaded = true;
+                Debug.WriteLine($"Ошибка загрузки фотографий: {ex.Message}");
             }
         }
 
-        private void ShowPhoto(int index, string path)
+        private void ShowDefaultPhoto(int index)
         {
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(path);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.EndInit();
-
-            var imageBrush = new ImageBrush(bitmap);
-            Resources[$"photo{index + 1}brush"] = imageBrush;
+            var defaultBrush = new ImageBrush(new BitmapImage(
+                new Uri("pack://application:,,,/Resources/route_placeholder.jpg")));
 
             switch (index)
             {
                 case 0:
                     Photo1Progress.Visibility = Visibility.Collapsed;
                     Photo1Button.Visibility = Visibility.Visible;
+                    Resources["photo1brush"] = defaultBrush;
                     break;
                 case 1:
                     Photo2Progress.Visibility = Visibility.Collapsed;
                     Photo2Button.Visibility = Visibility.Visible;
+                    Resources["photo2brush"] = defaultBrush;
                     break;
                 case 2:
                     Photo3Progress.Visibility = Visibility.Collapsed;
                     Photo3Button.Visibility = Visibility.Visible;
+                    Resources["photo3brush"] = defaultBrush;
                     break;
+            }
+        }
+
+        private void ShowPhoto(int index, string path)
+        {
+            try
+            {
+                if (!File.Exists(path) || new FileInfo(path).Length == 0)
+                {
+                    ShowDefaultPhoto(index);
+                    return;
+                }
+
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(path);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                bitmap.EndInit();
+
+                var imageBrush = new ImageBrush(bitmap);
+                Resources[$"photo{index + 1}brush"] = imageBrush;
+
+                switch (index)
+                {
+                    case 0:
+                        Photo1Progress.Visibility = Visibility.Collapsed;
+                        Photo1Button.Visibility = Visibility.Visible;
+                        break;
+                    case 1:
+                        Photo2Progress.Visibility = Visibility.Collapsed;
+                        Photo2Button.Visibility = Visibility.Visible;
+                        break;
+                    case 2:
+                        Photo3Progress.Visibility = Visibility.Collapsed;
+                        Photo3Button.Visibility = Visibility.Visible;
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка отображения фото: {ex.Message}");
+                ShowDefaultPhoto(index);
             }
         }
 
@@ -223,8 +314,6 @@ namespace course_project_tourist_routes.Common
                 MessageBox.Show($"Ошибка при проверке статуса избранного: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-        public event Action<int> RouteViewed;
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
@@ -298,8 +387,9 @@ namespace course_project_tourist_routes.Common
 
         private void PhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            if (button == null) return;
+            this.Focus();
+            if (!_photosLoaded) return;
+            if (!(sender is Button button)) return;
 
             _totalPhotos = 0;
             if (Photo1Button.Visibility == Visibility.Visible) _totalPhotos++;
@@ -341,6 +431,7 @@ namespace course_project_tourist_routes.Common
             SupRect.Visibility = Visibility.Collapsed;
             FullScreenPhotoGrid.Visibility = Visibility.Collapsed;
             BackButton.IsCancel = true;
+            this.Focus();
         }
 
         private void PrevPhotoButton_Click(object sender, RoutedEventArgs e)

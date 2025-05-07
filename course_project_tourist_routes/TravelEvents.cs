@@ -12,24 +12,28 @@ namespace course_project_tourist_routes
     using System;
     using System.Collections.Generic;
     
-    public partial class Hikes
+    public partial class TravelEvents
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Hikes()
+        public TravelEvents()
         {
-            this.HikeParticipants = new HashSet<HikeParticipants>();
+            this.TravelParticipants = new HashSet<TravelParticipants>();
         }
     
-        public int IdHike { get; set; }
+        public int IdEvent { get; set; }
         public Nullable<int> IdRoute { get; set; }
-        public Nullable<System.DateTime> StartDate { get; set; }
-        public Nullable<System.DateTime> EndDate { get; set; }
-        public string DescriptionHike { get; set; }
-        public Nullable<int> MaxParticipants { get; set; }
-        public Nullable<System.DateTime> DateAddedHike { get; set; }
+        public Nullable<int> IdUser { get; set; }
+        public string TitleEvent { get; set; }
+        public System.DateTime StartDate { get; set; }
+        public System.DateTime EndDate { get; set; }
+        public int MaxParticipants { get; set; }
+        public string StatusEvent { get; set; }
+        public string DescriptionEvent { get; set; }
+        public System.DateTime DateAddedEvent { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<HikeParticipants> HikeParticipants { get; set; }
         public virtual Routes Routes { get; set; }
+        public virtual Users Users { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TravelParticipants> TravelParticipants { get; set; }
     }
 }

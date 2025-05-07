@@ -16,6 +16,7 @@ namespace course_project_tourist_routes.Common
         public AutorizWindow()
         {
             InitializeComponent();
+            LoginTextBox.Focus();
         }
 
         public static string GetHash(string password)
@@ -98,13 +99,13 @@ namespace course_project_tourist_routes.Common
 
                 if (user.IdRole == 1)
                 {
-                    AdminWindow adminWindow = new AdminWindow(user.IdUser, user.UserName, user.ProfileStatus, user);
+                    AdminWindow adminWindow = new AdminWindow(user.IdUser, user.UserName, user.ProfileBio, user);
                     this.Close();
                     adminWindow.Show();
                 }
                 else if (user.IdRole == 2)
                 {
-                    TravelerWindow travelerWindow = new TravelerWindow(user.IdUser, user.UserName, user.ProfileStatus, user);
+                    TravelerWindow travelerWindow = new TravelerWindow(user.IdUser, user.UserName, user.ProfileBio, user);
                     this.Close();
                     travelerWindow.Show();
                 }

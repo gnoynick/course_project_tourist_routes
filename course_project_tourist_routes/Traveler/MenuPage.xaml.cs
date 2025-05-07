@@ -7,7 +7,7 @@ namespace course_project_tourist_routes.Traveler
 {
     public partial class MenuPage : Page
     {
-        private int _userId;
+        private readonly int _userId;
 
         public MenuPage(int userId)
         {
@@ -26,20 +26,14 @@ namespace course_project_tourist_routes.Traveler
                 }
         }
 
-        private void AddRouteButton_Click(object sender, RoutedEventArgs e)
+        private void TravelEvensButton_Click(object sender, RoutedEventArgs e)
         {
             ToggleSettingsMenuFramesVisibility();
 
             if (Window.GetWindow(this) is TravelerWindow travelerWindow)
             {
-                travelerWindow.NavigationService.Navigate(new AddRoutePage(_userId));
+                travelerWindow.NavigationService.Navigate(new TravelEventsPage(_userId));
             }
-        }
-
-        private void OrganizeHikeButton_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleSettingsMenuFramesVisibility();
-
         }
 
         private void FindRouteButton_Click(object sender, RoutedEventArgs e)
@@ -72,8 +66,8 @@ namespace course_project_tourist_routes.Traveler
 
             if (result == MessageBoxResult.Yes)
             {
-                CloudStorage.ClearRoutePhotosDirectoryAsync();
-                CloudStorage.ClearProfilePhotosDirectoryAsync();
+                _ = CloudStorage.ClearRoutePhotosDirectoryAsync();
+                _ = CloudStorage.ClearProfilePhotosDirectoryAsync();
                 AutorizWindow mainWindow = new AutorizWindow();
                 mainWindow.Show();
                 Window.GetWindow(this).Close();

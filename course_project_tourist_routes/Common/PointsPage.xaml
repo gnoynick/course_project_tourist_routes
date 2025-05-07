@@ -30,7 +30,7 @@
                     </Button>
 
                     <Button x:Name="AddNewPointButton" 
-                            Style="{StaticResource ButtonStyle}"
+                            Style="{StaticResource ExitAndSettingsButtonStyle}"
                             HorizontalAlignment="Right"
                             Width="180"
                             Height="50"
@@ -70,6 +70,11 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <materialDesign:PackIcon Kind="Magnify" 
+                                   Width="24"
+                                   Height="33"
+                                   VerticalAlignment="Center"
+                                   Foreground="#4A773C"/>
                                 <TextBlock Text="поиск"
                                            VerticalAlignment="Center"
                                            HorizontalAlignment="Center"
@@ -275,12 +280,13 @@
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <Button x:Name="SelectPointButton"
                                                     Style="{StaticResource ButtonStyle}" 
-                                                    Padding="5"
-                                                    Width="120"
+                                                    Width="150"
+                                                    Height="25"
                                                     Margin="0,0,5,0"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    Click="SelectPointButton_Click">
+                                                    Click="SelectPointButton_Click"
+                                                    Visibility="{Binding DataContext.IsSelectMode, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <materialDesign:PackIcon Kind="Check" 
                                                                              Width="16"
@@ -293,28 +299,28 @@
 
                                             <Button x:Name="EditPointButton"
                                                     Style="{StaticResource ButtonStyle}" 
-                                                    Padding="5"
-                                                    Width="40"
+                                                    Width="55"
+                                                    Height="25"
                                                     Click="EditPointButton_Click"
                                                     Focusable="False"
-                                                    Visibility="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                    Visibility="{Binding DataContext.IsAdminMode, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                 <materialDesign:PackIcon Kind="Pencil" 
-                                                                         Width="16"
-                                                                         Height="16"
+                                                                         Width="15"
+                                                                         Height="15"
                                                                          Foreground="White"/>
                                             </Button>
 
                                             <Button x:Name="DeletePointButton"
                                                     Style="{StaticResource ButtonStyle}" 
-                                                    Padding="5"
-                                                    Width="40"
-                                                    Margin="5,0,0,0"
+                                                    Width="55"
+                                                    Height="25"
+                                                    Margin="10,0,0,0"
                                                     Click="DeletePointButton_Click"
                                                     Focusable="False"
-                                                    Visibility="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                    Visibility="{Binding DataContext.IsAdminMode, RelativeSource={RelativeSource AncestorType=Page}, Converter={StaticResource BooleanToVisibilityConverter}}">
                                                 <materialDesign:PackIcon Kind="Delete" 
-                                                                         Width="16"
-                                                                         Height="16"
+                                                                         Width="15"
+                                                                         Height="15"
                                                                          Foreground="White"/>
                                             </Button>
                                         </StackPanel>

@@ -12,13 +12,14 @@ namespace course_project_tourist_routes
     using System;
     using System.Collections.Generic;
     
-    public partial class HikeParticipants
+    public partial class TravelParticipants
     {
         public int IdParticipant { get; set; }
-        public Nullable<int> IdHike { get; set; }
+        public Nullable<int> IdEvent { get; set; }
         public Nullable<int> IdUser { get; set; }
+        public System.DateTime DateJoinParticipant { get; set; }
     
-        public virtual Hikes Hikes { get; set; }
+        public virtual TravelEvents TravelEvents { get; set; }
         public virtual Users Users { get; set; }
     }
 }

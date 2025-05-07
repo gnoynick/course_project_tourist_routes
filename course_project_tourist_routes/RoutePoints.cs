@@ -25,7 +25,7 @@ namespace course_project_tourist_routes
         public Nullable<int> IdType { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
-        public Nullable<System.DateTime> DateAddedPoint { get; set; }
+        public System.DateTime DateAddedPoint { get; set; }
     
         public virtual PointTypes PointTypes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

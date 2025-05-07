@@ -1,5 +1,6 @@
 ﻿using course_project_tourist_routes.Common;
 using System;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace course_project_tourist_routes.Traveler
         private string _userName;
         private string _userStatus;
         private bool _isAnimating;
+        private bool _isPhotoFullScreen = false;
 
         private Storyboard _menuFrameSlideIn;
         private Storyboard _menuFrameSlideOut;
@@ -50,7 +52,7 @@ namespace course_project_tourist_routes.Traveler
             UserLogin.Text = _userName;
             UserStatus.Text = _userStatus;
 
-            LoadRoutes();
+            _ = LoadRoutesAsync();
             StartClock();
         }
 
@@ -145,7 +147,7 @@ namespace course_project_tourist_routes.Traveler
                 {
                     context.ChangeTracker.Entries().ToList().ForEach(x => x.Reload());
                 }
-                LoadRoutes();
+                _ = LoadRoutesAsync();
             }
         }
 
@@ -181,13 +183,13 @@ namespace course_project_tourist_routes.Traveler
             }
         }
 
-        public void LoadRoutes()
+        public async Task LoadRoutesAsync()
         {
             try
             {
                 using (var db = new TouristRoutesEntities())
                 {
-                    var routes = db.Routes
+                    var routes = await db.Routes
                         .Where(r => r.IdUser == _userId && r.Categories.NameCategory == "Пользовательские")
                         .OrderByDescending(r => r.IdRoute)
                         .Take(3)
@@ -198,7 +200,7 @@ namespace course_project_tourist_routes.Traveler
                                 r.DescriptionRoute.Substring(0, 30) + "..." :
                                 r.DescriptionRoute
                         })
-                        .ToList();
+                        .ToListAsync();
 
                     ListViewRoutes.ItemsSource = routes;
                 }
@@ -237,6 +239,13 @@ namespace course_project_tourist_routes.Traveler
         {
             if (e.Key == Key.Escape)
             {
+                if (_isPhotoFullScreen)
+                {
+                    BackButton_Click(null, null);
+                    e.Handled = true;
+                    return;
+                }
+
                 if (MenuFrame.Visibility == Visibility.Visible)
                 {
                     _ = AnimateFrameOut(MenuFrame, _menuFrameSlideOut);
@@ -245,11 +254,6 @@ namespace course_project_tourist_routes.Traveler
                 else if (SettingsFrame.Visibility == Visibility.Visible)
                 {
                     _ = AnimateFrameOut(SettingsFrame, _settingsFrameSlideOut);
-                    e.Handled = true;
-                }
-                else if (FullScreenAvatar.Visibility == Visibility.Visible)
-                {
-                    BackButton_Click(null, null);
                     e.Handled = true;
                 }
             }
@@ -333,6 +337,12 @@ namespace course_project_tourist_routes.Traveler
 
         private void ProfilePhoto_Click(object sender, RoutedEventArgs e)
         {
+            _isPhotoFullScreen = true;
+            if (SettingsFrame.Visibility == Visibility.Visible || MenuFrame.Visibility == Visibility.Visible)
+            {
+                MenuButton.IsCancel = false;
+                Settings.IsCancel = false;
+            }
             SupRect.Visibility = Visibility.Visible;
             FullScreenAvatar.Visibility = Visibility.Visible;
             BackButton.Visibility = Visibility.Visible;
@@ -361,7 +371,7 @@ namespace course_project_tourist_routes.Traveler
             }
         }
 
-        private void ListViewRoutes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ListViewRoutes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!MenuButton.IsEnabled || _isAnimating) return;
 
@@ -370,20 +380,35 @@ namespace course_project_tourist_routes.Traveler
                 dynamic selectedItem = ListViewRoutes.SelectedItem;
                 string titleRoute = selectedItem.TitleRoute;
 
-                using (var db = new TouristRoutesEntities())
+                try
                 {
-                    var route = db.Routes.FirstOrDefault(r => r.TitleRoute == titleRoute);
-                    if (route != null)
+                    using (var db = new TouristRoutesEntities())
                     {
-                        NavigationService?.Navigate(new OpenRoutePage(route.IdRoute, _userId));
+                        var route = await db.Routes
+                            .FirstOrDefaultAsync(r => r.TitleRoute == titleRoute);
+
+                        if (route != null)
+                        {
+                            NavigationService?.Navigate(new OpenRoutePage(route.IdRoute, _userId));
+                        }
                     }
                 }
-                ListViewRoutes.SelectedItem = null;
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при переходе к маршруту: " + ex.Message);
+                }
+                finally
+                {
+                    ListViewRoutes.SelectedItem = null;
+                }
             }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
+            _isPhotoFullScreen = false;
+            MenuButton.IsCancel = true;
+            Settings.IsCancel = true;
             SupRect.Visibility = Visibility.Collapsed;
             FullScreenAvatar.Visibility = Visibility.Collapsed;
             BackButton.Visibility = Visibility.Collapsed;

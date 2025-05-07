@@ -16,9 +16,9 @@ namespace course_project_tourist_routes.Admin
 {
     public partial class UsersPage : Page
     {
-        private int _userId;
+        private readonly int _userId;
         private List<Roles> _roles = new List<Roles>();
-        private Dictionary<int, ImageBrush> _userPhotosCache = new Dictionary<int, ImageBrush>();
+        private readonly Dictionary<int, ImageBrush> _userPhotosCache = new Dictionary<int, ImageBrush>();
 
         public UsersPage(int userId)
         {
@@ -71,6 +71,8 @@ namespace course_project_tourist_routes.Admin
         {
             try
             {
+                UsersListViewBorder.Visibility = Visibility.Collapsed;
+                LoadingGrid.Visibility = Visibility.Visible;
                 using (var context = new TouristRoutesEntities())
                 {
                     var query = context.Users
@@ -110,21 +112,20 @@ namespace course_project_tourist_routes.Admin
                         user.Email,
                         user.Roles,
                         user.AccountStatus,
-                        user.DateAddedUser,
+                        user.DateUserRegistration,
                         ProfilePhotoBrush = _userPhotosCache.TryGetValue(user.IdUser, out var brush) ? brush : CreateDefaultImageBrush(),
                         AccountStatusIcon = user.AccountStatus == "Активен" ? PackIconKind.LockOpenVariant : PackIconKind.Lock,
                         AccountStatusButtonTooltip = user.AccountStatus == "Активен" ? "Заблокировать" : "Разблокировать"
                     }).ToList();
+                    UsersListViewBorder.Visibility = Visibility.Visible;
+                    LoadingGrid.Visibility = Visibility.Collapsed;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при загрузке пользователей: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
                 UsersListViewBorder.Visibility = Visibility.Visible;
                 LoadingGrid.Visibility = Visibility.Collapsed;
+                MessageBox.Show($"Ошибка при загрузке пользователей: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -192,8 +193,7 @@ namespace course_project_tourist_routes.Admin
 
                 return new ImageBrush
                 {
-                    ImageSource = bitmap,
-                    Stretch = Stretch.UniformToFill
+                    ImageSource = bitmap
                 };
             }
             catch
@@ -242,11 +242,12 @@ namespace course_project_tourist_routes.Admin
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var textBox = sender as TextBox;
-            if (textBox == null) return;
+            if (!(sender is TextBox textBox)) return;
 
-            var timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(500);
+            var timer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(500)
+            };
             timer.Tick += (s, args) =>
             {
                 timer.Stop();
@@ -310,25 +311,25 @@ namespace course_project_tourist_routes.Admin
                         .Include(u => u.Favorites)
                         .Include(u => u.Routes.Select(r => r.Photos))
                         .Include(u => u.Routes.Select(r => r.Favorites))
-                        .Include(u => u.HikeParticipants)
+                        .Include(u => u.TravelParticipants)
                         .FirstOrDefault(u => u.IdUser == userId);
 
                     if (user != null)
                     {
                         if (!string.IsNullOrEmpty(user.ProfilePhoto))
                         {
-                            CloudStorage.DeleteFileAsync(user.ProfilePhoto);
+                            _ = CloudStorage.DeleteFileAsync(user.ProfilePhoto);
                         }
 
                         foreach (var route in user.Routes)
                         {
                             foreach (var photo in route.Photos.Where(p => !string.IsNullOrEmpty(p.Photo)))
                             {
-                                CloudStorage.DeleteFileAsync(photo.Photo);
+                                _ = CloudStorage.DeleteFileAsync(photo.Photo);
                             }
                         }
 
-                        context.HikeParticipants.RemoveRange(user.HikeParticipants);
+                        context.TravelParticipants.RemoveRange(user.TravelParticipants);
 
                         foreach (var route in user.Routes.ToList())
                         {

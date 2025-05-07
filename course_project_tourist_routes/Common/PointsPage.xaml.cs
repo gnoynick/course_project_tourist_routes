@@ -11,6 +11,12 @@ namespace course_project_tourist_routes.Common
 {
     public partial class PointsPage : Page
     {
+        public enum PointsPageMode
+        {
+            Admin,
+            RouteEdit
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private bool _isAdmin;
@@ -29,17 +35,22 @@ namespace course_project_tourist_routes.Common
         private List<PointTypes> pointTypes = new List<PointTypes>();
         private List<string> cities = new List<string>();
         private List<string> countries = new List<string>();
-        private int _userId;
+        private readonly int _userId;
+        private readonly PointsPageMode _pageMode;
 
-        public PointsPage(int userId)
+        public PointsPage(int userId, PointsPageMode pageMode = PointsPageMode.RouteEdit)
         {
             InitializeComponent();
             _userId = userId;
+            _pageMode = pageMode;
             this.DataContext = this;
 
             LoadData();
             AdminButtonsVisibility();
         }
+
+        public bool IsAdminMode => _pageMode == PointsPageMode.Admin;
+        public bool IsSelectMode => _pageMode == PointsPageMode.RouteEdit;
 
         private void PointsPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {

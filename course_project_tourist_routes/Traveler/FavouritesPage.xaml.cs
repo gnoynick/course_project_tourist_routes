@@ -11,7 +11,7 @@ namespace course_project_tourist_routes.Traveler
 {
     public partial class FavouritesPage : Page
     {
-        private int _userId;
+        private readonly int _userId;
         private List<Categories> _categories = new List<Categories>();
 
         public FavouritesPage(int userId)
@@ -143,7 +143,7 @@ namespace course_project_tourist_routes.Traveler
             {
                 dynamic selectedItem = FavouritesListView.SelectedItem;
                 int routeId = selectedItem.Route.IdRoute;
-                CloudStorage.ClearRoutePhotosDirectoryAsync();
+                _ = CloudStorage.ClearRoutePhotosDirectoryAsync();
                 NavigationService?.Navigate(new OpenRoutePage(routeId, _userId));
                 FavouritesListView.SelectedItem = null;
             }

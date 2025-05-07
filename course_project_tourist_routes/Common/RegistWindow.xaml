@@ -140,6 +140,7 @@
                 <Button x:Name="ShowPasswordButton" 
                         Grid.Row="9" Grid.Column="1"
                         Style="{StaticResource ShowPasswordButtonStyle}"
+                        IsDefault="False"
                         Click="ShowPasswordButton_Click">
                     <materialDesign:PackIcon Kind="Eye" VerticalAlignment="Center" Width="25" Height="20" />
                 </Button>
@@ -183,6 +184,7 @@
                 <Button x:Name="ShowRepeatPasswordButton" 
                         Grid.Row="12" Grid.Column="1"
                         Style="{StaticResource ShowPasswordButtonStyle}"
+                        IsDefault="False"
                         Click="ShowRepeatPasswordButton_Click">
                     <materialDesign:PackIcon Kind="Eye" VerticalAlignment="Center" Width="25" Height="20" />
                 </Button>

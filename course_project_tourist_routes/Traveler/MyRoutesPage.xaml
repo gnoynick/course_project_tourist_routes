@@ -30,7 +30,7 @@
                                 VerticalAlignment="Center"
                                 Width="60"
                                 Height="60" 
-                                IsDefault="True"
+                                IsCancel="True"
                                 Click="BackButton_Click">
                             <materialDesign:PackIcon Kind="ArrowLeftBold" 
                                                   Foreground="#F0FFF0"
@@ -56,32 +56,52 @@
                 </Border>
 
                 <Border Grid.Row="1" CornerRadius="10" Margin="10,10,10,0" Padding="10">
-                    <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                            <materialDesign:PackIcon Kind="Magnify" 
-                                                Foreground="#4A773C"
-                                                Width="24"
-                                                Height="24"
-                                                Margin="0,0,5,0"/>
-                            <TextBlock Text="Поиск" 
-                                   FontSize="16" 
-                                   FontWeight="Bold" 
-                                   Foreground="#4A773C"/>
-                        </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                        <TextBox x:Name="SearchTextBox"
+                        <materialDesign:PackIcon Grid.Column="0" Kind="Magnify" 
+                                            Foreground="#4A773C"
+                                            Width="24"
+                                            Height="24"
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="Поиск" 
+                               FontSize="16" 
+                               FontWeight="Bold" 
+                               Foreground="#4A773C"
+                               Margin="0,0,10,0"
+                               VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="2" x:Name="SearchTextBox"
                              Style="{StaticResource StyledTextBox}"
-                             Margin="0,5,0,0"
+                             VerticalContentAlignment="Center"
                              TextChanged="SearchTextBox_TextChanged"
                              materialDesign:HintAssist.Hint="Введите название маршрута">
                             <TextBox.InputBindings>
                                 <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
                             </TextBox.InputBindings>
                         </TextBox>
-                    </StackPanel>
+                    </Grid>
                 </Border>
 
-                <Border Grid.Row="2" CornerRadius="10" Background="White" Margin="10" Padding="10">
+                <Grid Grid.Row="2" x:Name="LoadingGrid" Visibility="Visible" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Идёт загрузка маршрутов..." 
+                                   Foreground="#4A773C"
+                                   FontSize="30"
+                                   HorizontalAlignment="Center"/>
+                        <ProgressBar Width="420" 
+                                     Height="15"
+                                     IsIndeterminate="True"
+                                     Foreground="#4A773C"
+                                     Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <Border x:Name="RoutesListViewBorder" Grid.Row="2" CornerRadius="10" Background="White" Margin="10" Padding="10" Visibility="Collapsed">
                     <ListView x:Name="RoutesListView" 
                               ScrollViewer.CanContentScroll="True"
                               ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -96,54 +116,74 @@
                                 <Border Style="{StaticResource RouteCardStyle}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <StackPanel Grid.Column="0" Margin="5">
+                                        <Grid Width="100" Height="100" Margin="10">
+                                            <Button x:Name="RoutePhotoButton" 
+                                                    Width="100" Height="100"
+                                                    Content="{DynamicResource photo1image}"
+                                                    Style="{StaticResource ProfilePhotoButtonStyle}"
+                                                    Background="{Binding RoutePhotoBrush}" 
+                                                    BorderBrush="Transparent"
+                                                    BorderThickness="0"
+                                                    Click="RoutePhotoButton_Click"/>
+                                        </Grid>
+
+                                        <StackPanel Grid.Column="1" Margin="5" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding TitleRoute}" 
                                                    FontSize="14" 
-                                                   FontWeight="Bold" 
+                                                   FontWeight="Bold"
+                                                   VerticalAlignment="Center"
                                                    Style="{StaticResource RouteTextStyle}"/>
                                             <TextBlock Text="{Binding DescriptionRoute}" 
                                                    Style="{StaticResource RouteTextStyle}" 
                                                    TextWrapping="Wrap"
                                                    MaxHeight="60"
+                                                   VerticalAlignment="Center"
                                                    TextTrimming="CharacterEllipsis"/>
-                                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0" VerticalAlignment="Center">
+                                                <materialDesign:PackIcon Kind="Calendar" 
+                                                                  Width="16"
+                                                                  Height="16"
+                                                                  Foreground="#8B7962"
+                                                                  Margin="0,0,5,0"/>
                                                 <TextBlock Text="{Binding DateAddedRoute, StringFormat='Создан: {0:dd.MM.yyyy}'}" 
                                                        FontStyle="Italic" 
+                                                       VerticalAlignment="Center"
                                                        Foreground="#8B7962"/>
                                             </StackPanel>
                                         </StackPanel>
 
-                                        <StackPanel Grid.Column="1" 
+                                        <StackPanel Grid.Column="2" 
                                                 Orientation="Horizontal" 
                                                 VerticalAlignment="Center" 
                                                 Margin="5">
                                             <Button x:Name="EditButton"
                                                 Style="{StaticResource HoverButtonStyle}"
-                                                Width="40"
-                                                Height="30"
-                                                Margin="0,0,10,0"
+                                                Width="70"
+                                                Height="40"
+                                                Margin="0,0,20,0"
                                                 Tag="{Binding IdRoute}"
                                                 Click="EditRouteButton_Click"
                                                 ToolTip="Редактировать">
                                                 <materialDesign:PackIcon Kind="Pencil" 
-                                                                  Width="16" 
-                                                                  Height="16" 
+                                                                  Width="20" 
+                                                                  Height="20" 
                                                                   Foreground="White"/>
                                             </Button>
                                             <Button x:Name="DeleteButton"
                                                 Style="{StaticResource HoverButtonStyle}"
-                                                Width="40"
-                                                Height="30"
+                                                Width="70"
+                                                Height="40"
                                                 Tag="{Binding IdRoute}"
                                                 Click="DeleteRouteButton_Click"
                                                 ToolTip="Удалить">
                                                 <materialDesign:PackIcon Kind="Delete" 
-                                                                  Width="16" 
-                                                                  Height="16" 
+                                                                  Width="20" 
+                                                                  Height="20" 
                                                                   Foreground="White"/>
                                             </Button>
                                         </StackPanel>
@@ -155,5 +195,35 @@
                 </Border>
             </Grid>
         </Border>
+        <Rectangle x:Name="SupRect" 
+               Grid.Row="0" Grid.RowSpan="2"
+               Fill="#5A5A42" 
+               Opacity="0.6" 
+               Visibility="Collapsed"/>
+
+        <Rectangle x:Name="FullScreenPhoto" 
+               Grid.Row="0" Grid.RowSpan="2"
+               Visibility="Collapsed" 
+               Width="700" 
+               Height="700" 
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Center"/>
+
+        <Button x:Name="PhotoBackButton" 
+            Grid.Row="0" Grid.RowSpan="2"
+            Style="{StaticResource HoverButtonStyle}" 
+            Visibility="Collapsed"
+            HorizontalAlignment="Left" 
+            VerticalAlignment="Bottom"
+            Width="100" 
+            Height="104" 
+            Margin="25"
+            IsCancel="True"
+            Click="PhotoBackButton_Click">
+            <materialDesign:PackIcon Kind="ArrowLeftBold" 
+                              Foreground="#F0FFF0"
+                              Width="60"
+                              Height="60"/>
+        </Button>
     </Grid>
 </Page>

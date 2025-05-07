@@ -18,29 +18,29 @@ namespace course_project_tourist_routes
         public Routes()
         {
             this.Favorites = new HashSet<Favorites>();
-            this.Hikes = new HashSet<Hikes>();
             this.Photos = new HashSet<Photos>();
+            this.TravelEvents = new HashSet<TravelEvents>();
             this.RoutePoints = new HashSet<RoutePoints>();
         }
     
         public int IdRoute { get; set; }
         public Nullable<int> IdUser { get; set; }
-        public Nullable<int> IdCategory { get; set; }
+        public int IdCategory { get; set; }
         public string TitleRoute { get; set; }
         public string DescriptionRoute { get; set; }
-        public Nullable<decimal> LengthPoint { get; set; }
+        public decimal LengthRoute { get; set; }
         public Nullable<int> StepsCount { get; set; }
-        public Nullable<System.DateTime> DateAddedRoute { get; set; }
         public Nullable<int> ViewsCount { get; set; }
+        public System.DateTime DateAddedRoute { get; set; }
     
         public virtual Categories Categories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Favorites> Favorites { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Hikes> Hikes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Photos> Photos { get; set; }
         public virtual Users Users { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TravelEvents> TravelEvents { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RoutePoints> RoutePoints { get; set; }
     }

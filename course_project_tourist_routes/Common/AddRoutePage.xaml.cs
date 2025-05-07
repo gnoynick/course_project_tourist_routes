@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using System.Threading.Tasks;
+using System.IO;
+using static course_project_tourist_routes.Common.PointsPage;
 
 namespace course_project_tourist_routes.Common
 {
@@ -15,8 +17,8 @@ namespace course_project_tourist_routes.Common
     {
         private readonly int _userId;
         private List<Categories> _categories = new List<Categories>();
-        private List<RoutePoints> _selectedPoints = new List<RoutePoints>();
-        private List<string> _photoPaths = new List<string>() { null, null, null };
+        private readonly List<RoutePoints> _selectedPoints = new List<RoutePoints>();
+        private readonly List<string> _photoPaths = new List<string>() { null, null, null };
 
         public AddRoutePage(int userId)
         {
@@ -78,8 +80,7 @@ namespace course_project_tourist_routes.Common
 
         private async void AddPhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            if (button == null) return;
+            if (!(sender is Button button)) return;
 
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -89,6 +90,18 @@ namespace course_project_tourist_routes.Common
 
             if (openFileDialog.ShowDialog() == true)
             {
+                long maxFileSize = 1 * 1024 * 1024;
+                FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
+
+                if (fileInfo.Length > maxFileSize)
+                {
+                    double fileSizeInMb = fileInfo.Length / (1024.0 * 1024.0);
+                    MessageBox.Show($"Размер фото не должен превышать 1 МБ.\n\n" +
+                                  $"Текущий размер: {fileSizeInMb:F2} МБ",
+                                  "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 int photoIndex = GetPhotoIndex(button.Name);
                 if (photoIndex == -1) return;
 
@@ -152,8 +165,7 @@ namespace course_project_tourist_routes.Common
 
         private void ShowPhotoProgress(int photoIndex, bool show)
         {
-            var progressBar = FindName($"Photo{photoIndex + 1}Progress") as ProgressBar;
-            if (progressBar != null)
+            if (FindName($"Photo{photoIndex + 1}Progress") is ProgressBar progressBar)
             {
                 progressBar.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
             }
@@ -172,8 +184,7 @@ namespace course_project_tourist_routes.Common
 
             for (int i = 0; i < 3; i++)
             {
-                var addButton = FindName($"AddPhoto{i + 1}Button") as Button;
-                if (addButton != null)
+                if (FindName($"AddPhoto{i + 1}Button") is Button addButton)
                 {
                     addButton.IsEnabled = (i == 0) || (i > 0 && _photoPaths[i - 1] != null);
 
@@ -187,11 +198,7 @@ namespace course_project_tourist_routes.Common
 
         private void UpdatePhotoUI(int photoIndex, bool showPhoto)
         {
-            var photoButton = FindName($"Photo{photoIndex + 1}Button") as Button;
-            var addButton = FindName($"AddPhoto{photoIndex + 1}Button") as Button;
-            var removeButton = FindName($"RemovePhoto{photoIndex + 1}Button") as Button;
-
-            if (photoButton != null && addButton != null && removeButton != null)
+            if (FindName($"Photo{photoIndex + 1}Button") is Button photoButton && FindName($"AddPhoto{photoIndex + 1}Button") is Button addButton && FindName($"RemovePhoto{photoIndex + 1}Button") is Button removeButton)
             {
                 photoButton.Visibility = showPhoto ? Visibility.Visible : Visibility.Collapsed;
                 removeButton.Visibility = showPhoto ? Visibility.Visible : Visibility.Collapsed;
@@ -211,8 +218,7 @@ namespace course_project_tourist_routes.Common
 
         private void PhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            if (button == null) return;
+            if (!(sender is Button button)) return;
 
             if (button.Name == "Photo1Button")
             {
@@ -234,6 +240,7 @@ namespace course_project_tourist_routes.Common
 
         private void PhotoBackButton_Click(object sender, RoutedEventArgs e)
         {
+            BackButton.IsCancel = false;
             SupRect.Visibility = Visibility.Collapsed;
             FullScreenPhoto.Visibility = Visibility.Collapsed;
             PhotoBackButton.Visibility = Visibility.Collapsed;
@@ -265,8 +272,7 @@ namespace course_project_tourist_routes.Common
 
         private void RemovePhotoButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            if (button == null) return;
+            if (!(sender is Button button)) return;
 
             int photoIndex = -1;
             if (button.Name == "RemovePhoto1Button") photoIndex = 0;
@@ -316,7 +322,7 @@ namespace course_project_tourist_routes.Common
 
         private void AddPointButton_Click(object sender, RoutedEventArgs e)
         {
-            var pointsPage = new PointsPage(_userId);
+            var pointsPage = new PointsPage(_userId, PointsPageMode.RouteEdit);
             pointsPage.PointSelected += (s, point) =>
             {
                 AddPointToRoute(point);
@@ -386,7 +392,7 @@ namespace course_project_tourist_routes.Common
                     IdUser = _userId,
                     TitleRoute = TitleTextBox.Text.Trim(),
                     DescriptionRoute = DescriptionTextBox.Text.Trim(),
-                    LengthPoint = decimal.TryParse(LengthTextBox.Text, out var length) ? length : 0,
+                    LengthRoute = decimal.TryParse(LengthTextBox.Text, out var length) ? length : 0,
                     StepsCount = int.TryParse(StepsCountTextBox.Text, out var steps) ? steps : 0,
                     DateAddedRoute = DateTime.Now
                 };
@@ -480,14 +486,17 @@ namespace course_project_tourist_routes.Common
                 errors.Add("Укажите корректную протяженность маршрута (положительное число)");
             }
 
-            if (!int.TryParse(StepsCountTextBox.Text, out int steps) || steps <= 0)
+            if (!string.IsNullOrEmpty(StepsCountTextBox.Text))
             {
-                errors.Add("Укажите корректное количество шагов (положительное целое число)");
+                if (!int.TryParse(StepsCountTextBox.Text, out int steps) || steps <= 0)
+                {
+                    errors.Add("Укажите корректное количество шагов (положительное целое число)");
+                }
             }
 
-            if (_selectedPoints.Count == 0)
+            if (_selectedPoints.Count < 2)
             {
-                errors.Add("Добавьте хотя бы одну точку в маршрут");
+                errors.Add("Добавьте хотя бы две точки в маршрут");
             }
 
             if (errors.Count > 0)
@@ -528,10 +537,44 @@ namespace course_project_tourist_routes.Common
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
+            if (HasUnsavedChanges())
+            {
+                var result = MessageBox.Show("У вас есть несохраненные изменения. Вы уверены, что хотите выйти? Все несохраненные данные будут потеряны.",
+                                          "Подтверждение выхода",
+                                          MessageBoxButton.YesNo,
+                                          MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             if (NavigationService.CanGoBack)
             {
                 NavigationService.GoBack();
             }
+        }
+
+        private bool HasUnsavedChanges()
+        {
+            if (!string.IsNullOrWhiteSpace(TitleTextBox.Text)) return true;
+            if (!string.IsNullOrWhiteSpace(DescriptionTextBox.Text)) return true;
+            if (!string.IsNullOrWhiteSpace(LengthTextBox.Text)) return true;
+            if (!string.IsNullOrWhiteSpace(StepsCountTextBox.Text)) return true;
+
+            if (CategoryComboBox.SelectedItem != null &&
+                CategoryComboBox.SelectedValue is int id &&
+                id != 0 && id != -1)
+            {
+                return true;
+            }
+
+            if (_selectedPoints.Count > 0) return true;
+
+            if (_photoPaths.Any(p => !string.IsNullOrEmpty(p))) return true;
+
+            return false;
         }
     }
 }

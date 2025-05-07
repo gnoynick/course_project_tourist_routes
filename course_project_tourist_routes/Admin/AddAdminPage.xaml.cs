@@ -120,9 +120,9 @@ namespace course_project_tourist_routes.Admin
                         Email = email,
                         PasswordHash = hashedPassword,
                         IdRole = 1,
-                        ProfileStatus = "Администратор",
+                        ProfileBio = "Ваше описание",
                         AccountStatus = "Активен",
-                        DateAddedUser = DateTime.Now
+                        DateUserRegistration = DateTime.Now
                     });
 
                     db.SaveChanges();

@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using static course_project_tourist_routes.Common.PointsPage;
 
 namespace course_project_tourist_routes.Admin
 {
@@ -165,8 +166,8 @@ namespace course_project_tourist_routes.Admin
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                CloudStorage.ClearRoutePhotosDirectoryAsync();
-                CloudStorage.ClearProfilePhotosDirectoryAsync();
+                _ = CloudStorage.ClearRoutePhotosDirectoryAsync();
+                _ = CloudStorage.ClearProfilePhotosDirectoryAsync();
                 new AutorizWindow().Show();
                 Window.GetWindow(this)?.Close();
             }
@@ -209,10 +210,9 @@ namespace course_project_tourist_routes.Admin
             NavigationService.Navigate(new UsersPage(_userId));
         }
 
-        private void AddRouteButton_Click(object sender, RoutedEventArgs e)
+        private void TravelEvensButton_Click(object sender, RoutedEventArgs e)
         {
             ToggleSettingsFrameVisibility();
-            NavigationService.Navigate(new AddRoutePage(_userId));
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -231,7 +231,7 @@ namespace course_project_tourist_routes.Admin
         private void RoutePointsButton_Click(object sender, RoutedEventArgs e)
         {
             ToggleSettingsFrameVisibility();
-            // NavigationService.Navigate(new RoutePointsPage(_userId));
+            NavigationService.Navigate(new PointsPage(_userId, PointsPageMode.Admin));
         }
 
         private void ReportsButton_Click(object sender, RoutedEventArgs e)

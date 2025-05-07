@@ -14,6 +14,7 @@ namespace course_project_tourist_routes.Common
         public RegistWindow()
         {
             InitializeComponent();
+            UsernameTextBox.Focus();
         }
 
         private void UsernameTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -114,9 +115,9 @@ namespace course_project_tourist_routes.Common
                         Email = email,
                         PasswordHash = hashedPassword,
                         IdRole = 2,
-                        ProfileStatus = "Ваш статус",
+                        ProfileBio = "Ваше описание",
                         AccountStatus = "Активен",
-                        DateAddedUser = DateTime.Now
+                        DateUserRegistration = DateTime.Now
                     });
 
                     db.SaveChanges();

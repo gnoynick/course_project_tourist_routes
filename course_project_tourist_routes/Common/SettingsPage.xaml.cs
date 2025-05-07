@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Data.Entity;
 
 namespace course_project_tourist_routes.Common
 {
@@ -20,12 +21,12 @@ namespace course_project_tourist_routes.Common
         private string _originalLogin;
         private string _originalStatus;
         private readonly int _userId;
-        private AdminPage _adminPage;
-        private TravelerPage _travelerPage;
-        private Users _currentUser;
+        private readonly AdminPage _adminPage;
+        private readonly TravelerPage _travelerPage;
+        private readonly Users _currentUser;
         private ImageSource _previousAvatar;
         private string _newImagePath;
-        private ImageBrush _currentImageBrush;
+        private readonly ImageBrush _currentImageBrush;
         private bool _isPhotoLoaded = false;
 
 
@@ -83,7 +84,7 @@ namespace course_project_tourist_routes.Common
                     context.ChangeTracker.Entries().ToList().ForEach(x => x.Reload());
                 }
 
-                LoadProfilePhotoAsync();
+                _ = LoadProfilePhotoAsync();
             }
         }
 
@@ -157,6 +158,18 @@ namespace course_project_tourist_routes.Common
 
             if (dialog.ShowDialog() == true)
             {
+                const long maxFileSize = 1 * 1024 * 1024;
+                FileInfo fileInfo = new FileInfo(dialog.FileName);
+
+                if (fileInfo.Length > maxFileSize)
+                {
+                    double fileSizeInMb = fileInfo.Length / (1024.0 * 1024.0);
+                    MessageBox.Show($"Размер фото не должен превышать 1 МБ.\n\n" +
+                                    $"Текущий размер: {fileSizeInMb:F2} МБ",
+                                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 try
                 {
                     _previousAvatar = _currentImageBrush.ImageSource;
@@ -396,7 +409,7 @@ namespace course_project_tourist_routes.Common
                     var user = db.Users.FirstOrDefault(u => u.IdUser == _userId);
                     if (user != null)
                     {
-                        user.ProfileStatus = StatusTextBox.Text;
+                        user.ProfileBio = StatusTextBox.Text;
                         db.SaveChanges();
                         _originalStatus = StatusTextBox.Text;
 
@@ -409,13 +422,13 @@ namespace course_project_tourist_routes.Common
                             _travelerPage?.UpdateUserInfo(LoginTextBox.Text, StatusTextBox.Text);
                         }
 
-                        MessageBox.Show("Статус успешно изменен.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Описание успешно изменено.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при изменении статуса: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Ошибка при изменении описания: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -434,31 +447,63 @@ namespace course_project_tourist_routes.Common
 
         private void DeleteProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить профиль? Это действие нельзя отменить.", "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (MessageBox.Show("Вы уверены, что хотите удалить профиль? Это действие нельзя отменить.",
+                "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                return;
 
-            if (result == MessageBoxResult.Yes)
+            try
             {
-                try
+                using (var db = new TouristRoutesEntities())
                 {
-                    using (var db = new TouristRoutesEntities())
-                    {
-                        var user = db.Users.FirstOrDefault(u => u.IdUser == _userId);
-                        if (user != null)
-                        {
-                            db.Users.Remove(user);
-                            db.SaveChanges();
-                            MessageBox.Show("Профиль успешно удален.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    var user = db.Users
+                        .Include(u => u.Favorites)
+                        .Include(u => u.Routes.Select(r => r.Photos))
+                        .Include(u => u.Routes.Select(r => r.Favorites))
+                        .Include(u => u.TravelParticipants)
+                        .FirstOrDefault(u => u.IdUser == _userId);
 
-                            Window.GetWindow(this).Close();
-                            AutorizWindow mainWindow = new AutorizWindow();
-                            mainWindow.Show();
+                    if (user != null)
+                    {
+                        if (!string.IsNullOrEmpty(user.ProfilePhoto))
+                        {
+                            _ = CloudStorage.DeleteFileAsync(user.ProfilePhoto);
                         }
+
+                        foreach (var route in user.Routes)
+                        {
+                            foreach (var photo in route.Photos.Where(p => !string.IsNullOrEmpty(p.Photo)))
+                            {
+                                _ = CloudStorage.DeleteFileAsync(photo.Photo);
+                            }
+                        }
+
+                        db.TravelParticipants.RemoveRange(user.TravelParticipants);
+
+                        foreach (var route in user.Routes.ToList())
+                        {
+                            db.Favorites.RemoveRange(route.Favorites);
+                            db.Photos.RemoveRange(route.Photos);
+                            db.Routes.Remove(route);
+                        }
+
+                        db.Favorites.RemoveRange(user.Favorites);
+                        db.Users.Remove(user);
+                        db.SaveChanges();
+
+                        MessageBox.Show("Профиль успешно удален.",
+                            "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        Window.GetWindow(this).Close();
+                        AutorizWindow mainWindow = new AutorizWindow();
+                        mainWindow.Show();
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка при удалении профиля: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при удалении профиля: {ex.Message}\n\n" +
+                    "Подробности см. в логах.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine($"Ошибка удаления профиля: {ex}");
             }
         }
     }

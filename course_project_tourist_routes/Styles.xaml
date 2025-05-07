@@ -4,7 +4,7 @@
     
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
-    <ImageBrush x:Key="DefaultImageBrush" Stretch="Uniform"/>
+    <ImageBrush x:Key="DefaultImageBrush" Stretch="UniformToFill"/>
 
     <ImageBrush x:Key="imagebrush" Stretch="UniformToFill"/>
     <ImageBrush x:Key="imagebrushset" Stretch="UniformToFill"/>
@@ -1109,6 +1109,182 @@
                                 </EventTrigger>
                             </Path.Triggers>
                         </Path>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="DatePicker" x:Key="StyledDatePicker">
+        <Setter Property="Background" Value="#F3F0E6"/>
+        <Setter Property="Foreground" Value="#5A5A42"/>
+        <Setter Property="BorderBrush" Value="#8B7962"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="materialDesign:HintAssist.Hint" Value="Выберите дату"/>
+        <Setter Property="materialDesign:HintAssist.Foreground" Value="#8B7962"/>
+        <Setter Property="materialDesign:HintAssist.IsFloating" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DatePicker">
+                    <Grid>
+                        <Border x:Name="border" 
+                            Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            CornerRadius="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid VerticalAlignment="Center" Margin="10,0,0,0">
+                                    <TextBlock x:Name="Hint"
+                                           Text="{TemplateBinding materialDesign:HintAssist.Hint}"
+                                           Foreground="{TemplateBinding materialDesign:HintAssist.Foreground}"
+                                           Visibility="Collapsed"
+                                           VerticalAlignment="Center"/>
+                                    <TextBox x:Name="PART_TextBox"
+                                         Foreground="{TemplateBinding Foreground}"
+                                         VerticalContentAlignment="Center"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         IsReadOnly="True"
+                                         Padding="0"/>
+                                </Grid>
+
+                                <Button x:Name="PART_Button"
+                                    Grid.Column="1"
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    Background="#8B7962"
+                                    Foreground="#8B7962"
+                                    Margin="0,0,10,0">
+                                    <materialDesign:PackIcon Kind="Calendar" Width="20" Height="20" Foreground="#F0FFF0"/>
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <Popup x:Name="PART_Popup"
+                           AllowsTransparency="True"
+                           Placement="Bottom"
+                           PlacementTarget="{Binding ElementName=border}"
+                           StaysOpen="False">
+                            <Border Background="#F3F0E6"
+                                BorderBrush="#8B7962"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <Calendar x:Name="PART_Calendar"/>
+                            </Border>
+                        </Popup>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Hint" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <DataTrigger Binding="{Binding Text, ElementName=PART_TextBox}" Value="">
+                            <Setter TargetName="Hint" Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#4A773C"/>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#4A773C"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border" Property="Background" Value="#F3F0E6"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="#8B7962"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MaterialSwitchStyle" TargetType="CheckBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CheckStates">
+                                <VisualState x:Name="Checked">
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="SwitchTrack">
+                                            <DiscreteColorKeyFrame KeyTime="0" Value="#4A773C"/>
+                                        </ColorAnimationUsingKeyFrames>
+
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="SwitchKnob">
+                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="18"/>
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="SwitchKnob">
+                                            <DiscreteColorKeyFrame KeyTime="0" Value="#D1E2C4"/>
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked">
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="SwitchTrack">
+                                            <DiscreteColorKeyFrame KeyTime="0" Value="#8B7962"/>
+                                        </ColorAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Storyboard.TargetName="SwitchKnob">
+                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="SwitchKnob">
+                                            <DiscreteColorKeyFrame KeyTime="0" Value="White"/>
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+
+                        <Grid Margin="0,0,5,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Rectangle x:Name="SwitchTrack" 
+                               Grid.Column="0"
+                               Width="36" 
+                               Height="14" 
+                               RadiusX="7" 
+                               RadiusY="7" 
+                               Fill="#8B7962"
+                               VerticalAlignment="Center"/>
+
+                            <Ellipse x:Name="SwitchKnob" 
+                             Grid.Column="0"
+                             Width="20" 
+                             Height="20" 
+                             Fill="White" 
+                             Stroke="#8E8E8E" 
+                             StrokeThickness="1"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Left"
+                             RenderTransformOrigin="0.5,0.5">
+                                <Ellipse.RenderTransform>
+                                    <TranslateTransform X="0"/>
+                                </Ellipse.RenderTransform>
+                                <Ellipse.Effect>
+                                    <DropShadowEffect BlurRadius="3" ShadowDepth="1" Color="#80000000"/>
+                                </Ellipse.Effect>
+                            </Ellipse>
+
+                            <ContentPresenter x:Name="contentPresenter"
+                                      Grid.Column="1"
+                                      Content="{TemplateBinding Content}"
+                                      Margin="8,0,0,0"
+                                      VerticalAlignment="Center"
+                                      RecognizesAccessKey="True"/>
+                        </Grid>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

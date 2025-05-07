@@ -31,7 +31,7 @@
                                 VerticalAlignment="Center"
                                 Width="60"
                                 Height="60" 
-                                IsDefault="True"
+                                IsCancel="True"
                                 Click="BackButton_Click">
                             <materialDesign:PackIcon Kind="ArrowLeftBold" 
                                                   Foreground="#F0FFF0"
@@ -73,7 +73,7 @@
                                        Margin="0,0,10,0"/>
                         </StackPanel>
                         <TextBox x:Name="SearchTextBox" 
-                                 Width="250"
+                                 Width="550"
                                  TextAlignment="Left"
                                  HorizontalContentAlignment="Center"
                                  VerticalContentAlignment="Center"

@@ -17,7 +17,7 @@ namespace course_project_tourist_routes
         public int IdFavorite { get; set; }
         public int IdUser { get; set; }
         public int IdRoute { get; set; }
-        public Nullable<System.DateTime> DateAddedFavorite { get; set; }
+        public System.DateTime DateAddedFavorite { get; set; }
     
         public virtual Routes Routes { get; set; }
         public virtual Users Users { get; set; }

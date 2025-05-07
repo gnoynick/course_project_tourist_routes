@@ -8,7 +8,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="900" d:DesignWidth="1200"
       Title="Просмотр маршрута">
-    <Grid>
+    <Grid Focusable="True">
         <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
             <Grid>
                 <Grid.RowDefinitions>
@@ -77,11 +77,18 @@
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                     <Border Background="#4A773C" CornerRadius="5" Padding="5,3,5,3">
-                                        <TextBlock x:Name="CategoryText" 
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Tag" 
+                                                                   Foreground="#F0FFF0"
+                                                                   Width="16"
+                                                                   Height="21"
+                                                                   Margin="0,0,3,0"/>
+                                            <TextBlock x:Name="CategoryText" 
                                                    Foreground="#F0FFF0" 
                                                    FontWeight="Bold"
                                                    Margin="5,0"
                                                    FontSize="16" />
+                                        </StackPanel>
                                     </Border>
 
                                     <Border x:Name="AuthorBorder" 
@@ -192,6 +199,7 @@
                                 </StackPanel>
                                 <ListView x:Name="PointsListView"
                                           Style="{StaticResource NonSelectableListViewStyle}"
+                                          Height="210"
                                           MaxHeight="300"
                                           ScrollViewer.VerticalScrollBarVisibility="Auto"
                                           BorderThickness="0"

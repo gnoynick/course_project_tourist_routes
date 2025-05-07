@@ -18,8 +18,9 @@ namespace course_project_tourist_routes
         public Users()
         {
             this.Favorites = new HashSet<Favorites>();
-            this.HikeParticipants = new HashSet<HikeParticipants>();
             this.Routes = new HashSet<Routes>();
+            this.TravelEvents = new HashSet<TravelEvents>();
+            this.TravelParticipants = new HashSet<TravelParticipants>();
         }
     
         public int IdUser { get; set; }
@@ -27,17 +28,19 @@ namespace course_project_tourist_routes
         public string UserName { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
-        public string ProfileStatus { get; set; }
+        public string ProfileBio { get; set; }
         public string AccountStatus { get; set; }
         public string ProfilePhoto { get; set; }
-        public Nullable<System.DateTime> DateAddedUser { get; set; }
+        public System.DateTime DateUserRegistration { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Favorites> Favorites { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<HikeParticipants> HikeParticipants { get; set; }
         public virtual Roles Roles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Routes> Routes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TravelEvents> TravelEvents { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TravelParticipants> TravelParticipants { get; set; }
     }
 }

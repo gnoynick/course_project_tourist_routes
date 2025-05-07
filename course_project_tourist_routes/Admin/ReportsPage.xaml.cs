@@ -11,7 +11,7 @@ namespace course_project_tourist_routes.Admin
 {
     public partial class ReportsPage : Page
     {
-        private TouristRoutesEntities _context = new TouristRoutesEntities();
+        private readonly TouristRoutesEntities _context = new TouristRoutesEntities();
 
         public ReportsPage()
         {
@@ -30,13 +30,13 @@ namespace course_project_tourist_routes.Admin
             try
             {
                 var reportData = _context.Users
-                    .OrderByDescending(u => u.DateAddedUser)
+                    .OrderByDescending(u => u.DateUserRegistration)
                     .Select(u => new
                     {
                         Логин = u.UserName,
                         Email = u.Email,
                         Статус_аккаунта = u.AccountStatus,
-                        Дата_регистрации = u.DateAddedUser
+                        Дата_регистрации = u.DateUserRegistration
                     })
                     .ToList();
 
@@ -194,7 +194,6 @@ namespace course_project_tourist_routes.Admin
                             }
                             else if (value is int)
                             {
-                                cell.Value = Convert.ToDouble(value);
                                 cell.Style.Numberformat.Format = "0";
 
                             }
@@ -204,11 +203,6 @@ namespace course_project_tourist_routes.Admin
                                 {
                                     cell.Value = parsedDate;
                                     cell.Style.Numberformat.Format = "yyyy-mm-dd HH:mm:ss";
-                                }
-                                else if (double.TryParse(s, out double parsedNumber))
-                                {
-                                    cell.Value = parsedNumber;
-                                    cell.Style.Numberformat.Format = "0.00";
                                 }
                                 else
                                 {

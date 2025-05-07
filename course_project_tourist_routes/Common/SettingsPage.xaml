@@ -179,7 +179,7 @@
                                                            Width="24"
                                                            Height="24"
                                                            Margin="0,0,5,0"/>
-                                    <TextBlock Text="Био" 
+                                    <TextBlock Text="Описание" 
                                                FontSize="18" 
                                                FontWeight="Bold" 
                                                Margin="0,0,10,10" 

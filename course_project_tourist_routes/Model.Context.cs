@@ -15,26 +15,18 @@ namespace course_project_tourist_routes
     
     public partial class TouristRoutesEntities : DbContext
     {
+        public TouristRoutesEntities()
+            : base("name=TouristRoutesEntities")
+        {
+        }
+
         private static TouristRoutesEntities _context;
         public static TouristRoutesEntities GetContext()
         {
             if (_context == null) _context = new TouristRoutesEntities();
             return _context;
         }
-        public static void DisposeContext()
-        {
-            if (_context != null)
-            {
-                _context.Dispose();
-                _context = null;
-            }
-        }
 
-        public TouristRoutesEntities()
-            : base("name=TouristRoutesEntities")
-        {
-        }
-    
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             throw new UnintentionalCodeFirstException();
@@ -42,13 +34,13 @@ namespace course_project_tourist_routes
     
         public virtual DbSet<Categories> Categories { get; set; }
         public virtual DbSet<Favorites> Favorites { get; set; }
-        public virtual DbSet<HikeParticipants> HikeParticipants { get; set; }
-        public virtual DbSet<Hikes> Hikes { get; set; }
         public virtual DbSet<Photos> Photos { get; set; }
         public virtual DbSet<PointTypes> PointTypes { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<RoutePoints> RoutePoints { get; set; }
         public virtual DbSet<Routes> Routes { get; set; }
+        public virtual DbSet<TravelEvents> TravelEvents { get; set; }
+        public virtual DbSet<TravelParticipants> TravelParticipants { get; set; }
         public virtual DbSet<Users> Users { get; set; }
     }
 }
