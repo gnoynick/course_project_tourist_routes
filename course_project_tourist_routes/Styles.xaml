@@ -1124,7 +1124,6 @@
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="materialDesign:HintAssist.Hint" Value="Выберите дату"/>
         <Setter Property="materialDesign:HintAssist.Foreground" Value="#8B7962"/>
         <Setter Property="materialDesign:HintAssist.IsFloating" Value="True"/>
         <Setter Property="Template">
@@ -1132,10 +1131,10 @@
                 <ControlTemplate TargetType="DatePicker">
                     <Grid>
                         <Border x:Name="border" 
-                            Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
-                            CornerRadius="10">
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        CornerRadius="10">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -1144,40 +1143,45 @@
 
                                 <Grid VerticalAlignment="Center" Margin="10,0,0,0">
                                     <TextBlock x:Name="Hint"
-                                           Text="{TemplateBinding materialDesign:HintAssist.Hint}"
-                                           Foreground="{TemplateBinding materialDesign:HintAssist.Foreground}"
-                                           Visibility="Collapsed"
-                                           VerticalAlignment="Center"/>
+                                       Text="{TemplateBinding materialDesign:HintAssist.Hint}"
+                                       Foreground="{TemplateBinding materialDesign:HintAssist.Foreground}"
+                                       Visibility="Collapsed"
+                                       VerticalAlignment="Center"/>
                                     <TextBox x:Name="PART_TextBox"
-                                         Foreground="{TemplateBinding Foreground}"
-                                         VerticalContentAlignment="Center"
-                                         BorderThickness="0"
-                                         Background="Transparent"
-                                         IsReadOnly="True"
-                                         Padding="0"/>
+                                     Text="{Binding SelectedDate, RelativeSource={RelativeSource TemplatedParent}, StringFormat='dd.MM.yyyy'}"
+                                     Foreground="{TemplateBinding Foreground}"
+                                     VerticalContentAlignment="Center"
+                                     BorderThickness="0"
+                                     Background="Transparent"
+                                     IsReadOnly="True"
+                                     Padding="0"/>
                                 </Grid>
 
                                 <Button x:Name="PART_Button"
-                                    Grid.Column="1"
-                                    Style="{StaticResource MaterialDesignIconButton}"
-                                    Background="#8B7962"
-                                    Foreground="#8B7962"
-                                    Margin="0,0,10,0">
-                                    <materialDesign:PackIcon Kind="Calendar" Width="20" Height="20" Foreground="#F0FFF0"/>
+                                Grid.Column="1"
+                                Style="{StaticResource MaterialDesignIconButton}"
+                                Background="Transparent"
+                                Foreground="#8B7962"
+                                Margin="5"
+                                Width="30"
+                                Height="30">
+                                    <materialDesign:PackIcon Kind="Calendar" Width="20" Height="20" Foreground="#8B7962"/>
                                 </Button>
                             </Grid>
                         </Border>
 
                         <Popup x:Name="PART_Popup"
-                           AllowsTransparency="True"
-                           Placement="Bottom"
-                           PlacementTarget="{Binding ElementName=border}"
-                           StaysOpen="False">
+                       AllowsTransparency="True"
+                       Placement="Bottom"
+                       PlacementTarget="{Binding ElementName=border}"
+                       StaysOpen="False">
                             <Border Background="#F3F0E6"
-                                BorderBrush="#8B7962"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <Calendar x:Name="PART_Calendar"/>
+                            BorderBrush="#8B7962"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                                <Calendar x:Name="PART_Calendar"
+                                   Background="#F3F0E6"
+                                   BorderBrush="#8B7962"/>
                             </Border>
                         </Popup>
                     </Grid>
@@ -1192,9 +1196,11 @@
 
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="#4A773C"/>
+                            <Setter TargetName="PART_Button" Property="Foreground" Value="#4A773C"/>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="#4A773C"/>
+                            <Setter TargetName="PART_Button" Property="Foreground" Value="#4A773C"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="border" Property="Background" Value="#F3F0E6"/>
@@ -1289,5 +1295,49 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="StaticListViewStyle" TargetType="ListView">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="0,5,0,5"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListView">
+                    <ScrollViewer>
+                        <ItemsPresenter/>
+                    </ScrollViewer>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="StaticCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="#F0FFF0"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Margin" Value="0,5"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="#D1E2C4"/>
     </Style>
 </ResourceDictionary>

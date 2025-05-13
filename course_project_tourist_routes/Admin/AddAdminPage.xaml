@@ -80,10 +80,10 @@
                                      Height="35"
                                      MaxLength="25"
                                      PreviewKeyDown="TextBox_PreviewKeyDown"
-                                     TextChanged="UsernameTextBox_TextChanged"/>
+                                     TextChanged="UsernameTextBox_TextChanged" Margin="0,0,40,0"/>
                             <TextBlock HorizontalAlignment="Right" 
                                        VerticalAlignment="Bottom"
-                                       Margin="0,0,5,5"
+                                       Margin="0,0,44,5"
                                        Text="{Binding Text.Length, ElementName=UsernameTextBox, StringFormat={}{0}/25}"
                                        Foreground="#5A5A42"
                                        FontSize="12"/>
@@ -105,10 +105,10 @@
                                      Height="35"
                                      MaxLength="50"
                                      TextChanged="EmailTextBox_TextChanged"
-                                     PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                                     PreviewKeyDown="TextBox_PreviewKeyDown" Margin="-4,0,38,0"/>
                             <TextBlock HorizontalAlignment="Right" 
                                        VerticalAlignment="Bottom"
-                                       Margin="0,0,5,5"
+                                       Margin="0,0,44,5"
                                        Text="{Binding Text.Length, ElementName=EmailTextBox, StringFormat={}{0}/50}"
                                        Foreground="#5A5A42"
                                        FontSize="12"/>
@@ -135,7 +135,7 @@
                                          MaxLength="20"
                                          PreviewKeyDown="PasswordBox_PreviewKeyDown"
                                          PasswordChanged="PasswordBox_PasswordChanged"
-                                         Visibility="Visible"/>
+                                         Visibility="Visible" Grid.ColumnSpan="2" Margin="2,0,38,0"/>
                             <TextBox x:Name="PasswordTextBox" 
                                      Style="{StaticResource StyledTextBox}" 
                                      FontSize="15"
@@ -184,7 +184,7 @@
                                          MaxLength="20"
                                          PreviewKeyDown="PasswordBox_PreviewKeyDown"
                                          PasswordChanged="RepeatPasswordBox_PasswordChanged"
-                                         Visibility="Visible"/>
+                                         Visibility="Visible" Grid.ColumnSpan="2" Margin="2,0,38,0"/>
                             <TextBox x:Name="RepeatPasswordTextBox" 
                                      Style="{StaticResource StyledTextBox}" 
                                      FontSize="15"
@@ -217,10 +217,8 @@
                             Content="ДОБАВИТЬ АДМИНИСТРАТОРА" 
                             Grid.Row="8"
                             Style="{StaticResource HoverButtonStyle}" 
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Center" 
                             Height="45" 
-                            Width="350" 
+                            Width="400" 
                             FontSize="16"
                             FontWeight="Bold"
                             Cursor="Hand"

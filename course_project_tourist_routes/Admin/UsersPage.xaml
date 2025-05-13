@@ -200,11 +200,11 @@
                                   ScrollViewer.VerticalScrollBarVisibility="Auto"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   ScrollViewer.IsDeferredScrollingEnabled="False"
-                                  Style="{StaticResource NonSelectableListViewStyle}"
+                                  Style="{StaticResource StaticListViewStyle}"
                                   BorderThickness="0" d:ItemsSource="{d:SampleData ItemCount=5}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Border Style="{StaticResource RouteCardStyle}">
+                                <Border  Style="{StaticResource StaticCardStyle}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -244,7 +244,7 @@
                                                                              Height="12"
                                                                              Margin="10,0,3,0"
                                                                              Foreground="#8B7962"/>
-                                                <TextBlock Text="{Binding DateAddedUser, StringFormat='dd.MM.yyyy'}" 
+                                                <TextBlock Text="{Binding DateUserRegistration, StringFormat='dd.MM.yyyy'}" 
                                                            FontStyle="Italic" 
                                                            FontSize="11"
                                                            Foreground="#8B7962"/>

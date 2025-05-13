@@ -90,7 +90,9 @@ namespace course_project_tourist_routes.Traveler
                             {
                                 f.Routes.IdRoute,
                                 f.Routes.TitleRoute,
-                                DescriptionRoute = f.Routes.DescriptionRoute ?? "",
+                                DescriptionRoute = f.Routes.DescriptionRoute.Length > 30 ?
+                                f.Routes.DescriptionRoute.Substring(0, 30) + "..." :
+                                f.Routes.DescriptionRoute,
                                 CategoryName = f.Routes.Categories.NameCategory,
                                 f.Routes.IdCategory
                             }

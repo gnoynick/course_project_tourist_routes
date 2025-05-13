@@ -63,6 +63,7 @@ namespace course_project_tourist_routes
             return new DriveService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
+                HttpClientTimeout = TimeSpan.FromSeconds(30)
             });
         }
 

@@ -6,7 +6,6 @@ using System.Windows.Media;
 using System.Data.Entity;
 using System.Collections.Generic;
 using course_project_tourist_routes.Traveler;
-using static MaterialDesignThemes.Wpf.Theme;
 using System.Dynamic;
 
 namespace course_project_tourist_routes.Common
@@ -27,6 +26,7 @@ namespace course_project_tourist_routes.Common
             bool isAdmin = IsCurrentUserAdmin();
 
             MyEventsCheckBox.Visibility = isAdmin ? Visibility.Collapsed : Visibility.Visible;
+            CreateEventButton.Visibility = isAdmin ? Visibility.Collapsed : Visibility.Visible;
 
             LoadEvents();
         }
@@ -80,6 +80,7 @@ namespace course_project_tourist_routes.Common
                         dynamic expando = new ExpandoObject();
                         expando.IdEvent = e.IdEvent;
                         expando.TitleEvent = e.TitleEvent;
+                        expando.ViewsCount = e.ViewsCount ?? 0;
                         expando.DescriptionEvent = e.DescriptionEvent.Length > 50 ?
                             e.DescriptionEvent.Substring(0, 50) + "..." : e.DescriptionEvent;
                         expando.OrganizerName = e.Users.UserName;
@@ -90,13 +91,13 @@ namespace course_project_tourist_routes.Common
                         expando.StatusEvent = e.StatusEvent;
                         expando.StatusColor = GetStatusBrush(e.StatusEvent);
                         expando.DateRange = $"{e.StartDate:dd.MM.yyyy} - {e.EndDate:dd.MM.yyyy}";
-                        expando.ShowActions = isAdmin || e.Users.IdUser == _userId;
-                        expando.IsMyEvent = e.Users.IdUser == _userId && MyEventsCheckBox.IsChecked == true;
-                        expando.IsAdminOrMyEvent = isAdmin || (e.Users.IdUser == _userId && MyEventsCheckBox.IsChecked == true);
+                        expando.IsMyEvent = e.Users.IdUser == _userId;
+                        expando.IsAdminOrMyEvent = isAdmin || e.Users.IdUser == _userId;
                         return expando;
-                    }).ToList<dynamic>();
+                    }).ToList();
 
-                    EventsListView.ItemsSource = _allEvents;
+                    // Применяем фильтры (по умолчанию чекбокс выключен - показываем все, кроме своих)
+                    ApplyFilters();
                 }
             }
             catch (Exception ex)
@@ -124,6 +125,22 @@ namespace course_project_tourist_routes.Common
 
             var filtered = _allEvents.AsEnumerable();
 
+            // Основная фильтрация по принадлежности событий
+            if (MyEventsCheckBox.IsChecked == true)
+            {
+                // Показываем только свои события
+                filtered = filtered.Where(e => e.OrganizerId == _userId);
+            }
+            else
+            {
+                // Показываем все, кроме своих (или все, если пользователь админ)
+                if (!IsCurrentUserAdmin())
+                {
+                    filtered = filtered.Where(e => e.OrganizerId != _userId);
+                }
+            }
+
+            // Остальные фильтры
             if (StatusComboBox.SelectedItem is ComboBoxItem statusItem && statusItem.Content.ToString() != "Все")
             {
                 filtered = filtered.Where(e => e.StatusEvent == statusItem.Content.ToString());
@@ -189,21 +206,6 @@ namespace course_project_tourist_routes.Common
                     e.DescriptionEvent.ToString().ToLower().Contains(searchText));
             }
 
-            if (MyEventsCheckBox.IsChecked == true)
-            {
-                filtered = filtered.Where(e => e.OrganizerId == _userId);
-            }
-
-            int currentUserRoleId = GetUserRoleId();
-            bool isAdmin = currentUserRoleId == 1;
-
-            filtered = filtered.Select(e =>
-            {
-                e.IsMyEvent = e.OrganizerId == _userId && MyEventsCheckBox.IsChecked == true;
-                e.IsAdminOrMyEvent = isAdmin || (e.OrganizerId == _userId && MyEventsCheckBox.IsChecked == true);
-                return e;
-            });
-
             EventsListView.ItemsSource = filtered.ToList();
         }
 
@@ -234,6 +236,7 @@ namespace course_project_tourist_routes.Common
             DateComboBox.SelectedIndex = 0;
             SearchTextBox.Text = "";
             MyEventsCheckBox.IsChecked = false;
+            ApplyFilters();
         }
 
         private void CreateEventButton_Click(object sender, RoutedEventArgs e)
@@ -267,11 +270,17 @@ namespace course_project_tourist_routes.Common
                     {
                         using (var context = new TouristRoutesEntities())
                         {
-                            var eventToDelete = context.TravelEvents.FirstOrDefault(ev => ev.IdEvent == eventId);
+                            var eventToDelete = context.TravelEvents
+                                .Include(te => te.TravelParticipants)
+                                .FirstOrDefault(ev => ev.IdEvent == eventId);
+
                             if (eventToDelete != null)
                             {
+                                context.TravelParticipants.RemoveRange(eventToDelete.TravelParticipants);
                                 context.TravelEvents.Remove(eventToDelete);
                                 context.SaveChanges();
+                                MessageBox.Show("Путешествие успешно удалено!",
+                            "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                                 LoadEvents();
                             }
                         }
@@ -289,9 +298,31 @@ namespace course_project_tourist_routes.Common
         {
             if (EventsListView.SelectedItem != null)
             {
-                dynamic selectedEvent = EventsListView.SelectedItem;
-                // Можно добавить переход на страницу с подробной информацией
-                EventsListView.SelectedItem = null;
+                try
+                {
+                    dynamic selectedEvent = EventsListView.SelectedItem;
+                    int eventId = selectedEvent.IdEvent;
+
+                    using (var context = new TouristRoutesEntities())
+                    {
+                        if (context.TravelEvents.Any(ev => ev.IdEvent == eventId))
+                        {
+                            NavigationService.Navigate(new OpenTravelEventPage(_userId, eventId));
+                        }
+                        else
+                        {
+                            MessageBox.Show("Выбранное путешествие больше не существует", "Ошибка",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+
+                    EventsListView.SelectedItem = null;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при открытии путешествия: {ex.Message}",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 

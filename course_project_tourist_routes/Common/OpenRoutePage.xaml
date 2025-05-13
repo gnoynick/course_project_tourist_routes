@@ -177,7 +177,8 @@
                                 </StackPanel>
                                 <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
                                     <TextBlock x:Name="DescriptionText" 
-                                               TextWrapping="Wrap" 
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Justify"
                                                FontSize="14"
                                                Foreground="#4A773C"/>
                                 </ScrollViewer>

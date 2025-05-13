@@ -43,7 +43,7 @@
 
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20">
                 <StackPanel>
-                    <Border CornerRadius="5" Background="White" Padding="15" Margin="0,0,0,15">
+                    <Border CornerRadius="5" Background="#F0FFF0" Padding="15" Margin="0,0,0,15">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -209,7 +209,7 @@
                         </Grid>
                     </Border>
 
-                    <Border CornerRadius="5" Background="White" Padding="15">
+                    <Border CornerRadius="5" Background="#F0FFF0" Padding="15">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -236,6 +236,10 @@
                                       IsReadOnly="True"
                                       SelectionMode="Single"
                                       HeadersVisibility="Column"
+                                      ScrollViewer.CanContentScroll="True"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                      ScrollViewer.IsDeferredScrollingEnabled="False"
                                       Background="White"
                                       BorderThickness="0"/>
                         </Grid>

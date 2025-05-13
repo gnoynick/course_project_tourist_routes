@@ -76,8 +76,8 @@
                                                    Height="30"/>
                         </Button>
 
-                        <Border Grid.Column="1" Background="#F0FFF0" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,10,0"/>
-                        <Border Grid.Column="1" Background="#F0FFF0" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10,0,0,0"/>
+                        <Border x:Name="StickRight" Grid.Column="1" Background="#F0FFF0" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,10,0"/>
+                        <Border x:Name="StickLeft" Grid.Column="1" Background="#F0FFF0" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10,0,0,0"/>
                     </Grid>
                 </Border>
 
@@ -156,17 +156,25 @@
                                                         Height="24"
                                                         Margin="0,0,5,0"/>
                                 <TextBlock x:Name="AdminLogin" Text="Логин" 
-                                           FontSize="20" FontWeight="Bold" Foreground="#4A773C"/>
+                                           FontSize="20" FontWeight="Bold" Foreground="#4A773C"
+                                           TextWrapping="Wrap" TextTrimming="None"
+                                           MaxWidth="170"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"/>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
                                 <TextBlock x:Name="AdminStatus" Text="Статус" 
-                                           Foreground="#4A773C" FontSize="18"/>
+                                           Foreground="#4A773C" FontSize="18"
+                                           TextWrapping="Wrap" TextTrimming="None"
+                                           MaxWidth="180"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
 
-                    <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,20,0">
+                    <StackPanel x:Name="Buttons" Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,20,0">
                         <Button x:Name="UsersButton" 
                                 Style="{StaticResource HoverButtonStyle}" 
                                 FontSize="20" Padding="30,20"
@@ -209,12 +217,12 @@
                             </StackPanel>
                         </Button>
 
-                        <Button x:Name="AddRouteButton"
+                        <Button x:Name="TravelEvensButton"
                                 Style="{StaticResource HoverButtonStyle}" 
                                 FontSize="20" Padding="30,20"
                                 Margin="15" Width="300" Height="50" Click="TravelEvensButton_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Kind="WalletTravel" 
+                                <materialDesign:PackIcon Kind="CalendarMultiple" 
                                                         Foreground="White"
                                                         Width="24"
                                                         Height="26"
@@ -294,7 +302,8 @@
         Style="{StaticResource ExitAndSettingsButtonStyle}" Visibility="Collapsed"
         HorizontalAlignment="Left" VerticalAlignment="Bottom"
         Width="100" Height="104" Margin="25"
-        Click="BackButton_Click">
+        Click="BackButton_Click"
+                IsCancel="True">
             <materialDesign:PackIcon Kind="ArrowLeftBold" 
                           Foreground="#F0FFF0"
                           Width="60"

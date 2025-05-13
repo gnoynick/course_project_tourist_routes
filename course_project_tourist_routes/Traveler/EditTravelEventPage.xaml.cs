@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using course_project_tourist_routes.Common;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Windows.Input;
 
 namespace course_project_tourist_routes.Traveler
 {
@@ -28,6 +29,47 @@ namespace course_project_tourist_routes.Traveler
             _eventId = eventId;
             LoadEventData();
             LoadOrganizerInfo();
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !(char.IsDigit(e.Text, 0) && e.Text != " ");
+        }
+
+        private void TextBoxPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if (!IsTextAllowed(text))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
+        private void NumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                string newText = new string(textBox.Text.Where(char.IsDigit).ToArray());
+
+                if (newText != textBox.Text)
+                {
+                    textBox.Text = newText;
+                    textBox.CaretIndex = newText.Length;
+                }
+            }
+        }
+
+
+        private bool IsTextAllowed(string text)
+        {
+            return text.All(c => char.IsDigit(c));
         }
 
         private async void LoadEventData()
@@ -68,7 +110,9 @@ namespace course_project_tourist_routes.Traveler
                             {
                                 IdRoute = route.IdRoute,
                                 TitleRoute = route.TitleRoute,
-                                DescriptionRoute = route.DescriptionRoute,
+                                DescriptionRoute = route.DescriptionRoute.Length > 30 ?
+                                route.DescriptionRoute.Substring(0, 30) + "..." :
+                                route.DescriptionRoute,
                                 CategoryName = route.Categories.NameCategory,
                                 AuthorInfo = route.Categories.NameCategory == "Пользовательские" ? $"Автор: {route.Users.UserName}" : "",
                                 Countries = string.Join(", ", route.RoutePoints.Select(p => p.Country).Distinct()),
@@ -167,7 +211,6 @@ namespace course_project_tourist_routes.Traveler
                 return new ImageBrush
                 {
                     ImageSource = bitmap,
-                    Stretch = Stretch.UniformToFill
                 };
             }
             catch
@@ -264,7 +307,39 @@ namespace course_project_tourist_routes.Traveler
 
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            // Валидация данных
+
+            if (string.IsNullOrWhiteSpace(TitleTextBox.Text) &&
+    string.IsNullOrWhiteSpace(MaxParticipantsTextBox.Text) &&
+    StartDatePicker.SelectedDate == null &&
+    EndDatePicker.SelectedDate == null &&
+    _selectedRoute == null &&
+    string.IsNullOrWhiteSpace(DescriptionTextBox.Text))
+            {
+                MessageBox.Show("Все поля должны быть заполнены!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (StartDatePicker.SelectedDate == null && EndDatePicker.SelectedDate == null)
+            {
+                MessageBox.Show("Введите даты проведения путешествия", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            else if (StartDatePicker.SelectedDate == null)
+            {
+                MessageBox.Show("Введите дату начала путешествия", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            else if (EndDatePicker.SelectedDate == null)
+            {
+                MessageBox.Show("Введите дату окончания путешествия", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            else if (EndDatePicker.SelectedDate < StartDatePicker.SelectedDate)
+            {
+                MessageBox.Show("Дата окончания не может быть раньше даты начала", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(TitleTextBox.Text))
             {
                 MessageBox.Show("Введите название путешествия", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -274,24 +349,6 @@ namespace course_project_tourist_routes.Traveler
             if (!int.TryParse(MaxParticipantsTextBox.Text, out int maxParticipants) || maxParticipants <= 0)
             {
                 MessageBox.Show("Укажите корректное количество участников", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (StartDatePicker.SelectedDate == null)
-            {
-                MessageBox.Show("Укажите дату начала", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (EndDatePicker.SelectedDate == null)
-            {
-                MessageBox.Show("Укажите дату окончания", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (EndDatePicker.SelectedDate < StartDatePicker.SelectedDate)
-            {
-                MessageBox.Show("Дата окончания не может быть раньше даты начала", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

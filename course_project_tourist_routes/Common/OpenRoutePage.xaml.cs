@@ -178,7 +178,7 @@ namespace course_project_tourist_routes.Common
                     int index = i;
                     downloadTasks.Add(Task.Run(async () =>
                     {
-                        string fileName = $"route_{_routeId}_photo_{index + 1}.jpg"; // Изменено на index + 1
+                        string fileName = $"route_{_routeId}_photo_{index + 1}.jpg";
                         string path = Path.Combine(dir, fileName);
 
                         await Dispatcher.InvokeAsync(() =>
@@ -355,6 +355,10 @@ namespace course_project_tourist_routes.Common
                     db.SaveChanges();
                     FavoriteIcon.Kind = MaterialDesignThemes.Wpf.PackIconKind.Star;
                     _isFavorite = true;
+                    MessageBox.Show("Маршрут успешно добавлен в избранное",
+                          "Избранное",
+                          MessageBoxButton.OK,
+                          MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
@@ -376,6 +380,10 @@ namespace course_project_tourist_routes.Common
                         db.SaveChanges();
                         FavoriteIcon.Kind = MaterialDesignThemes.Wpf.PackIconKind.StarOutline;
                         _isFavorite = false;
+                        MessageBox.Show("Маршрут удален из избранного",
+                              "Избранное",
+                              MessageBoxButton.OK,
+                              MessageBoxImage.Information);
                     }
                 }
             }

@@ -15,7 +15,7 @@ namespace course_project_tourist_routes.Traveler
 {
     public partial class TravelerPage : Page
     {
-        private int _userId;
+        private readonly int _userId;
         private string _userName;
         private string _userStatus;
         private bool _isAnimating;

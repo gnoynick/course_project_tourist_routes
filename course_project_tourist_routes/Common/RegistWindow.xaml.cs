@@ -58,8 +58,8 @@ namespace course_project_tourist_routes.Common
         {
             string username = UsernameTextBox.Text;
             string email = EmailTextBox.Text;
-            string password = GetPassword();
-            string repeatPassword = GetRepeatPassword();
+            string password = GetPassword(); // получение пароля
+            string repeatPassword = GetRepeatPassword(); // получение подтвержения пароля
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(repeatPassword))
             {
@@ -67,43 +67,43 @@ namespace course_project_tourist_routes.Common
                 return;
             }
 
-            if (!IsValidUsername(username))
+            if (!IsValidUsername(username)) // валидация логина
             {
                 MessageBox.Show("Логин может содержать только буквы (латиница/кириллица), цифры и символ подчеркивания", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            if (password != repeatPassword)
+            if (password != repeatPassword) // проверка совпадения паролей
             {
                 MessageBox.Show("Пароли не совпадают!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            if (!IsValidPassword(password))
+            if (!IsValidPassword(password)) // валидация пароля 
             {
                 MessageBox.Show("Пароль должен содержать минимум 6 символов, хотя бы одну цифру, одну заглавную и одну строчную букву.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            if (!IsValidEmail(email))
+            if (!IsValidEmail(email)) // валидация электронной почты
             {
                 MessageBox.Show("Введите корректный email! Разрешены только латинские буквы, цифры и символы @ . -", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            string hashedPassword = GetHash(password);
+            string hashedPassword = GetHash(password); // получение хэша пароля
 
             try
             {
                 using (var db = new TouristRoutesEntities())
                 {
-                    if (db.Users.Any(u => u.UserName == username))
+                    if (db.Users.Any(u => u.UserName == username)) // проверка на существование пользователя по логину
                     {
                         MessageBox.Show("Пользователь с таким логином уже существует!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
-                    if (db.Users.Any(u => u.Email == email))
+                    if (db.Users.Any(u => u.Email == email)) // проверка на существование пользователя по электронной почте
                     {
                         MessageBox.Show("Пользователь с такой почтой уже существует!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
@@ -114,13 +114,13 @@ namespace course_project_tourist_routes.Common
                         UserName = username,
                         Email = email,
                         PasswordHash = hashedPassword,
-                        IdRole = 2,
+                        IdRole = 2, // автоматическое присваивание роли "Путешественник" 
                         ProfileBio = "Ваше описание",
                         AccountStatus = "Активен",
                         DateUserRegistration = DateTime.Now
                     });
 
-                    db.SaveChanges();
+                    db.SaveChanges(); // сохранение в базе данных
                 }
 
                 MessageBox.Show("Регистрация прошла успешно!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -265,10 +265,18 @@ namespace course_project_tourist_routes.Common
 
         private void EmailTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!IsValidEmailInput(EmailTextBox.Text))
+            if (sender is TextBox textBox)
             {
-                EmailTextBox.Text = Regex.Replace(EmailTextBox.Text, @"[^a-zA-Z0-9@.\-]", "");
-                EmailTextBox.CaretIndex = EmailTextBox.Text.Length;
+                string newText = textBox.Text.ToLower();
+
+                newText = Regex.Replace(newText, @"[^a-z0-9@.\-]", "");
+
+                if (newText != textBox.Text)
+                {
+                    int caretIndex = textBox.CaretIndex;
+                    textBox.Text = newText;
+                    textBox.CaretIndex = Math.Min(caretIndex, newText.Length);
+                }
             }
         }
     }

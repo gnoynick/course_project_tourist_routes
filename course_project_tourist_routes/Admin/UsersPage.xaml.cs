@@ -283,9 +283,17 @@ namespace course_project_tourist_routes.Admin
                     var user = context.Users.FirstOrDefault(u => u.IdUser == userId);
                     if (user == null) return;
 
+                    string oldStatus = user.AccountStatus;
                     user.AccountStatus = user.AccountStatus == "Активен" ? "Заблокирован" : "Активен";
                     context.SaveChanges();
+
                     ApplyFilters(true);
+
+                    string message = user.AccountStatus == "Активен"
+    ? $"Пользователь {user.UserName} успешно разблокирован."
+    : $"Пользователь {user.UserName} был заблокирован.";
+
+                    MessageBox.Show(message, "Статус изменен", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
@@ -311,6 +319,7 @@ namespace course_project_tourist_routes.Admin
                         .Include(u => u.Favorites)
                         .Include(u => u.Routes.Select(r => r.Photos))
                         .Include(u => u.Routes.Select(r => r.Favorites))
+                        .Include(u => u.TravelEvents)
                         .Include(u => u.TravelParticipants)
                         .FirstOrDefault(u => u.IdUser == userId);
 
@@ -329,6 +338,7 @@ namespace course_project_tourist_routes.Admin
                             }
                         }
 
+                        context.TravelEvents.RemoveRange(user.TravelEvents);
                         context.TravelParticipants.RemoveRange(user.TravelParticipants);
 
                         foreach (var route in user.Routes.ToList())
@@ -350,8 +360,8 @@ namespace course_project_tourist_routes.Admin
 
                         ApplyFilters(true);
 
-                        MessageBox.Show("Пользователь упешно удален.",
-                            "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show($"Пользователь {user.UserName} успешно удален.",
+                "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
@@ -368,6 +378,7 @@ namespace course_project_tourist_routes.Admin
             if (sender is Button button)
             {
                 FullScreenPhoto.Fill = button.Background as ImageBrush;
+                BackButton.IsCancel = false;
                 SupRect.Visibility = Visibility.Visible;
                 FullScreenPhoto.Visibility = Visibility.Visible;
                 PhotoBackButton.Visibility = Visibility.Visible;
@@ -376,6 +387,7 @@ namespace course_project_tourist_routes.Admin
 
         private void PhotoBackButton_Click(object sender, RoutedEventArgs e)
         {
+            BackButton.IsCancel = true;
             SupRect.Visibility = Visibility.Collapsed;
             FullScreenPhoto.Visibility = Visibility.Collapsed;
             PhotoBackButton.Visibility = Visibility.Collapsed;

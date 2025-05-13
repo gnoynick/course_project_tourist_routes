@@ -115,7 +115,9 @@
                                            VerticalAlignment="Center"/>
                             </StackPanel>
                             <TextBox x:Name="LengthTextBox"
-                                     Style="{StaticResource StyledTextBox}"/>
+                                     Style="{StaticResource StyledTextBox}"
+                                     PreviewTextInput="LengthTextBox_PreviewTextInput"
+                                     TextChanged="LengthTextBox_TextChanged"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1">
@@ -133,7 +135,9 @@
                                            VerticalAlignment="Center"/>
                             </StackPanel>
                             <TextBox x:Name="StepsCountTextBox"
-                                     Style="{StaticResource StyledTextBox}"/>
+                                     Style="{StaticResource StyledTextBox}"
+                                     PreviewTextInput="NumberValidationTextBox"
+                                     TextChanged="NumberTextBox_TextChanged"/>
                         </StackPanel>
                     </Grid>
 

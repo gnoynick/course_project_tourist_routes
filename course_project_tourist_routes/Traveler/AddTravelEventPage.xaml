@@ -48,7 +48,7 @@
                 <StackPanel>
                     <StackPanel Margin="0,0,0,15">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                            <materialDesign:PackIcon Kind="RenameBox" 
+                                <materialDesign:PackIcon Kind="FormatTitle" 
                                                    Foreground="#4A773C" 
                                                    Width="24" 
                                                    Height="24"
@@ -108,7 +108,9 @@
                             <TextBox x:Name="MaxParticipantsTextBox"
                                     MaxLength="4"
                                     Style="{StaticResource StyledTextBox}"
-                                    materialDesign:HintAssist.Hint="Введите число"/>
+                                    materialDesign:HintAssist.Hint="Введите число"
+                                    PreviewTextInput="NumberValidationTextBox"
+                                    TextChanged="NumberTextBox_TextChanged"/>
                         </StackPanel>
                     </Grid>
 
@@ -134,7 +136,6 @@
                             </StackPanel>
                             <DatePicker x:Name="StartDatePicker"
                                         Style="{StaticResource StyledDatePicker}"
-                                        materialDesign:HintAssist.Hint="Выберите дату"
                                         Margin="0,5,0,0"/>
                         </StackPanel>
 
@@ -154,14 +155,13 @@
                             </StackPanel>
                             <DatePicker x:Name="EndDatePicker"
                                         Style="{StaticResource StyledDatePicker}"
-                                        materialDesign:HintAssist.Hint="Выберите дату"
                                         Margin="0,5,0,0"/>
                         </StackPanel>
                     </Grid>
 
                     <StackPanel Margin="0,0,0,15">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                            <materialDesign:PackIcon Kind="MapMarker" 
+                                <materialDesign:PackIcon Kind="MapCheck" 
                                Foreground="#4A773C" 
                                Width="24" 
                                Height="24"

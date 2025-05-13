@@ -27,6 +27,7 @@ namespace course_project_tourist_routes
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public int MaxParticipants { get; set; }
+        public Nullable<int> ViewsCount { get; set; }
         public string StatusEvent { get; set; }
         public string DescriptionEvent { get; set; }
         public System.DateTime DateAddedEvent { get; set; }

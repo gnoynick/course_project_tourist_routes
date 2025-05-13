@@ -90,13 +90,10 @@ namespace course_project_tourist_routes.Admin
                         Страна = p.Country,
                         Город = p.City,
                         Количество_маршрутов = p.Routes.Count,
-                        Последнее_добавление = p.Routes.OrderByDescending(r => r.DateAddedRoute)
-                               .Select(r => r.DateAddedRoute)
-                               .FirstOrDefault() != null
-                                   ? p.Routes.OrderByDescending(r => r.DateAddedRoute)
-                                             .Select(r => r.DateAddedRoute)
-                                             .FirstOrDefault().ToString()
-                                   : "нет"
+                        Последнее_добавление = p.Routes.Any()
+                            ? p.Routes.OrderByDescending(r => r.DateAddedRoute)
+                                      .FirstOrDefault().DateAddedRoute.ToString()
+                            : "нет"
                     })
                     .ToList();
 
@@ -156,7 +153,6 @@ namespace course_project_tourist_routes.Admin
                     if (firstItem == null) return;
 
                     var properties = firstItem.GetType().GetProperties();
-
                     int columnsCount = properties.Length;
 
                     worksheet.Cells[1, 1, 1, columnsCount].Merge = true;
@@ -167,18 +163,21 @@ namespace course_project_tourist_routes.Admin
                     titleCell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     titleCell.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                     titleCell.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    titleCell.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    titleCell.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(209, 226, 196));
+                    titleCell.Style.Font.Color.SetColor(System.Drawing.Color.FromArgb(74, 119, 60));
+
                     var headerRange = worksheet.Cells[2, 1, 2, columnsCount];
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    headerRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+                    headerRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(139, 121, 98));
+                    headerRange.Style.Font.Color.SetColor(System.Drawing.Color.White);
 
                     for (int i = 0; i < columnsCount; i++)
                     {
                         worksheet.Cells[2, i + 1].Value = properties[i].Name;
                     }
-
-                    headerRange.Style.Font.Bold = true;
-                    headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                    headerRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                    headerRange.Style.Fill.PatternType = ExcelFillStyle.None;
 
                     int row = 3;
                     foreach (var item in (System.Collections.IEnumerable)data)
@@ -187,15 +186,23 @@ namespace course_project_tourist_routes.Admin
                         {
                             var value = properties[col].GetValue(item);
                             var cell = worksheet.Cells[row, col + 1];
+                            cell.Style.Font.Color.SetColor(System.Drawing.Color.FromArgb(74, 119, 60));
 
                             if (value == null)
                             {
                                 cell.Value = null;
                             }
-                            else if (value is int)
+                            else if (value is int || value is long || value is decimal || value is double)
                             {
+                                cell.Value = value;
                                 cell.Style.Numberformat.Format = "0";
-
+                                cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                            }
+                            else if (value is DateTime)
+                            {
+                                cell.Value = value;
+                                cell.Style.Numberformat.Format = "yyyy-mm-dd HH:mm:ss";
+                                cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                             }
                             else if (value is string s)
                             {
@@ -203,18 +210,20 @@ namespace course_project_tourist_routes.Admin
                                 {
                                     cell.Value = parsedDate;
                                     cell.Style.Numberformat.Format = "yyyy-mm-dd HH:mm:ss";
+                                    cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                                 }
                                 else
                                 {
                                     cell.Value = s;
+                                    cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                                 }
                             }
                             else
                             {
                                 cell.Value = value.ToString();
+                                cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                             }
 
-                            cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                             cell.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
                         }
                         row++;

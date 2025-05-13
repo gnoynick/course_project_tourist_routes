@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.IO;
 using static course_project_tourist_routes.Common.PointsPage;
+using System.Windows.Input;
 
 namespace course_project_tourist_routes.Common
 {
@@ -30,6 +31,74 @@ namespace course_project_tourist_routes.Common
             LoadRouteData();
             LoadCategories();
             PointsDataGrid.ItemsSource = _selectedPoints;
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !(char.IsDigit(e.Text, 0) && e.Text != " ");
+        }
+
+        private void NumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                string newText = new string(textBox.Text.Where(char.IsDigit).ToArray());
+
+                if (newText != textBox.Text)
+                {
+                    textBox.Text = newText;
+                    textBox.CaretIndex = newText.Length;
+                }
+            }
+        }
+
+        private void LengthTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            string newText = textBox.Text.Insert(textBox.CaretIndex, e.Text);
+
+            bool isDigit = char.IsDigit(e.Text, 0);
+            bool isComma = e.Text == ",";
+
+            if (!isDigit && !isComma)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            if (isComma)
+            {
+                if (textBox.Text.Length == 0 || textBox.Text.Contains(","))
+                {
+                    e.Handled = true;
+                    return;
+                }
+            }
+        }
+
+        private void LengthTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                string newText = new string(textBox.Text.Where(c => char.IsDigit(c) || c == ',').ToArray());
+
+                if (newText.StartsWith(",")) newText = newText.Substring(1);
+
+                int commaCount = newText.Count(c => c == ',');
+                if (commaCount > 1)
+                {
+                    int firstCommaIndex = newText.IndexOf(',');
+                    newText = newText.Substring(0, firstCommaIndex + 1) +
+                             newText.Substring(firstCommaIndex + 1).Replace(",", "");
+                }
+
+                if (newText != textBox.Text)
+                {
+                    int caretIndex = textBox.CaretIndex;
+                    textBox.Text = newText;
+                    textBox.CaretIndex = Math.Min(caretIndex, newText.Length);
+                }
+            }
         }
 
         private async void LoadRouteData()
@@ -177,6 +246,18 @@ namespace course_project_tourist_routes.Common
 
             if (openFileDialog.ShowDialog() == true)
             {
+                long maxFileSize = 1 * 1024 * 1024;
+                FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
+
+                if (fileInfo.Length > maxFileSize)
+                {
+                    double fileSizeInMb = fileInfo.Length / (1024.0 * 1024.0);
+                    MessageBox.Show($"Размер фото не должен превышать 1 МБ.\n\n" +
+                                  $"Текущий размер: {fileSizeInMb:F2} МБ",
+                                  "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 int photoIndex = GetPhotoIndex(button.Name);
                 if (photoIndex == -1) return;
 
@@ -549,10 +630,21 @@ namespace course_project_tourist_routes.Common
 
         private bool ValidateRoute()
         {
+            if ((CategoryComboBox.SelectedItem == null || (CategoryComboBox.SelectedValue is int id && id == 0)) &&
+                string.IsNullOrWhiteSpace(TitleTextBox.Text) &&
+                string.IsNullOrWhiteSpace(LengthTextBox.Text) &&
+                string.IsNullOrWhiteSpace(StepsCountTextBox.Text) &&
+                _selectedPoints.Count == 0 &&
+                string.IsNullOrWhiteSpace(DescriptionTextBox.Text))
+            {
+                MessageBox.Show("Все поля должны быть заполнены!", "Ошибки ввода", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
             var errors = new List<string>();
 
             if (CategoryComboBox.SelectedItem == null ||
-               (CategoryComboBox.SelectedValue is int id && id == 0))
+               (CategoryComboBox.SelectedValue is int categoryId && categoryId == 0))
             {
                 errors.Add("Выберите категорию маршрута");
             }
@@ -578,6 +670,11 @@ namespace course_project_tourist_routes.Common
             if (_selectedPoints.Count < 2)
             {
                 errors.Add("Добавьте хотя бы две точки в маршрут");
+            }
+
+            if (string.IsNullOrWhiteSpace(DescriptionTextBox.Text))
+            {
+                errors.Add("Введите описание маршрута");
             }
 
             if (errors.Count > 0)

@@ -9,7 +9,6 @@
       d:DesignHeight="700" d:DesignWidth="1300"
       Title="Путешествия"
       Loaded="Page_Loaded">
-
     <Grid>
         <Border Background="#D1E2C4" CornerRadius="10" Margin="15">
             <Grid>
@@ -19,7 +18,6 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Шапка с заголовком и кнопками -->
                 <Border Grid.Row="0" Background="#4A773C" CornerRadius="10" Margin="10,10,10,0" Padding="15">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -31,6 +29,7 @@
                         <Button x:Name="BackButton" 
                                 Style="{StaticResource ExitAndSettingsButtonStyle}" 
                                 Width="60" Height="60" 
+                                IsCancel="True"
                                 Click="BackButton_Click">
                             <materialDesign:PackIcon Kind="ArrowLeftBold" 
                                                   Foreground="#F0FFF0"
@@ -64,7 +63,6 @@
                     </Grid>
                 </Border>
 
-                <!-- Панель фильтров и поиска -->
                 <Border Grid.Row="1" CornerRadius="10" Margin="10,10,10,0" Padding="10">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -73,17 +71,18 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Orientation="Horizontal" Grid.Column="0">
-                            <!-- Поиск -->
                             <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
                                 <materialDesign:PackIcon Kind="Magnify" Foreground="#4A773C" Width="24" Height="37" Margin="0,0,5,0"/>
                                 <TextBox x:Name="SearchTextBox"
                                          Width="250"
+                                         TextAlignment="Left"
+                                         HorizontalContentAlignment="Center"
+                                         VerticalContentAlignment="Center"
                                          Style="{StaticResource StyledTextBox}"
                                          materialDesign:HintAssist.Hint="Поиск по названию..."
                                          TextChanged="SearchTextBox_TextChanged"/>
                             </StackPanel>
 
-                            <!-- Фильтр по статусу -->
                             <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
                                 <materialDesign:PackIcon Kind="CalendarCheck" Foreground="#4A773C" Width="24" Height="39" Margin="0,0,5,0"/>
                                 <ComboBox x:Name="StatusComboBox"
@@ -98,7 +97,6 @@
                                 </ComboBox>
                             </StackPanel>
 
-                            <!-- Фильтр по участникам -->
                             <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
                                 <materialDesign:PackIcon Kind="AccountGroup" Foreground="#4A773C" Width="24" Height="39" Margin="0,0,5,0"/>
                                 <ComboBox x:Name="ParticipantsComboBox"
@@ -113,7 +111,6 @@
                                 </ComboBox>
                             </StackPanel>
 
-                            <!-- Фильтр по дате -->
                             <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
                                 <materialDesign:PackIcon Kind="CalendarRange" Foreground="#4A773C" Width="24" Height="39" Margin="0,0,5,0"/>
                                 <ComboBox x:Name="DateComboBox"
@@ -144,15 +141,10 @@
                                 ToolTip="Сбросить фильтры">
                                 <materialDesign:PackIcon Kind="FilterRemove" Width="20" Height="20" Foreground="White"/>
                             </Button>
-
-                            <!-- Чекбокс "Мои путешествия" -->
                         </StackPanel>
-
-                        <!-- Кнопка сброса фильтров -->
                     </Grid>
                 </Border>
 
-                <!-- Список путешествий -->
                 <Border Grid.Row="2" CornerRadius="10" Background="White" Margin="10" Padding="0">
                     <ListView x:Name="EventsListView"
                               Style="{StaticResource ListViewStyle}"
@@ -169,7 +161,6 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <!-- Основная информация о путешествии -->
                                         <StackPanel Grid.Column="0" Margin="10">
                                             <TextBlock Text="{Binding TitleEvent}"
                                                        FontSize="18"
@@ -193,24 +184,30 @@
                                                 </StackPanel>
 
                                                 <StackPanel Orientation="Horizontal" Margin="0,0,15,0">
+                                                    <materialDesign:PackIcon Kind="Eye" Width="16" Height="16" Margin="0,0,5,0" Foreground="#8B7962"/>
+                                                    <TextBlock Text="{Binding ViewsCount}"
+                                                               FontStyle="Italic" 
+                                                               FontSize="12"
+                                                               Foreground="#8B7962"/>
+                                                </StackPanel>
+
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,15,0">
                                                     <materialDesign:PackIcon Kind="AccountGroup" Width="16" Height="16" Margin="0,0,5,0" Foreground="#8B7962"/>
                                                     <TextBlock Text="{Binding MaxParticipants}"
                                                                FontStyle="Italic" 
                                                                FontSize="12"
                                                                Foreground="#8B7962"/>
                                                 </StackPanel>
-
-                                                <StackPanel Orientation="Horizontal">
-                                                    <materialDesign:PackIcon Kind="CalendarRange" Width="16" Height="16" Margin="0,0,5,0" Foreground="#8B7962"/>
-                                                    <TextBlock Text="{Binding DateRange}"
-                                                               FontStyle="Italic" 
-                                                               FontSize="12"
-                                                               Foreground="#8B7962"/>
-                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="CalendarRange" Width="16" Height="16" Margin="0,0,5,0" Foreground="#8B7962"/>
+                                                <TextBlock Text="{Binding DateRange}"
+                                                           FontStyle="Italic" 
+                                                           FontSize="12"
+                                                           Foreground="#8B7962"/>
                                             </StackPanel>
                                         </StackPanel>
 
-                                        <!-- Блок с статусом и кнопками -->
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
                                             <Border Background="{Binding StatusColor}" 
                                                     CornerRadius="5" 
@@ -225,8 +222,7 @@
                                                            TextAlignment="Center"/>
                                             </Border>
 
-                                            <!-- Кнопки действий (видимы только для организатора или админа) -->
-                                            <StackPanel Orientation="Horizontal">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="">
                                                 <Button x:Name="EditButton"
                                                         Tag="{Binding IdEvent}"
                                                         Height="30"
@@ -234,6 +230,8 @@
                                                         Style="{StaticResource HoverButtonStyle}"
                                                         Click="EditButton_Click"
                                                         ToolTip="Редактировать"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
                                                         Margin="0,0,5,0"
                                                         Visibility="{Binding IsMyEvent, Converter={StaticResource BooleanToVisibilityConverter}}" Cursor="Hand">
                                                     <materialDesign:PackIcon Kind="Edit" Width="16" Height="16"/>
@@ -242,10 +240,12 @@
                                                         Tag="{Binding IdEvent}"
                                                         Height="30"
                                                         Width="55"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
                                                         Style="{StaticResource HoverButtonStyle}"
                                                         Click="DeleteButton_Click"
                                                         ToolTip="Удалить"
-                                                        Visibility="{Binding IsAdminOrMyEvent, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                        Visibility="{Binding IsAdminOrMyEvent, Converter={StaticResource BooleanToVisibilityConverter}}" Cursor="Hand">
                                                     <materialDesign:PackIcon Kind="Delete" Width="16" Height="16" />
                                                 </Button>
                                             </StackPanel>

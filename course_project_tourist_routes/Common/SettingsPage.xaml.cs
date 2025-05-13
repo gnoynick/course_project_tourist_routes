@@ -459,6 +459,7 @@ namespace course_project_tourist_routes.Common
                         .Include(u => u.Favorites)
                         .Include(u => u.Routes.Select(r => r.Photos))
                         .Include(u => u.Routes.Select(r => r.Favorites))
+                        .Include(u => u.TravelEvents)
                         .Include(u => u.TravelParticipants)
                         .FirstOrDefault(u => u.IdUser == _userId);
 
@@ -477,6 +478,7 @@ namespace course_project_tourist_routes.Common
                             }
                         }
 
+                        db.TravelEvents.RemoveRange(user.TravelEvents);
                         db.TravelParticipants.RemoveRange(user.TravelParticipants);
 
                         foreach (var route in user.Routes.ToList())
@@ -493,9 +495,11 @@ namespace course_project_tourist_routes.Common
                         MessageBox.Show("Профиль успешно удален.",
                             "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        Window.GetWindow(this).Close();
                         AutorizWindow mainWindow = new AutorizWindow();
+                        Application.Current.MainWindow = mainWindow;
                         mainWindow.Show();
+
+                        Window.GetWindow(this)?.Close();
                     }
                 }
             }

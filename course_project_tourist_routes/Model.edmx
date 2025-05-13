@@ -89,6 +89,7 @@
           <Property Name="StartDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="EndDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="MaxParticipants" Type="int" Nullable="false" />
+          <Property Name="ViewsCount" Type="int" />
           <Property Name="StatusEvent" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="DescriptionEvent" Type="nvarchar(max)" Nullable="false" />
           <Property Name="DateAddedEvent" Type="datetime2" Precision="7" Nullable="false" />
@@ -224,7 +225,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TravelEve__IdRou__619B8048">
+        <Association Name="FK__TravelEve__IdRou__628FA481">
           <End Role="Routes" Type="Self.Routes" Multiplicity="0..1" />
           <End Role="TravelEvents" Type="Self.TravelEvents" Multiplicity="*" />
           <ReferentialConstraint>
@@ -236,7 +237,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TravelEve__IdUse__628FA481">
+        <Association Name="FK__TravelEve__IdUse__6383C8BA">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="TravelEvents" Type="Self.TravelEvents" Multiplicity="*" />
           <ReferentialConstraint>
@@ -248,7 +249,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TravelPar__IdEve__6754599E">
+        <Association Name="FK__TravelPar__IdEve__68487DD7">
           <End Role="TravelEvents" Type="Self.TravelEvents" Multiplicity="0..1" />
           <End Role="TravelParticipants" Type="Self.TravelParticipants" Multiplicity="*" />
           <ReferentialConstraint>
@@ -260,7 +261,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TravelPar__IdUse__68487DD7">
+        <Association Name="FK__TravelPar__IdUse__693CA210">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="TravelParticipants" Type="Self.TravelParticipants" Multiplicity="*" />
           <ReferentialConstraint>
@@ -332,19 +333,19 @@
             <End Role="Users" EntitySet="Users" />
             <End Role="Routes" EntitySet="Routes" />
           </AssociationSet>
-          <AssociationSet Name="FK__TravelEve__IdRou__619B8048" Association="Self.FK__TravelEve__IdRou__619B8048">
+          <AssociationSet Name="FK__TravelEve__IdRou__628FA481" Association="Self.FK__TravelEve__IdRou__628FA481">
             <End Role="Routes" EntitySet="Routes" />
             <End Role="TravelEvents" EntitySet="TravelEvents" />
           </AssociationSet>
-          <AssociationSet Name="FK__TravelEve__IdUse__628FA481" Association="Self.FK__TravelEve__IdUse__628FA481">
+          <AssociationSet Name="FK__TravelEve__IdUse__6383C8BA" Association="Self.FK__TravelEve__IdUse__6383C8BA">
             <End Role="Users" EntitySet="Users" />
             <End Role="TravelEvents" EntitySet="TravelEvents" />
           </AssociationSet>
-          <AssociationSet Name="FK__TravelPar__IdEve__6754599E" Association="Self.FK__TravelPar__IdEve__6754599E">
+          <AssociationSet Name="FK__TravelPar__IdEve__68487DD7" Association="Self.FK__TravelPar__IdEve__68487DD7">
             <End Role="TravelEvents" EntitySet="TravelEvents" />
             <End Role="TravelParticipants" EntitySet="TravelParticipants" />
           </AssociationSet>
-          <AssociationSet Name="FK__TravelPar__IdUse__68487DD7" Association="Self.FK__TravelPar__IdUse__68487DD7">
+          <AssociationSet Name="FK__TravelPar__IdUse__693CA210" Association="Self.FK__TravelPar__IdUse__693CA210">
             <End Role="Users" EntitySet="Users" />
             <End Role="TravelParticipants" EntitySet="TravelParticipants" />
           </AssociationSet>
@@ -436,7 +437,7 @@
           <NavigationProperty Name="Favorites" Relationship="Self.FK__Favorites__IdRou__5CD6CB2B" FromRole="Routes" ToRole="Favorites" />
           <NavigationProperty Name="Photos" Relationship="Self.FK__Photos__IdRoute__571DF1D5" FromRole="Routes" ToRole="Photos" />
           <NavigationProperty Name="Users" Relationship="Self.FK__Routes__IdUser__46E78A0C" FromRole="Routes" ToRole="Users" />
-          <NavigationProperty Name="TravelEvents" Relationship="Self.FK__TravelEve__IdRou__619B8048" FromRole="Routes" ToRole="TravelEvents" />
+          <NavigationProperty Name="TravelEvents" Relationship="Self.FK__TravelEve__IdRou__628FA481" FromRole="Routes" ToRole="TravelEvents" />
           <NavigationProperty Name="RoutePoints" Relationship="Self.RoutePointsForRoute" FromRole="Routes" ToRole="RoutePoints" />
         </EntityType>
         <EntityType Name="TravelEvents">
@@ -450,12 +451,13 @@
           <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="MaxParticipants" Type="Int32" Nullable="false" />
+          <Property Name="ViewsCount" Type="Int32" />
           <Property Name="StatusEvent" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="DescriptionEvent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="DateAddedEvent" Type="DateTime" Nullable="false" Precision="7" />
-          <NavigationProperty Name="Routes" Relationship="Self.FK__TravelEve__IdRou__619B8048" FromRole="TravelEvents" ToRole="Routes" />
-          <NavigationProperty Name="Users" Relationship="Self.FK__TravelEve__IdUse__628FA481" FromRole="TravelEvents" ToRole="Users" />
-          <NavigationProperty Name="TravelParticipants" Relationship="Self.FK__TravelPar__IdEve__6754599E" FromRole="TravelEvents" ToRole="TravelParticipants" />
+          <NavigationProperty Name="Routes" Relationship="Self.FK__TravelEve__IdRou__628FA481" FromRole="TravelEvents" ToRole="Routes" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__TravelEve__IdUse__6383C8BA" FromRole="TravelEvents" ToRole="Users" />
+          <NavigationProperty Name="TravelParticipants" Relationship="Self.FK__TravelPar__IdEve__68487DD7" FromRole="TravelEvents" ToRole="TravelParticipants" />
         </EntityType>
         <EntityType Name="TravelParticipants">
           <Key>
@@ -465,8 +467,8 @@
           <Property Name="IdEvent" Type="Int32" />
           <Property Name="IdUser" Type="Int32" />
           <Property Name="DateJoinParticipant" Type="DateTime" Nullable="false" Precision="7" />
-          <NavigationProperty Name="TravelEvents" Relationship="Self.FK__TravelPar__IdEve__6754599E" FromRole="TravelParticipants" ToRole="TravelEvents" />
-          <NavigationProperty Name="Users" Relationship="Self.FK__TravelPar__IdUse__68487DD7" FromRole="TravelParticipants" ToRole="Users" />
+          <NavigationProperty Name="TravelEvents" Relationship="Self.FK__TravelPar__IdEve__68487DD7" FromRole="TravelParticipants" ToRole="TravelEvents" />
+          <NavigationProperty Name="Users" Relationship="Self.FK__TravelPar__IdUse__693CA210" FromRole="TravelParticipants" ToRole="Users" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -484,8 +486,8 @@
           <NavigationProperty Name="Favorites" Relationship="Self.FK__Favorites__IdUse__5BE2A6F2" FromRole="Users" ToRole="Favorites" />
           <NavigationProperty Name="Roles" Relationship="Self.FK__Users__IdRole__3F466844" FromRole="Users" ToRole="Roles" />
           <NavigationProperty Name="Routes" Relationship="Self.FK__Routes__IdUser__46E78A0C" FromRole="Users" ToRole="Routes" />
-          <NavigationProperty Name="TravelEvents" Relationship="Self.FK__TravelEve__IdUse__628FA481" FromRole="Users" ToRole="TravelEvents" />
-          <NavigationProperty Name="TravelParticipants" Relationship="Self.FK__TravelPar__IdUse__68487DD7" FromRole="Users" ToRole="TravelParticipants" />
+          <NavigationProperty Name="TravelEvents" Relationship="Self.FK__TravelEve__IdUse__6383C8BA" FromRole="Users" ToRole="TravelEvents" />
+          <NavigationProperty Name="TravelParticipants" Relationship="Self.FK__TravelPar__IdUse__693CA210" FromRole="Users" ToRole="TravelParticipants" />
         </EntityType>
         <Association Name="FK__PointType__IdCat__4BAC3F29">
           <End Role="Categories" Type="Self.Categories" Multiplicity="0..1" />
@@ -583,7 +585,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TravelEve__IdRou__619B8048">
+        <Association Name="FK__TravelEve__IdRou__628FA481">
           <End Role="Routes" Type="Self.Routes" Multiplicity="0..1" />
           <End Role="TravelEvents" Type="Self.TravelEvents" Multiplicity="*" />
           <ReferentialConstraint>
@@ -595,7 +597,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TravelEve__IdUse__628FA481">
+        <Association Name="FK__TravelEve__IdUse__6383C8BA">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="TravelEvents" Type="Self.TravelEvents" Multiplicity="*" />
           <ReferentialConstraint>
@@ -607,7 +609,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TravelPar__IdEve__6754599E">
+        <Association Name="FK__TravelPar__IdEve__68487DD7">
           <End Role="TravelEvents" Type="Self.TravelEvents" Multiplicity="0..1" />
           <End Role="TravelParticipants" Type="Self.TravelParticipants" Multiplicity="*" />
           <ReferentialConstraint>
@@ -619,7 +621,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TravelPar__IdUse__68487DD7">
+        <Association Name="FK__TravelPar__IdUse__693CA210">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="TravelParticipants" Type="Self.TravelParticipants" Multiplicity="*" />
           <ReferentialConstraint>
@@ -678,19 +680,19 @@
             <End Role="Users" EntitySet="Users" />
             <End Role="Routes" EntitySet="Routes" />
           </AssociationSet>
-          <AssociationSet Name="FK__TravelEve__IdRou__619B8048" Association="Self.FK__TravelEve__IdRou__619B8048">
+          <AssociationSet Name="FK__TravelEve__IdRou__628FA481" Association="Self.FK__TravelEve__IdRou__628FA481">
             <End Role="Routes" EntitySet="Routes" />
             <End Role="TravelEvents" EntitySet="TravelEvents" />
           </AssociationSet>
-          <AssociationSet Name="FK__TravelEve__IdUse__628FA481" Association="Self.FK__TravelEve__IdUse__628FA481">
+          <AssociationSet Name="FK__TravelEve__IdUse__6383C8BA" Association="Self.FK__TravelEve__IdUse__6383C8BA">
             <End Role="Users" EntitySet="Users" />
             <End Role="TravelEvents" EntitySet="TravelEvents" />
           </AssociationSet>
-          <AssociationSet Name="FK__TravelPar__IdEve__6754599E" Association="Self.FK__TravelPar__IdEve__6754599E">
+          <AssociationSet Name="FK__TravelPar__IdEve__68487DD7" Association="Self.FK__TravelPar__IdEve__68487DD7">
             <End Role="TravelEvents" EntitySet="TravelEvents" />
             <End Role="TravelParticipants" EntitySet="TravelParticipants" />
           </AssociationSet>
-          <AssociationSet Name="FK__TravelPar__IdUse__68487DD7" Association="Self.FK__TravelPar__IdUse__68487DD7">
+          <AssociationSet Name="FK__TravelPar__IdUse__693CA210" Association="Self.FK__TravelPar__IdUse__693CA210">
             <End Role="Users" EntitySet="Users" />
             <End Role="TravelParticipants" EntitySet="TravelParticipants" />
           </AssociationSet>
@@ -787,6 +789,7 @@
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="MaxParticipants" ColumnName="MaxParticipants" />
+                <ScalarProperty Name="ViewsCount" ColumnName="ViewsCount" />
                 <ScalarProperty Name="StatusEvent" ColumnName="StatusEvent" />
                 <ScalarProperty Name="DescriptionEvent" ColumnName="DescriptionEvent" />
                 <ScalarProperty Name="DateAddedEvent" ColumnName="DateAddedEvent" />

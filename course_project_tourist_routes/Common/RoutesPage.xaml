@@ -317,7 +317,7 @@
                                                     Margin="0,0,20,0"
                                                     Tag="{Binding IdRoute}"
                                                     Click="SelectButton_Click"
-                                                    Visibility="{Binding IsSelectionMode, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                    Visibility="{Binding IsSelectionMode, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource AncestorType=Page}}"
                                                     ToolTip="Выбрать маршрут">
                                                 <materialDesign:PackIcon Kind="Check" 
                                                                          Width="20" 

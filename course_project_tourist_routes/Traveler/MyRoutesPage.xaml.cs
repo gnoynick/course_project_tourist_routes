@@ -17,7 +17,7 @@ namespace course_project_tourist_routes.Traveler
     public partial class MyRoutesPage : Page
     {
         private readonly int _userId;
-        private Dictionary<int, ImageBrush> _routePhotosCache = new Dictionary<int, ImageBrush>();
+        private readonly Dictionary<int, ImageBrush> _routePhotosCache = new Dictionary<int, ImageBrush>();
 
         public MyRoutesPage(int userId)
         {
@@ -60,7 +60,9 @@ namespace course_project_tourist_routes.Traveler
                     {
                         r.IdRoute,
                         r.TitleRoute,
-                        DescriptionRoute = r.DescriptionRoute ?? "",
+                        DescriptionRoute = r.DescriptionRoute.Length > 30 ?
+                                r.DescriptionRoute.Substring(0, 30) + "..." :
+                                r.DescriptionRoute,
                         r.DateAddedRoute,
                         RoutePhotoBrush = _routePhotosCache.TryGetValue(r.IdRoute, out var brush) ?
                             brush : CreateDefaultRouteImageBrush()

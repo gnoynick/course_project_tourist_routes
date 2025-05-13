@@ -27,7 +27,7 @@
                             Margin="15" Width="260" Height="70" Click="FindRouteButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <materialDesign:PackIcon Kind="MapSearch" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
-                            <TextBlock Text="Найти маршрут" FontSize="18" Foreground="white"/>
+                            <TextBlock Text="Маршруты" FontSize="18" Foreground="white"/>
                         </StackPanel>
                     </Button>
 
@@ -36,7 +36,7 @@
                             FontSize="20" Padding="30,20"
                             Margin="15" Width="260" Height="70" Click="TravelEvensButton_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <materialDesign:PackIcon Kind="WalletTravel" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
+                            <materialDesign:PackIcon Kind="CalendarMultiple" Width="24" Height="24" Margin="0,0,10,0" Foreground="white"/>
                             <TextBlock Text="Путешествия" FontSize="18" Foreground="white"/>
                         </StackPanel>
                     </Button>

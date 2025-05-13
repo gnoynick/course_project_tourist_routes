@@ -20,7 +20,7 @@ namespace course_project_tourist_routes.Common
         private List<Categories> _categories = new List<Categories>();
         private List<string> _countries = new List<string>();
         private List<string> _cities = new List<string>();
-        private Dictionary<int, ImageBrush> _routePhotosCache = new Dictionary<int, ImageBrush>();
+        private readonly Dictionary<int, ImageBrush> _routePhotosCache = new Dictionary<int, ImageBrush>();
         public bool IsSelectionMode { get; set; }
 
         public RoutesPage(int userId, bool isSelectionMode = false)
@@ -396,11 +396,11 @@ namespace course_project_tourist_routes.Common
             var searchText = SearchTextBox.Text;
 
             _ = LoadRoutesAsync(
-                selectedCategory?.IdCategory == 0 ? null : (selectedCategory?.IdCategory),
-                selectedCountry,
-                selectedCity,
-                searchText
-            );
+            selectedCategory?.IdCategory == 0 ? null : (selectedCategory?.IdCategory),
+            selectedCountry,
+            selectedCity,
+            searchText
+        );
         }
 
         private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

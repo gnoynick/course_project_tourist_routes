@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 using static course_project_tourist_routes.Common.PointsPage;
 
@@ -25,7 +26,7 @@ namespace course_project_tourist_routes.Admin
             Settings.IsEnabled = isEnabled;
             RoutePointsButton.IsEnabled = isEnabled;
             RoutesButton.IsEnabled = isEnabled;
-            AddRouteButton.IsEnabled = isEnabled;
+            TravelEvensButton.IsEnabled = isEnabled;
             ReportsButton.IsEnabled = isEnabled;
             ExitButton.IsEnabled = isEnabled;
         }
@@ -110,14 +111,14 @@ namespace course_project_tourist_routes.Admin
         {
             if (e.Key == Key.Escape)
             {
-                if (SettingsFrame.Visibility == Visibility.Visible)
-                {
-                    _ = AnimateFrameOut(SettingsFrame, "SettingsFrameSlideOut");
-                    e.Handled = true;
-                }
-                else if (FullScreenAvatar.Visibility == Visibility.Visible)
+                if (FullScreenAvatar.Visibility == Visibility.Visible)
                 {
                     BackButton_Click(null, null);
+                    e.Handled = true;
+                }
+                else if (SettingsFrame.Visibility == Visibility.Visible)
+                {
+                    _ = AnimateFrameOut(SettingsFrame, "SettingsFrameSlideOut");
                     e.Handled = true;
                 }
             }
@@ -213,6 +214,7 @@ namespace course_project_tourist_routes.Admin
         private void TravelEvensButton_Click(object sender, RoutedEventArgs e)
         {
             ToggleSettingsFrameVisibility();
+            NavigationService.Navigate(new TravelEventsPage(_userId));
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
